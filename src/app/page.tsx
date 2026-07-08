@@ -74,19 +74,19 @@ function QuickStats() {
       {stats.map((stat, i) => (
         <motion.div
           key={stat.label}
-          className="glass rounded-xl px-4 sm:px-5 py-2.5 sm:py-3 text-center min-w-[80px] sm:min-w-[100px]"
+          className="glass-strong rounded-xl px-4 sm:px-5 py-2.5 sm:py-3 text-center min-w-[80px] sm:min-w-[100px]"
           initial={{ opacity: 0, scale: 0.8 }}
           animate={{ opacity: 1, scale: 1 }}
           transition={{ delay: 0.8 + i * 0.1 }}
           whileHover={{ scale: 1.05, y: -2 }}
         >
           <div
-            className={`text-base sm:text-lg font-bold ${stat.color}`}
+            className={`text-lg sm:text-xl font-bold ${stat.color}`}
             style={{ fontFamily: "var(--font-display)" }}
           >
             {stat.value}
           </div>
-          <div className="text-xs text-gray-500 mt-0.5">{stat.label}</div>
+          <div className="text-[10px] text-gray-500 mt-1 uppercase tracking-wider">{stat.label}</div>
         </motion.div>
       ))}
     </motion.div>
@@ -327,7 +327,7 @@ export default function Home() {
         {screen === "hub" && (
           <motion.div
             key="hub"
-            className="relative z-10 min-h-screen flex flex-col items-center justify-center px-4 py-20"
+            className="relative z-10 min-h-screen flex flex-col items-center justify-center px-4 py-24"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ duration: 0.8 }}
@@ -352,7 +352,7 @@ export default function Home() {
                 Welcome back, {characterName || "Crawler"}
               </motion.p>
               <h2
-                className="text-4xl md:text-5xl font-bold mb-3 glow-blue"
+                className="text-4xl md:text-5xl font-black mb-4 glow-blue"
                 style={{ fontFamily: "var(--font-display)" }}
               >
                 <motion.span
@@ -365,7 +365,7 @@ export default function Home() {
                 </motion.span>
               </h2>
               <motion.p
-                className="text-gray-400 text-base sm:text-lg"
+                className="text-gray-400 text-sm sm:text-base"
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 transition={{ delay: 0.5 }}
@@ -381,7 +381,7 @@ export default function Home() {
             <AnimatedDivider delay={1.0} />
 
             {/* Zone Portals */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 max-w-6xl w-full">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 sm:gap-8 max-w-6xl w-full">
               {zoneData.map((z, i) => (
                 <motion.div
                   key={z.zone}

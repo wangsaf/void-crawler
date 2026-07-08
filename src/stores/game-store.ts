@@ -105,7 +105,7 @@ export const useGameStore = create<GameState>()(
         });
       },
       
-      addGold: (amount) => set((s) => ({ gold: s.gold + amount })),
+      addGold: (amount) => set((s) => ({ gold: Math.max(0, s.gold + amount) })),
       
       addItem: (item) => set((s) => ({
         items: s.items.includes(item) ? s.items : [...s.items, item],

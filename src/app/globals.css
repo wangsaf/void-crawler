@@ -110,17 +110,18 @@ body {
 /* ==================== GLASS MORPHISM ==================== */
 
 .glass {
-  background: rgba(30, 30, 58, 0.6);
+  background: rgba(30, 30, 58, 0.65);
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.12);
 }
 
 .glass-strong {
-  background: rgba(30, 30, 58, 0.8);
+  background: rgba(30, 30, 58, 0.85);
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
-  border: 1px solid rgba(255, 255, 255, 0.12);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.3), 0 1px 3px rgba(0, 0, 0, 0.2);
 }
 
 /* ==================== NOISE TEXTURE ==================== */

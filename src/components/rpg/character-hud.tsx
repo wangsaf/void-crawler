@@ -29,13 +29,13 @@ export function CharacterHUD() {
 
   return (
     <motion.div
-      className="fixed top-3 right-3 sm:top-4 sm:right-4 z-50 glass rounded-xl p-4 w-48 sm:w-64"
+      className="fixed top-3 right-3 sm:top-4 sm:right-4 z-50 glass-strong rounded-xl p-4 sm:p-5 w-48 sm:w-64"
       initial={{ x: 300, opacity: 0 }}
       animate={{ x: 0, opacity: 1 }}
       transition={{ type: "spring", damping: 20, delay: 0.5 }}
     >
       {/* Character Info */}
-      <div className="flex items-center gap-2 sm:gap-3 mb-2 sm:mb-3">
+      <div className="flex items-center gap-2 sm:gap-3 mb-3 sm:mb-4">
         <div
           className="w-8 h-8 sm:w-10 sm:h-10 rounded-full flex items-center justify-center text-base sm:text-lg shrink-0"
           style={{
@@ -47,12 +47,12 @@ export function CharacterHUD() {
         </div>
         <div className="min-w-0 flex-1">
           <div
-            className="text-xs sm:text-sm font-bold text-neon-blue truncate"
+            className="text-sm sm:text-base font-bold text-neon-blue truncate"
             style={{ fontFamily: "var(--font-display)" }}
           >
             {characterName}
           </div>
-          <div className="text-[10px] sm:text-xs text-gray-400 truncate">
+          <div className="text-[10px] sm:text-xs text-gray-300 truncate">
             Lv.{level} {title} • {characterClass}
           </div>
         </div>
@@ -73,9 +73,9 @@ export function CharacterHUD() {
       </div>
 
       {/* Health Bar */}
-      <div className="mb-1.5 sm:mb-2">
+      <div className="mb-2 sm:mb-3">
         <div className="flex justify-between text-[10px] sm:text-xs mb-1">
-          <span className="text-neon-red">HP</span>
+          <span className="text-neon-red font-semibold">HP</span>
           <span className="text-gray-400">
             {health}/{maxHealth}
           </span>
@@ -95,9 +95,9 @@ export function CharacterHUD() {
       </div>
 
       {/* XP Bar - hidden on mobile when collapsed */}
-      <div className={`mb-2 sm:mb-3 ${expanded ? 'block' : 'hidden sm:block'}`}>
+      <div className={`mb-3 sm:mb-4 ${expanded ? 'block' : 'hidden sm:block'}`}>
         <div className="flex justify-between text-[10px] sm:text-xs mb-1">
-          <span className="text-neon-purple">XP</span>
+          <span className="text-neon-purple font-semibold">XP</span>
           <span className="text-gray-400">
             {formatNumber(xp)}/{formatNumber(xpToNext)}
           </span>
@@ -115,7 +115,7 @@ export function CharacterHUD() {
       </div>
 
       {/* Stats - hidden on mobile when collapsed */}
-      <div className={`grid grid-cols-2 gap-1.5 sm:gap-2 text-[10px] sm:text-xs ${expanded ? 'block' : 'hidden sm:block'}`}>
+      <div className={`grid grid-cols-2 gap-2 sm:gap-3 text-[10px] sm:text-xs ${expanded ? 'block' : 'hidden sm:block'}`}>
         <div className="flex items-center gap-1">
           <span className="text-neon-gold">💰</span>
           <span className="text-gray-300">{formatNumber(gold)}</span>

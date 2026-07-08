@@ -378,9 +378,9 @@ export default function CartChaosPage() {
         )}
       </AnimatePresence>
 
-      <div className="relative z-10 mx-auto max-w-7xl px-4 py-8">
+      <div className="relative z-10 mx-auto max-w-7xl px-4 py-12">
         {/* Header */}
-        <div className="mb-6 sm:mb-8 flex flex-wrap items-center justify-between gap-2">
+        <div className="mb-8 sm:mb-10 flex flex-wrap items-center justify-between gap-2">
           <motion.button
             onClick={goBack}
             whileHover={{ scale: 1.05 }}
@@ -401,7 +401,7 @@ export default function CartChaosPage() {
           className="mb-2 text-center"
         >
           <h1
-            className="animate-gradient bg-clip-text text-5xl font-black tracking-tight text-transparent md:text-7xl"
+            className="animate-gradient bg-clip-text text-4xl sm:text-5xl md:text-7xl font-black tracking-tight text-transparent"
             style={{
               fontFamily: 'var(--font-display)',
               backgroundImage: 'linear-gradient(90deg, #ff6b35, #ffc107, #ff4081, #ff6b35)',
@@ -412,14 +412,14 @@ export default function CartChaosPage() {
           >
             🛒 Cart Chaos
           </h1>
-          <p className="mt-2 text-sm text-orange-300/70" style={{ fontFamily: 'var(--font-code)' }}>
+          <p className="mt-3 text-sm text-orange-300/70" style={{ fontFamily: 'var(--font-code)' }}>
             where shopping fights back — prices shift, carts rebel, goblins tax
           </p>
         </motion.div>
 
         {/* Price Roulette timer */}
         <motion.div
-          className="mx-auto mb-6 sm:mb-8 flex items-center w-fit gap-2 sm:gap-3 rounded-full border border-white/10 bg-black/40 px-3 sm:px-5 py-1.5 sm:py-2 backdrop-blur-sm text-xs sm:text-sm"
+          className="mx-auto mb-8 sm:mb-10 flex items-center w-fit gap-2 sm:gap-3 rounded-full border border-white/10 bg-black/40 px-3 sm:px-5 py-1.5 sm:py-2 backdrop-blur-sm text-xs sm:text-sm"
           animate={{ borderColor: priceRouletteCountdown <= 3 ? ['#ff6b35', '#ff4081', '#ff6b35'] : '#ff6b3566' }}
           transition={{ duration: 0.5, repeat: priceRouletteCountdown <= 3 ? Infinity : 0 }}
         >
@@ -438,10 +438,10 @@ export default function CartChaosPage() {
         <div className="grid gap-8 lg:grid-cols-3">
           {/* ─── Shop Grid ──────────────────────────────────────────────────── */}
           <div className="lg:col-span-2">
-            <h2 className="mb-3 sm:mb-4 text-lg sm:text-xl font-bold text-orange-200" style={{ fontFamily: 'var(--font-display)' }}>
+            <h2 className="mb-4 sm:mb-5 text-lg sm:text-xl font-bold uppercase tracking-wider text-orange-200" style={{ fontFamily: 'var(--font-display)' }}>
               Market Stalls
             </h2>
-            <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
+            <div className="grid gap-5 sm:grid-cols-2 xl:grid-cols-3">
               {items.map((item, idx) => (
                 <motion.div
                   key={item.id}
@@ -451,7 +451,7 @@ export default function CartChaosPage() {
                   whileHover={{ scale: 1.03, y: -4 }}
                   whileTap={{ scale: 0.97 }}
                   onClick={() => addToCart(item)}
-                  className={`glass-strong group relative cursor-pointer rounded-xl border p-5 h-full transition-all ${
+                  className={`glass-strong group relative cursor-pointer rounded-xl border p-6 h-full transition-all ${
                     glitchingItem === item.id
                       ? 'border-pink-500 shadow-[0_0_30px_rgba(255,64,129,0.4)]'
                       : 'border-white/10 hover:border-white/20 hover:shadow-[0_0_20px_rgba(255,107,53,0.2)]'
@@ -496,11 +496,11 @@ export default function CartChaosPage() {
           {/* ─── Cart Panel ─────────────────────────────────────────────────── */}
           <div className="lg:col-span-1">
             <motion.div
-              className="glass-strong lg:sticky top-0 lg:top-8 rounded-xl border border-white/10 p-5"
+              className="glass-strong lg:sticky top-0 lg:top-8 rounded-xl border border-white/10 p-6"
               initial={{ opacity: 0, x: 30 }}
               animate={{ opacity: 1, x: 0 }}
             >
-              <h2 className="mb-4 flex items-center gap-2 text-lg font-bold text-pink-200" style={{ fontFamily: 'var(--font-display)' }}>
+              <h2 className="mb-5 flex items-center gap-2 text-lg font-bold text-pink-200 uppercase tracking-wider" style={{ fontFamily: 'var(--font-display)' }}>
                 <motion.span
                   animate={{ rotate: [0, -10, 10, -5, 0] }}
                   transition={{ duration: 2, repeat: Infinity, repeatDelay: 3 }}

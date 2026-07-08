@@ -112,8 +112,8 @@ function PortScanner({ addXP }: { addXP: (n: number) => void }) {
   };
 
   return (
-    <div className="glass-strong rounded-xl p-5 h-full">
-      <h3 className="text-[#00ff41] font-mono text-lg mb-4 flex items-center gap-2">
+    <div className="glass-strong rounded-xl p-6 h-full">
+      <h3 className="text-[#00ff41] font-mono text-lg font-bold mb-5 flex items-center gap-2">
         <span className="text-2xl">🔍</span> PORT SCANNER
       </h3>
       <div className="flex flex-col sm:flex-row items-center gap-2 mb-4">
@@ -182,8 +182,8 @@ function PasswordChecker() {
   const colors = ['#ff0040', '#ff6600', '#ffaa00', '#00aaff', '#aa00ff', '#00ff41'];
 
   return (
-    <div className="glass-strong rounded-xl p-5 h-full">
-      <h3 className="text-[#00ff41] font-mono text-lg mb-4 flex items-center gap-2">
+    <div className="glass-strong rounded-xl p-6 h-full">
+      <h3 className="text-[#00ff41] font-mono text-lg font-bold mb-5 flex items-center gap-2">
         <span className="text-2xl">🔐</span> PASSWORD STRENGTH
       </h3>
       <input
@@ -259,8 +259,8 @@ function FirewallSim({ addXP }: { addXP: (n: number) => void }) {
   };
 
   return (
-    <div className="glass-strong rounded-xl p-5 h-full">
-      <h3 className="text-[#00ff41] font-mono text-lg mb-4 flex items-center gap-2">
+    <div className="glass-strong rounded-xl p-6 h-full">
+      <h3 className="text-[#00ff41] font-mono text-lg font-bold mb-5 flex items-center gap-2">
         <span className="text-2xl">🧱</span> FIREWALL SIMULATOR
       </h3>
       <div className="grid grid-cols-1 gap-2 mb-4">
@@ -326,8 +326,8 @@ function XssPlayground({ addXP }: { addXP: (n: number) => void }) {
   };
 
   return (
-    <div className="glass-strong rounded-xl p-5 h-full">
-      <h3 className="text-[#00ff41] font-mono text-lg mb-4 flex items-center gap-2">
+    <div className="glass-strong rounded-xl p-6 h-full">
+      <h3 className="text-[#00ff41] font-mono text-lg font-bold mb-5 flex items-center gap-2">
         <span className="text-2xl">💀</span> XSS PLAYGROUND
       </h3>
       <div className="flex flex-col sm:flex-row items-center gap-2 mb-4">
@@ -397,8 +397,8 @@ function SqlInjection({ addXP }: { addXP: (n: number) => void }) {
   };
 
   return (
-    <div className="glass-strong rounded-xl p-5 h-full">
-      <h3 className="text-[#00ff41] font-mono text-lg mb-4 flex items-center gap-2">
+    <div className="glass-strong rounded-xl p-6 h-full">
+      <h3 className="text-[#00ff41] font-mono text-lg font-bold mb-5 flex items-center gap-2">
         <span className="text-2xl">💉</span> SQL INJECTION
       </h3>
       <div className="flex flex-col sm:flex-row items-center gap-2 mb-4">
@@ -475,8 +475,8 @@ function PhishingDetector({ addXP }: { addXP: (n: number) => void }) {
   };
 
   return (
-    <div className="glass-strong rounded-xl p-5 h-full">
-      <h3 className="text-[#00ff41] font-mono text-lg mb-4 flex items-center gap-2">
+    <div className="glass-strong rounded-xl p-6 h-full">
+      <h3 className="text-[#00ff41] font-mono text-lg font-bold mb-5 flex items-center gap-2">
         <span className="text-2xl">🎣</span> PHISHING DETECTOR
       </h3>
       <textarea
@@ -549,7 +549,7 @@ function TerminalLog() {
   };
 
   return (
-    <div className="glass-strong rounded-xl p-5 h-52 sm:h-64 flex flex-col">
+    <div className="glass-strong rounded-xl p-6 h-52 sm:h-64 flex flex-col">
       <div className="flex-1 overflow-y-auto font-mono text-xs space-y-1 mb-2" style={{ fontFamily: 'var(--font-code)' }}>
         {logs.map((l, i) => (
           <div key={i} className={`${l.startsWith('>') ? 'text-[#00ff41]' : l.includes('[WARN]') ? 'text-yellow-400' : l.includes('[ERR]') ? 'text-red-400' : 'text-[#00ff41]/70'}`}>
@@ -608,13 +608,13 @@ export default function CyberPage() {
         {phantom && <XssPhantom onSanitize={handleSanitizePhantom} />}
       </AnimatePresence>
 
-      <div className="relative z-10 max-w-7xl mx-auto px-4 py-8">
+      <div className="relative z-10 max-w-7xl mx-auto px-4 py-12">
         {/* Header */}
-        <motion.div initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }} className="mb-8">
+        <motion.div initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }} className="mb-10">
           <Link href="/" className="inline-flex items-center gap-2 text-[#00ff41]/60 hover:text-[#00ff41] transition-colors font-mono text-sm mb-4">
             ← BACK TO HUB
           </Link>
-          <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold glow-green font-mono tracking-wider">
+          <h1 className="text-4xl sm:text-5xl md:text-6xl font-black glow-green font-mono tracking-wider">
             EXPLOIT<span className="text-white/30">.</span>ME
           </h1>
           <p className="text-[#00ff41]/50 font-mono mt-2 text-sm">
@@ -623,7 +623,7 @@ export default function CyberPage() {
         </motion.div>
 
         {/* Grid */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
           <motion.div className="h-full" initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.1 }}>
             <PortScanner addXP={wrappedAddXP} />
           </motion.div>
@@ -645,7 +645,7 @@ export default function CyberPage() {
         </div>
 
         {/* Terminal */}
-        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.7 }} className="mt-6">
+        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.7 }} className="mt-8">
           <TerminalLog />
         </motion.div>
 

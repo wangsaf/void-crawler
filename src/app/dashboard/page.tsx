@@ -172,9 +172,9 @@ function SlotMachine() {
   };
 
   return (
-    <div className="glass rounded-xl p-5">
+    <div className="glass rounded-xl p-6">
       <h3
-        className="text-sm font-bold mb-3 text-cyan-300 uppercase tracking-widest"
+        className="text-base font-bold mb-4 text-cyan-300 uppercase tracking-widest"
         style={{ fontFamily: "var(--font-display)" }}
       >
         💰 Billing Slot Machine
@@ -257,9 +257,9 @@ function ErrorChat() {
   }, [messages]);
 
   return (
-    <div className="glass rounded-xl p-5 flex flex-col h-60 sm:h-72">
+    <div className="glass rounded-xl p-6 flex flex-col h-60 sm:h-72">
       <h3
-        className="text-sm font-bold mb-3 text-red-400 uppercase tracking-widest"
+        className="text-base font-bold mb-4 text-red-400 uppercase tracking-widest"
         style={{ fontFamily: "var(--font-display)" }}
       >
         🐛 Error Log Chat Room
@@ -309,9 +309,9 @@ function StatusWeather() {
   const ws = WEATHER_STATES[status];
 
   return (
-    <div className="glass rounded-xl p-5">
+    <div className="glass rounded-xl p-6">
       <h3
-        className="text-sm font-bold mb-3 text-yellow-300 uppercase tracking-widest"
+        className="text-base font-bold mb-4 text-yellow-300 uppercase tracking-widest"
         style={{ fontFamily: "var(--font-display)" }}
       >
         🌤️ System Status
@@ -371,9 +371,9 @@ function APIKeyHoroscope() {
   };
 
   return (
-    <div className="glass rounded-xl p-5">
+    <div className="glass rounded-xl p-6">
       <h3
-        className="text-sm font-bold mb-3 text-purple-300 uppercase tracking-widest"
+        className="text-base font-bold mb-4 text-purple-300 uppercase tracking-widest"
         style={{ fontFamily: "var(--font-display)" }}
       >
         🔮 API Key Horoscope
@@ -438,9 +438,9 @@ function DeployNuke() {
   };
 
   return (
-    <div className="glass rounded-xl p-5">
+    <div className="glass rounded-xl p-6">
       <h3
-        className="text-sm font-bold mb-3 text-red-400 uppercase tracking-widest"
+        className="text-base font-bold mb-4 text-red-400 uppercase tracking-widest"
         style={{ fontFamily: "var(--font-display)" }}
       >
         ☢️ Deploy Control
@@ -589,10 +589,10 @@ export default function DashboardPage() {
         {/* handled inside DeployNuke */}
       </AnimatePresence>
 
-      <div className="relative z-10 max-w-7xl mx-auto px-4 py-6">
+      <div className="relative z-10 max-w-7xl mx-auto px-4 py-12">
         {/* Header */}
         <motion.div
-          className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-6 sm:mb-8 gap-3"
+          className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-8 sm:mb-10 gap-3"
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5 }}
@@ -612,7 +612,7 @@ export default function DashboardPage() {
             </motion.button>
             <div>
               <h1
-                className="text-2xl sm:text-3xl font-bold glow-blue"
+                className="text-3xl sm:text-4xl font-black glow-blue"
                 style={{ fontFamily: "var(--font-display)", color: "#e0f7fa" }}
               >
                 Panel Panic
@@ -633,19 +633,19 @@ export default function DashboardPage() {
         </motion.div>
 
         {/* Main Grid */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           {/* Left Column: Metrics + Chart */}
-          <div className="lg:col-span-2 space-y-6">
+          <div className="lg:col-span-2 space-y-8">
             {/* Metrics Panel */}
             <motion.div
-              className="glass-strong rounded-xl p-6 box-glow-blue"
+              className="glass-strong rounded-xl p-6 sm:p-8 box-glow-blue"
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.1 }}
             >
               <div className="flex items-center justify-between mb-4">
                 <h2
-                  className="text-sm font-bold text-cyan-300 uppercase tracking-widest"
+                  className="text-base font-bold text-cyan-300 uppercase tracking-widest"
                   style={{ fontFamily: "var(--font-display)" }}
                 >
                   📊 Real-Time Metrics
@@ -666,14 +666,14 @@ export default function DashboardPage() {
 
             {/* Live Chart */}
             <motion.div
-              className="glass rounded-xl p-5"
+              className="glass rounded-xl p-6"
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.2 }}
             >
               <div className="flex items-center justify-between mb-2">
                 <h2
-                  className="text-sm font-bold text-cyan-300 uppercase tracking-widest"
+                  className="text-base font-bold text-cyan-300 uppercase tracking-widest"
                   style={{ fontFamily: "var(--font-display)" }}
                 >
                   📈 Request Throughput
@@ -699,7 +699,7 @@ export default function DashboardPage() {
           </div>
 
           {/* Right Column: Side panels */}
-          <div className="space-y-6">
+          <div className="space-y-8">
             {/* Deploy Nuke */}
             <motion.div
               initial={{ opacity: 0, x: 20 }}

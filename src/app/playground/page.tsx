@@ -280,7 +280,7 @@ function InterpretationCard({ type, icon, children }: { type: string; icon: stri
       animate={{ opacity: 1, y: 0, scale: 1 }}
       exit={{ opacity: 0, y: -20, scale: 0.95 }}
       transition={{ duration: 0.5 }}
-      className="glass-strong rounded-xl p-5 box-glow-purple relative overflow-hidden"
+      className="glass-strong rounded-xl p-6 box-glow-purple relative overflow-hidden"
     >
       <motion.div
         className="absolute inset-0 bg-gradient-to-br from-purple-500/5 to-transparent"
@@ -470,13 +470,13 @@ export default function PlaygroundPage() {
         <ParticleBurst key={p.id} x={p.x} y={p.y} onDone={() => removeParticle(p.id)} />
       ))}
 
-      <div className="relative z-10 max-w-4xl mx-auto px-4 py-8">
+      <div className="relative z-10 max-w-4xl mx-auto px-4 py-12">
         {/* Header */}
-        <motion.div initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }} className="mb-8 text-center">
+        <motion.div initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }} className="mb-10 text-center">
           <Link href="/" className="inline-flex items-center gap-2 text-purple-400/60 hover:text-purple-400 transition-colors font-mono text-sm mb-4">
             ← BACK TO HUB
           </Link>
-          <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold glow-purple font-mono tracking-wider">
+          <h1 className="text-5xl sm:text-6xl md:text-7xl font-black glow-purple font-mono tracking-wider">
             THE VOID
           </h1>
           <p className="text-purple-400/50 font-mono mt-2 text-sm tracking-widest">
@@ -491,10 +491,10 @@ export default function PlaygroundPage() {
 
         {/* Input */}
         <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }}
-          className="glass-strong rounded-xl p-5 mb-8">
+          className="glass-strong rounded-xl p-6 mb-10">
           <div className="flex items-center gap-2 mb-3">
             <span className="text-2xl">🔮</span>
-            <span className="text-purple-300 font-mono text-lg">INPUT PORTAL</span>
+            <span className="text-purple-300 font-mono text-lg font-bold tracking-wider">INPUT PORTAL</span>
             {inputType !== 'empty' && (
               <motion.span initial={{ opacity: 0, scale: 0 }} animate={{ opacity: 1, scale: 1 }}
                 className="ml-auto px-3 py-1 bg-purple-500/20 border border-white/10 rounded-full text-purple-300 font-mono text-xs uppercase">
