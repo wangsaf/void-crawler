@@ -1,0 +1,259 @@
+@import "tailwindcss";
+
+@theme {
+  --color-void-black: #0a0a0f;
+  --color-void-deep: #0d0d1a;
+  --color-void-purple: #1a0a2e;
+  --color-void-surface: #15152a;
+  --color-void-card: #1e1e3a;
+  --color-void-border: #2a2a4a;
+  
+  --color-neon-blue: #00d4ff;
+  --color-neon-purple: #b000ff;
+  --color-neon-pink: #ff006e;
+  --color-neon-green: #00ff88;
+  --color-neon-gold: #ffd700;
+  --color-neon-red: #ff3333;
+  --color-neon-cyan: #00ffff;
+  
+  --color-market-warm: #ff6b35;
+  --color-market-gold: #ffc107;
+  --color-market-pink: #ff4081;
+  
+  --color-panel-blue: #0288d1;
+  --color-panel-cyan: #00bcd4;
+  --color-panel-white: #e0f7fa;
+  
+  --color-cyber-green: #00ff41;
+  --color-cyber-dark: #0d1117;
+  --color-cyber-terminal: #0a1628;
+  
+  --font-display: "Space Grotesk", system-ui, sans-serif;
+  --font-body: "Inter", system-ui, sans-serif;
+  --font-code: "JetBrains Mono", monospace;
+  --font-retro: "Silkscreen", cursive;
+}
+
+/* ==================== BASE STYLES ==================== */
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  background: var(--color-void-black);
+  color: #e0e0e0;
+  font-family: var(--font-body);
+  overflow-x: hidden;
+  min-height: 100vh;
+}
+
+/* ==================== SCROLLBAR ==================== */
+
+::-webkit-scrollbar {
+  width: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--color-void-deep);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--color-neon-purple);
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--color-neon-blue);
+}
+
+/* ==================== GLOW EFFECTS ==================== */
+
+.glow-blue {
+  text-shadow: 0 0 10px rgba(0, 212, 255, 0.5), 0 0 40px rgba(0, 212, 255, 0.2);
+}
+
+.glow-purple {
+  text-shadow: 0 0 10px rgba(176, 0, 255, 0.5), 0 0 40px rgba(176, 0, 255, 0.2);
+}
+
+.glow-green {
+  text-shadow: 0 0 10px rgba(0, 255, 136, 0.5), 0 0 40px rgba(0, 255, 136, 0.2);
+}
+
+.glow-gold {
+  text-shadow: 0 0 10px rgba(255, 215, 0, 0.5), 0 0 40px rgba(255, 215, 0, 0.2);
+}
+
+.glow-pink {
+  text-shadow: 0 0 10px rgba(255, 0, 110, 0.5), 0 0 40px rgba(255, 0, 110, 0.2);
+}
+
+.box-glow-blue {
+  box-shadow: 0 0 15px rgba(0, 212, 255, 0.3), 0 0 45px rgba(0, 212, 255, 0.1), inset 0 0 15px rgba(0, 212, 255, 0.05);
+}
+
+.box-glow-purple {
+  box-shadow: 0 0 15px rgba(176, 0, 255, 0.3), 0 0 45px rgba(176, 0, 255, 0.1), inset 0 0 15px rgba(176, 0, 255, 0.05);
+}
+
+.box-glow-green {
+  box-shadow: 0 0 15px rgba(0, 255, 136, 0.3), 0 0 45px rgba(0, 255, 136, 0.1), inset 0 0 15px rgba(0, 255, 136, 0.05);
+}
+
+/* ==================== GLASS MORPHISM ==================== */
+
+.glass {
+  background: rgba(30, 30, 58, 0.6);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.glass-strong {
+  background: rgba(30, 30, 58, 0.8);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+}
+
+/* ==================== NOISE TEXTURE ==================== */
+
+.noise::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.03'/%3E%3C/svg%3E");
+  pointer-events: none;
+  z-index: 1;
+}
+
+/* ==================== SCANLINES ==================== */
+
+.scanlines::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: repeating-linear-gradient(
+    0deg,
+    transparent,
+    transparent 2px,
+    rgba(0, 0, 0, 0.05) 2px,
+    rgba(0, 0, 0, 0.05) 4px
+  );
+  pointer-events: none;
+  z-index: 2;
+}
+
+/* ==================== ANIMATED GRADIENTS ==================== */
+
+@keyframes gradient-shift {
+  0%, 100% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+}
+
+.animate-gradient {
+  background-size: 200% 200%;
+  animation: gradient-shift 8s ease infinite;
+}
+
+/* ==================== PULSE GLOW ==================== */
+
+@keyframes pulse-glow {
+  0%, 100% { opacity: 0.5; }
+  50% { opacity: 1; }
+}
+
+.animate-pulse-glow {
+  animation: pulse-glow 2s ease-in-out infinite;
+}
+
+/* ==================== FLOAT ANIMATION ==================== */
+
+@keyframes float {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-10px); }
+}
+
+.animate-float {
+  animation: float 3s ease-in-out infinite;
+}
+
+/* ==================== GLITCH EFFECT ==================== */
+
+@keyframes glitch-1 {
+  0%, 100% { clip-path: inset(0 0 0 0); transform: translate(0); }
+  20% { clip-path: inset(20% 0 60% 0); transform: translate(-3px, 2px); }
+  40% { clip-path: inset(40% 0 30% 0); transform: translate(3px, -1px); }
+  60% { clip-path: inset(60% 0 10% 0); transform: translate(-2px, 3px); }
+  80% { clip-path: inset(10% 0 80% 0); transform: translate(2px, -2px); }
+}
+
+.glitch {
+  position: relative;
+}
+
+.glitch::before,
+.glitch::after {
+  content: attr(data-text);
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.glitch::before {
+  color: var(--color-neon-blue);
+  animation: glitch-1 3s infinite;
+  z-index: -1;
+}
+
+.glitch::after {
+  color: var(--color-neon-pink);
+  animation: glitch-1 3s infinite reverse;
+  z-index: -2;
+}
+
+/* ==================== MATRIX RAIN ==================== */
+
+@keyframes matrix-fall {
+  0% { transform: translateY(-100%); opacity: 1; }
+  100% { transform: translateY(100vh); opacity: 0; }
+}
+
+/* ==================== BORDER ANIMATIONS ==================== */
+
+@keyframes border-rotate {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+.animated-border {
+  position: relative;
+  border-radius: 12px;
+  padding: 1px;
+  background: linear-gradient(90deg, var(--color-neon-blue), var(--color-neon-purple), var(--color-neon-pink), var(--color-neon-blue));
+  background-size: 300% 300%;
+  animation: border-rotate 4s ease infinite;
+}
+
+.animated-border > * {
+  background: var(--color-void-surface);
+  border-radius: 11px;
+}
+
+/* ==================== RESPONSIVE ==================== */
+
+@media (max-width: 768px) {
+  .glow-blue, .glow-purple, .glow-green, .glow-gold, .glow-pink {
+    text-shadow: 0 0 5px currentColor;
+  }
+}
