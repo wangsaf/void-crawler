@@ -1,0 +1,175 @@
+"use client";
+
+import { useState, useEffect, useCallback } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import { soundEngine } from "@/lib/sound-engine";
+import { useGameStore } from "@/stores/game-store";
+
+export interface ToastMessage {
+  id: string;
+  icon: string;
+  title: string;
+  subtitle?: string;
+  xp?: number;
+  color: string;
+  type: "achievement" | "xp" | "levelup" | "item" | "quest";
+}
+
+// Singleton toast store
+let toastListeners: Array<(toast: ToastMessage) => void> = [];
+let toastIdCounter = 0;
+
+export function showToast(toast: Omit<ToastMessage, "id">) {
+  const id = `toast-${++toastIdCounter}`;
+  toastListeners.forEach((listener) => listener({ ...toast, id }));
+}
+
+export function AchievementToast() {
+  const [toasts, setToasts] = useState<ToastMessage[]>([]);
+  const soundEnabled = useGameStore((s) => s.soundEnabled);
+
+  const addToast = useCallback((toast: ToastMessage) => {
+    setToasts((prev) => [...prev.slice(-2), toast]); // max 3 visible
+
+    if (soundEnabled) {
+      if (toast.type === "levelup") {
+        soundEngine.playLevelUp();
+      } else {
+        soundEngine.playAchievement();
+      }
+    }
+
+    // Auto-dismiss after 3 seconds
+    setTimeout(() => {
+      setToasts((prev) => prev.filter((t) => t.id !== toast.id));
+    }, 3000);
+  }, [soundEnabled]);
+
+  useEffect(() => {
+    toastListeners.push(addToast);
+    return () => {
+      toastListeners = toastListeners.filter((l) => l !== addToast);
+    };
+  }, [addToast]);
+
+  return (
+    <div className="fixed top-4 right-4 z-[100] flex flex-col gap-3 pointer-events-none w-80">
+      <AnimatePresence mode="popLayout">
+        {toasts.map((toast) => (
+          <motion.div
+            key={toast.id}
+            layout
+            initial={{ x: 350, opacity: 0, scale: 0.8 }}
+            animate={{ x: 0, opacity: 1, scale: 1 }}
+            exit={{ x: 350, opacity: 0, scale: 0.8 }}
+            transition={{ type: "spring", damping: 20, stiffness: 300 }}
+          >
+            <div
+              className="relative overflow-hidden rounded-xl pointer-events-auto"
+              style={{
+                background: "rgba(0, 0, 0, 0.85)",
+                backdropFilter: "blur(16px)",
+                border: `1px solid ${toast.color}40`,
+                boxShadow: `0 0 20px ${toast.color}20, 0 4px 20px rgba(0,0,0,0.5)`,
+              }}
+            >
+              {/* Animated top bar */}
+              <motion.div
+                className="absolute top-0 left-0 h-[2px]"
+                style={{ background: toast.color }}
+                initial={{ width: "100%" }}
+                animate={{ width: "0%" }}
+                transition={{ duration: 3, ease: "linear" }}
+              />
+
+              {/* Glow pulse */}
+              <motion.div
+                className="absolute inset-0 opacity-30"
+                style={{
+                  background: `radial-gradient(circle at 30% 50%, ${toast.color}30, transparent 60%)`,
+                }}
+                animate={{ opacity: [0.3, 0.15, 0.3] }}
+                transition={{ duration: 2, repeat: Infinity }}
+              />
+
+              {/* Content */}
+              <div className="relative flex items-center gap-3 p-4">
+                {/* Icon with pulse */}
+                <motion.div
+                  className="text-2xl flex-shrink-0"
+                  animate={{ scale: [1, 1.2, 1] }}
+                  transition={{ duration: 0.5, delay: 0.2 }}
+                >
+                  {toast.icon}
+                </motion.div>
+
+                <div className="flex-1 min-w-0">
+                  <div
+                    className="text-sm font-bold truncate"
+                    style={{
+                      color: toast.color,
+                      fontFamily: "var(--font-display)",
+                    }}
+                  >
+                    {toast.title}
+                  </div>
+                  {toast.subtitle && (
+                    <div className="text-xs text-gray-400 truncate mt-0.5">
+                      {toast.subtitle}
+                    </div>
+                  )}
+                </div>
+
+                {/* XP badge */}
+                {toast.xp && (
+                  <motion.div
+                    className="flex-shrink-0 px-2 py-1 rounded-full text-xs font-bold"
+                    style={{
+                      background: `${toast.color}20`,
+                      color: toast.color,
+                    }}
+                    initial={{ scale: 0 }}
+                    animate={{ scale: 1 }}
+                    transition={{ type: "spring", delay: 0.3 }}
+                  >
+                    +{toast.xp} XP
+                  </motion.div>
+                )}
+              </div>
+
+              {/* Sparkle effect for level ups */}
+              {toast.type === "levelup" && (
+                <>
+                  {[...Array(8)].map((_, i) => (
+                    <motion.div
+                      key={i}
+                      className="absolute w-1 h-1 rounded-full"
+                      style={{ background: toast.color }}
+                      initial={{
+                        x: "50%",
+                        y: "50%",
+                        opacity: 1,
+                        scale: 0,
+                      }}
+                      animate={{
+                        x: `${20 + Math.random() * 60}%`,
+                        y: `${20 + Math.random() * 60}%`,
+                        opacity: [1, 0],
+                        scale: [0, 1.5],
+                      }}
+                      transition={{
+                        duration: 0.8,
+                        delay: i * 0.05,
+                        ease: "easeOut",
+                      }}
+                    />
+                  ))}
+                </>
+              )}
+            </div>
+          </motion.div>
+        ))}
+      </AnimatePresence>
+    </div>
+  );
+}

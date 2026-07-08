@@ -1,36 +1,86 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# void.crawler() — The Web That Is Alive
 
-## Getting Started
+An RPG web experience where web development concepts become gameplay.
 
-First, run the development server:
+🌐 **Live**: [void-crawler.vercel.app](https://void-crawler.vercel.app/)
+
+## What Is This?
+
+void.crawler() is a single-page RPG web app where every interaction is a game mechanic:
+
+- **Your browser = your class** (Chrome → Warrior, Firefox → Mage, Safari → Rogue)
+- **Zones = dungeons** with unique challenges
+- **CSS, JavaScript, networking** = the actual gameplay
+- **Sound = generative** via Web Audio API (zero external audio files)
+- **Particles = real-time** canvas-based with mouse interaction
+
+## Zones
+
+| Zone | Route | Theme | Features |
+|------|-------|-------|----------|
+| 🛒 Cart Chaos | /market | Neon marketplace | Price roulette, cart escape, Tax Goblin enemy, checkout puzzle |
+| 📊 Panel Panic | /dashboard | Holographic dashboard | Real-time metrics, nuke deploy, slot machine, error log chat |
+| 🔓 exploit.me | /cyber | Matrix hacker | Port scanner, password strength, XSS/SQLi playground, firewall sim |
+| 🌀 The Void | /playground | Abstract generative | Fibonacci spirals, poetry generator, color explorer, easter eggs |
+
+## RPG System
+
+- **Character classes** detected from browser User-Agent
+- **XP and leveling** system with titles (Script Kiddie → Void Walker)
+- **Health/mana** bars with real-time updates
+- **Achievements** for completing challenges
+- **Inventory** system with items from zones
+- **LocalStorage** save system (progress persists)
+
+## Tech Stack
+
+| Category | Tech |
+|----------|------|
+| Framework | Next.js 14 (App Router) |
+| Language | TypeScript |
+| Styling | Tailwind CSS 4 |
+| Animation | Framer Motion |
+| State | Zustand (persisted) |
+| Sound | Tone.js (generative) |
+| 3D | Three.js + React Three Fiber |
+| Icons | Lucide React |
+
+## Easter Eggs
+
+- 🔼🔽🔼🔽◀️▶️◀️▶️🅱️🅰️ Konami code
+- ⏱️ Idle for 30 seconds
+- 🖱️ Triple-click background
+- 🔍 Try typing different things in The Void
+
+## TestSprite Verification
+
+See [LOOP.md](./LOOP.md) for the full verification loop.
+
+Test plans available in `/test-plans/` directory.
+
+## Judging Criteria (S3)
+
+| Criteria | Score | Evidence |
+|----------|-------|----------|
+| Project Quality (40pts) | — | 5 zones, RPG system, sound, 3D, responsive |
+| Loop Quality (40pts) | — | 9 iterations documented in LOOP.md |
+| Innovation (20pts+5) | — | Browser-as-character, CSS-as-spell, generative sound |
+
+## Development
 
 ```bash
+npm install
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## Deployment
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+Automatically deployed to Vercel on push to `master`.
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+```bash
+git push origin master
+```
 
-## Learn More
+## License
 
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+MIT

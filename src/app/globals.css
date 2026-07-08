@@ -250,6 +250,42 @@ body {
   border-radius: 11px;
 }
 
+/* ==================== SPIN SLOW ==================== */
+
+@keyframes spin-slow {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+/* ==================== GLITCH TEXT (Zone Transition) ==================== */
+
+.glitch-text {
+  position: relative;
+}
+
+.glitch-text::before,
+.glitch-text::after {
+  content: attr(data-text);
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+
+.glitch-text::before {
+  animation: glitch-1 2.5s infinite;
+  opacity: 0.6;
+  z-index: -1;
+}
+
+.glitch-text::after {
+  animation: glitch-1 2.5s infinite reverse;
+  opacity: 0.4;
+  z-index: -2;
+}
+
 /* ==================== RESPONSIVE ==================== */
 
 @media (max-width: 768px) {
