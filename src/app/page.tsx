@@ -74,7 +74,7 @@ function QuickStats() {
       {stats.map((stat, i) => (
         <motion.div
           key={stat.label}
-          className="glass-strong rounded-xl px-4 sm:px-5 py-2.5 sm:py-3 text-center min-w-[80px] sm:min-w-[100px]"
+          className="retro-card px-4 sm:px-5 py-2.5 sm:py-3 text-center min-w-[80px] sm:min-w-[100px]"
           initial={{ opacity: 0, scale: 0.8 }}
           animate={{ opacity: 1, scale: 1 }}
           transition={{ delay: 0.8 + i * 0.1 }}
@@ -86,7 +86,7 @@ function QuickStats() {
           >
             {stat.value}
           </div>
-          <div className="text-[10px] text-gray-500 mt-1 uppercase tracking-wider">{stat.label}</div>
+          <div className="text-[10px] text-gray-500 mt-1 uppercase tracking-widest" style={{ fontFamily: 'var(--font-display)' }}>{stat.label}</div>
         </motion.div>
       ))}
     </motion.div>
@@ -238,8 +238,8 @@ export default function Home() {
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 2 }}
             >
-              <div className="animated-border p-[1px] rounded-xl">
-                <div className="flex gap-2 p-1 bg-void-surface rounded-xl">
+              <div className="animated-border p-[1px]">
+                <div className="flex gap-2 p-1 bg-void-surface">
                   <input
                     type="text"
                     value={inputValue}
@@ -251,7 +251,7 @@ export default function Home() {
                   />
                   <button
                     type="submit"
-                    className="px-6 py-3 bg-neon-purple/20 hover:bg-neon-purple/30 text-neon-purple rounded-lg transition-all duration-200 font-medium"
+                    className="px-6 py-3 bg-neon-purple/20 hover:bg-neon-purple/30 text-neon-purple transition-all duration-200 font-bold uppercase tracking-wider"
                   >
                     ENTER
                   </button>
@@ -280,12 +280,12 @@ export default function Home() {
             transition={{ duration: 0.5 }}
           >
             <motion.div
-              className="glass-strong rounded-xl p-5 max-w-md w-full text-center"
+              className="glass-strong p-5 max-w-md w-full text-center"
               initial={{ y: 30 }}
               animate={{ y: 0 }}
             >
               <h2
-                className="text-3xl font-bold mb-2 glow-blue"
+                className="text-xl font-bold mb-2 glow-blue uppercase"
                 style={{ fontFamily: "var(--font-display)" }}
               >
                 Choose Your Name
@@ -294,7 +294,7 @@ export default function Home() {
                 Every crawler needs an identity in the void.
               </p>
 
-              <div className="mb-4 p-3 rounded-lg bg-void-deep/50 text-sm text-gray-300">
+              <div className="mb-4 p-3 bg-void-deep/50 text-sm text-gray-300 border border-void-border">
                 <span className="text-neon-green">Class detected:</span>{" "}
                 <span className="text-neon-blue font-bold">
                   {detectCharacterClass()}
@@ -308,13 +308,13 @@ export default function Home() {
                   value={nameInput}
                   onChange={(e) => setNameInput(e.target.value)}
                   placeholder="Enter your name..."
-                  className="w-full bg-void-deep/50 border border-white/10 rounded-lg px-4 py-3 text-white placeholder-gray-500 outline-none focus:border-white/20 transition-colors mb-4"
+                  className="w-full bg-void-deep/50 border-2 border-void-border px-4 py-3 text-white placeholder-gray-500 outline-none focus:border-neon-purple transition-colors mb-4"
                   style={{ fontFamily: "var(--font-display)" }}
                   autoFocus
                 />
                 <button
                   type="submit"
-                  className="w-full py-3 bg-gradient-to-r from-neon-blue/20 to-neon-purple/20 hover:from-neon-blue/30 hover:to-neon-purple/30 border border-neon-blue/30 rounded-lg text-neon-blue font-bold transition-all duration-300"
+                  className="w-full py-3 bg-neon-purple/20 hover:bg-neon-purple/30 border-2 border-neon-purple text-neon-blue font-bold transition-all duration-300 uppercase tracking-wider"
                 >
                   ⚔️ BEGIN YOUR QUEST
                 </button>
@@ -352,7 +352,7 @@ export default function Home() {
                 Welcome back, {characterName || "Crawler"}
               </motion.p>
               <h2
-                className="text-4xl md:text-5xl font-black mb-4 glow-blue"
+                className="text-xl md:text-2xl font-black mb-4 glow-blue uppercase"
                 style={{ fontFamily: "var(--font-display)" }}
               >
                 <motion.span

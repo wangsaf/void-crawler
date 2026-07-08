@@ -29,27 +29,14 @@ export function BackButton({ color = "#00d4ff" }: BackButtonProps) {
       whileTap={{ scale: 0.95 }}
     >
       <div
-        className="relative flex items-center gap-2 px-4 py-2.5 rounded-xl overflow-hidden"
+        className="relative flex items-center gap-2 px-4 py-2.5 overflow-hidden"
         style={{
-          background: "rgba(0, 0, 0, 0.6)",
-          backdropFilter: "blur(12px)",
-          border: `1px solid ${color}30`,
-          boxShadow: `0 0 15px ${color}15, inset 0 1px 0 rgba(255,255,255,0.05)`,
+          background: "rgba(26, 26, 46, 0.95)",
+          border: `3px solid ${color}40`,
+          boxShadow: `4px 4px 0px #000, 0 0 10px ${color}15`,
         }}
       >
-        {/* Animated border glow on hover */}
-        <motion.div
-          className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300"
-          style={{
-            background: `linear-gradient(90deg, ${color}20, transparent, ${color}20)`,
-          }}
-          animate={{
-            backgroundPosition: ["0% 50%", "200% 50%"],
-          }}
-          transition={{ duration: 2, repeat: Infinity, ease: "linear" }}
-        />
-
-        {/* Arrow with bounce animation */}
+        {/* Arrow */}
         <motion.span
           className="relative z-10 text-lg"
           style={{ color }}
@@ -61,23 +48,15 @@ export function BackButton({ color = "#00d4ff" }: BackButtonProps) {
 
         {/* Text */}
         <span
-          className="relative z-10 text-sm font-medium"
+          className="relative z-10 text-xs font-bold uppercase tracking-wider"
           style={{
             color,
             fontFamily: "var(--font-display)",
-            textShadow: `0 0 10px ${color}60`,
+            textShadow: `0 0 8px ${color}60`,
           }}
         >
-          Return to Void Hub
+          Return to Hub
         </span>
-
-        {/* Hover glow effect */}
-        <motion.div
-          className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none"
-          style={{
-            background: `radial-gradient(circle at center, ${color}10, transparent 70%)`,
-          }}
-        />
       </div>
     </motion.button>
   );

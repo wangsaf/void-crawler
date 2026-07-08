@@ -385,7 +385,7 @@ export default function CartChaosPage() {
             onClick={goBack}
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
-            className="glass rounded-xl border border-orange-500/30 px-4 py-2 text-sm text-orange-300 transition-colors hover:border-orange-400 hover:text-orange-200"
+            className="glass border-orange-500/30 px-4 py-2 text-sm text-orange-300 transition-colors hover:border-orange-400 hover:text-orange-200 uppercase tracking-wider"
           >
             ← Back to Hub
           </motion.button>
@@ -401,7 +401,7 @@ export default function CartChaosPage() {
           className="mb-2 text-center"
         >
           <h1
-            className="animate-gradient bg-clip-text text-4xl sm:text-5xl md:text-7xl font-black tracking-tight text-transparent"
+            className="animate-gradient bg-clip-text text-xl sm:text-2xl md:text-3xl font-black tracking-wider text-transparent uppercase"
             style={{
               fontFamily: 'var(--font-display)',
               backgroundImage: 'linear-gradient(90deg, #ff6b35, #ffc107, #ff4081, #ff6b35)',
@@ -419,7 +419,7 @@ export default function CartChaosPage() {
 
         {/* Price Roulette timer */}
         <motion.div
-          className="mx-auto mb-8 flex items-center w-fit gap-4 rounded-full border border-white/10 bg-black/40 px-4 py-2 backdrop-blur-sm text-xs sm:text-sm"
+          className="mx-auto mb-8 flex items-center w-fit gap-4 border-2 border-white/10 bg-black/40 px-4 py-2 text-xs sm:text-sm uppercase tracking-wider"
           animate={{ borderColor: priceRouletteCountdown <= 3 ? ['#ff6b35', '#ff4081', '#ff6b35'] : '#ff6b3566' }}
           transition={{ duration: 0.5, repeat: priceRouletteCountdown <= 3 ? Infinity : 0 }}
         >
@@ -451,7 +451,7 @@ export default function CartChaosPage() {
                   whileHover={{ scale: 1.03, y: -4 }}
                   whileTap={{ scale: 0.97 }}
                   onClick={() => addToCart(item)}
-                  className={`glass-strong group relative cursor-pointer rounded-xl border p-6 h-full transition-all ${
+                  className={`retro-card group relative cursor-pointer p-6 h-full transition-all ${
                     glitchingItem === item.id
                       ? 'border-pink-500 shadow-[0_0_30px_rgba(255,64,129,0.4)]'
                       : 'border-white/10 hover:border-white/20 hover:shadow-[0_0_20px_rgba(255,107,53,0.2)]'
@@ -496,7 +496,7 @@ export default function CartChaosPage() {
           {/* ─── Cart Panel ─────────────────────────────────────────────────── */}
           <div className="lg:col-span-1">
             <motion.div
-              className="glass-strong lg:sticky top-0 lg:top-8 rounded-xl border border-white/10 p-6"
+              className="glass-strong lg:sticky top-0 lg:top-8 border-2 border-void-border p-6"
               initial={{ opacity: 0, x: 30 }}
               animate={{ opacity: 1, x: 0 }}
             >
@@ -566,7 +566,7 @@ export default function CartChaosPage() {
                     onClick={startCheckout}
                     whileHover={{ scale: 1.02 }}
                     whileTap={{ scale: 0.98 }}
-                    className="mt-3 w-full rounded-xl border border-pink-500/40 bg-gradient-to-r from-orange-600/80 to-pink-600/80 py-3 text-sm font-bold text-white transition-all hover:from-orange-500 hover:to-pink-500 glow-pink"
+                    className="mt-3 w-full border-2 border-pink-500/40 bg-neon-pink/20 py-3 text-sm font-bold text-white transition-all hover:bg-neon-pink/30 glow-pink uppercase tracking-wider"
                     style={{ fontFamily: 'var(--font-display)' }}
                   >
                     🧮 Checkout Puzzle
@@ -602,9 +602,9 @@ export default function CartChaosPage() {
                 initial={{ scale: 0.7, y: 50 }}
                 animate={{ scale: 1, y: 0 }}
                 exit={{ scale: 0.7, y: 50 }}
-                className="glass-strong mx-4 w-full max-w-md rounded-xl border border-white/10 p-5 box-glow-purple"
+                className="glass-strong mx-4 w-full max-w-md border-2 border-neon-purple/30 p-5 box-glow-purple"
               >
-                <h3 className="mb-2 text-center text-2xl font-black text-yellow-300" style={{ fontFamily: 'var(--font-display)' }}>
+                <h3 className="mb-2 text-center text-base font-black text-yellow-300 uppercase" style={{ fontFamily: 'var(--font-display)' }}>
                   🧮 Checkout Puzzle
                 </h3>
                 <p className="mb-6 text-center text-xs text-gray-400">Solve to complete your purchase!</p>
@@ -665,7 +665,7 @@ export default function CartChaosPage() {
                 initial={{ scale: 0.5, rotate: -10 }}
                 animate={{ scale: 1, rotate: 0 }}
                 exit={{ scale: 0.5, rotate: 10 }}
-                className="glass-strong mx-4 w-full max-w-md rounded-xl border border-white/10 p-5"
+                className="glass-strong mx-4 w-full max-w-md border-2 border-orange-500/30 p-5"
               >
                 <motion.div
                   className="mb-4 text-center text-6xl"

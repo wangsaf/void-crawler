@@ -172,7 +172,7 @@ function SlotMachine() {
   };
 
   return (
-    <div className="glass rounded-xl p-6">
+    <div className="retro-card p-6">
       <h3
         className="text-base font-bold mb-4 text-cyan-300 uppercase tracking-widest"
         style={{ fontFamily: "var(--font-display)" }}
@@ -257,7 +257,7 @@ function ErrorChat() {
   }, [messages]);
 
   return (
-    <div className="glass rounded-xl p-6 flex flex-col h-64 sm:h-80">
+    <div className="retro-card p-6 flex flex-col h-64 sm:h-80">
       <h3
         className="text-base font-bold mb-4 text-red-400 uppercase tracking-widest"
         style={{ fontFamily: "var(--font-display)" }}
@@ -309,7 +309,7 @@ function StatusWeather() {
   const ws = WEATHER_STATES[status];
 
   return (
-    <div className="glass rounded-xl p-6">
+    <div className="retro-card p-6">
       <h3
         className="text-base font-bold mb-4 text-yellow-300 uppercase tracking-widest"
         style={{ fontFamily: "var(--font-display)" }}
@@ -371,7 +371,7 @@ function APIKeyHoroscope() {
   };
 
   return (
-    <div className="glass rounded-xl p-6">
+    <div className="retro-card p-6">
       <h3
         className="text-base font-bold mb-4 text-purple-300 uppercase tracking-widest"
         style={{ fontFamily: "var(--font-display)" }}
@@ -438,7 +438,7 @@ function DeployNuke() {
   };
 
   return (
-    <div className="glass rounded-xl p-6">
+    <div className="retro-card p-6">
       <h3
         className="text-base font-bold mb-4 text-red-400 uppercase tracking-widest"
         style={{ fontFamily: "var(--font-display)" }}
@@ -603,7 +603,7 @@ export default function DashboardPage() {
                 if (soundEnabled) soundEngine.playClick();
                 router.push("/");
               }}
-              className="glass px-4 py-2 rounded-lg text-cyan-300 text-sm hover:bg-white/5 transition-colors border border-cyan-500/20"
+              className="glass px-4 py-2 text-cyan-300 text-sm hover:bg-white/5 transition-colors border border-cyan-500/20 uppercase tracking-wider"
               style={{ fontFamily: "var(--font-display)" }}
               whileHover={{ x: -3 }}
               whileTap={{ scale: 0.95 }}
@@ -612,7 +612,7 @@ export default function DashboardPage() {
             </motion.button>
             <div>
               <h1
-                className="text-3xl sm:text-4xl font-black glow-blue"
+                className="text-2xl sm:text-3xl font-black glow-blue uppercase"
                 style={{ fontFamily: "var(--font-display)", color: "#e0f7fa" }}
               >
                 Panel Panic
@@ -638,7 +638,7 @@ export default function DashboardPage() {
           <div className="lg:col-span-2 space-y-8">
             {/* Metrics Panel */}
             <motion.div
-              className="glass-strong rounded-xl p-6 sm:p-8 box-glow-blue"
+              className="glass-strong p-6 sm:p-8 box-glow-blue"
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.1 }}
@@ -666,7 +666,7 @@ export default function DashboardPage() {
 
             {/* Live Chart */}
             <motion.div
-              className="glass rounded-xl p-6"
+              className="retro-card p-6"
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.2 }}

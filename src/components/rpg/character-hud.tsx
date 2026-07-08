@@ -29,7 +29,12 @@ export function CharacterHUD() {
 
   return (
     <motion.div
-      className="fixed top-3 right-3 sm:top-4 sm:right-4 z-50 glass-strong rounded-xl p-4 sm:p-5 w-48 sm:w-64"
+      className="fixed top-3 right-3 sm:top-4 sm:right-4 z-50 p-4 sm:p-5 w-48 sm:w-64"
+      style={{
+        background: "rgba(26, 26, 46, 0.95)",
+        border: "3px solid #3a3a5a",
+        boxShadow: "4px 4px 0px #000",
+      }}
       initial={{ x: 300, opacity: 0 }}
       animate={{ x: 0, opacity: 1 }}
       transition={{ type: "spring", damping: 20, delay: 0.5 }}
@@ -37,22 +42,22 @@ export function CharacterHUD() {
       {/* Character Info */}
       <div className="flex items-center gap-4 mb-4">
         <div
-          className="w-8 h-8 sm:w-10 sm:h-10 rounded-full flex items-center justify-center text-base sm:text-lg shrink-0"
+          className="w-8 h-8 sm:w-10 sm:h-10 flex items-center justify-center text-base sm:text-lg shrink-0"
           style={{
             background: "linear-gradient(135deg, #b000ff30, #00d4ff30)",
-            border: "1px solid rgba(255,255,255,0.1)",
+            border: "2px solid #3a3a5a",
           }}
         >
           ⚔️
         </div>
         <div className="min-w-0 flex-1">
           <div
-            className="text-sm sm:text-base font-bold text-neon-blue truncate"
+            className="text-xs sm:text-sm font-bold text-neon-blue truncate uppercase"
             style={{ fontFamily: "var(--font-display)" }}
           >
             {characterName}
           </div>
-          <div className="text-[10px] sm:text-xs text-gray-300 truncate">
+          <div className="text-[10px] sm:text-xs text-gray-300 truncate uppercase tracking-wider">
             Lv.{level} {title} • {characterClass}
           </div>
         </div>
@@ -75,14 +80,14 @@ export function CharacterHUD() {
       {/* Health Bar */}
       <div className="mb-3">
         <div className="flex justify-between text-[10px] sm:text-xs mb-2">
-          <span className="text-neon-red font-semibold">HP</span>
-          <span className="text-gray-400">
+          <span className="text-neon-red font-semibold uppercase" style={{ fontFamily: "var(--font-display)", fontSize: "8px" }}>HP</span>
+          <span className="text-gray-400" style={{ fontFamily: "var(--font-code)" }}>
             {health}/{maxHealth}
           </span>
         </div>
-        <div className="h-1.5 sm:h-2 bg-void-deep rounded-full overflow-hidden">
+        <div className="h-2 sm:h-3 bg-void-deep overflow-hidden" style={{ border: "2px solid #3a3a5a" }}>
           <motion.div
-            className="h-full rounded-full"
+            className="h-full"
             style={{
               background: healthPercent > 30
                 ? "linear-gradient(90deg, #00ff88, #00d4ff)"
@@ -97,14 +102,14 @@ export function CharacterHUD() {
       {/* XP Bar - hidden on mobile when collapsed */}
       <div className={`mb-4 ${expanded ? 'block' : 'hidden sm:block'}`}>
         <div className="flex justify-between text-[10px] sm:text-xs mb-2">
-          <span className="text-neon-purple font-semibold">XP</span>
-          <span className="text-gray-400">
+          <span className="text-neon-purple font-semibold uppercase" style={{ fontFamily: "var(--font-display)", fontSize: "8px" }}>XP</span>
+          <span className="text-gray-400" style={{ fontFamily: "var(--font-code)" }}>
             {formatNumber(xp)}/{formatNumber(xpToNext)}
           </span>
         </div>
-        <div className="h-1.5 sm:h-2 bg-void-deep rounded-full overflow-hidden">
+        <div className="h-2 sm:h-3 bg-void-deep overflow-hidden" style={{ border: "2px solid #3a3a5a" }}>
           <motion.div
-            className="h-full rounded-full"
+            className="h-full"
             style={{
               background: "linear-gradient(90deg, #b000ff, #ff006e)",
             }}
@@ -118,11 +123,11 @@ export function CharacterHUD() {
       <div className={`grid grid-cols-2 gap-4 text-[10px] sm:text-xs ${expanded ? 'block' : 'hidden sm:block'}`}>
         <div className="flex items-center gap-2">
           <span className="text-neon-gold">💰</span>
-          <span className="text-gray-300">{formatNumber(gold)}</span>
+          <span className="text-gray-300" style={{ fontFamily: "var(--font-code)" }}>{formatNumber(gold)}</span>
         </div>
         <div className="flex items-center gap-2">
           <span className="text-neon-red">⚔️</span>
-          <span className="text-gray-300">{enemiesDefeated} killed</span>
+          <span className="text-gray-300" style={{ fontFamily: "var(--font-code)" }}>{enemiesDefeated} killed</span>
         </div>
       </div>
     </motion.div>

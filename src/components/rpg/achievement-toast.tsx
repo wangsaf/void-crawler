@@ -29,7 +29,7 @@ export function AchievementToast() {
   const soundEnabled = useGameStore((s) => s.soundEnabled);
 
   const addToast = useCallback((toast: ToastMessage) => {
-    setToasts((prev) => [...prev.slice(-2), toast]); // max 3 visible
+    setToasts((prev) => [...prev.slice(-2), toast]);
 
     if (soundEnabled) {
       if (toast.type === "levelup") {
@@ -39,7 +39,6 @@ export function AchievementToast() {
       }
     }
 
-    // Auto-dismiss after 3 seconds
     setTimeout(() => {
       setToasts((prev) => prev.filter((t) => t.id !== toast.id));
     }, 3000);
@@ -65,17 +64,16 @@ export function AchievementToast() {
             transition={{ type: "spring", damping: 20, stiffness: 300 }}
           >
             <div
-              className="relative overflow-hidden rounded-xl pointer-events-auto"
+              className="relative overflow-hidden pointer-events-auto"
               style={{
-                background: "rgba(0, 0, 0, 0.85)",
-                backdropFilter: "blur(16px)",
-                border: `1px solid ${toast.color}40`,
-                boxShadow: `0 0 20px ${toast.color}20, 0 4px 20px rgba(0,0,0,0.5)`,
+                background: "rgba(26, 26, 46, 0.95)",
+                border: `3px solid ${toast.color}60`,
+                boxShadow: `4px 4px 0px #000, 0 0 15px ${toast.color}20`,
               }}
             >
               {/* Animated top bar */}
               <motion.div
-                className="absolute top-0 left-0 h-[2px]"
+                className="absolute top-0 left-0 h-[3px]"
                 style={{ background: toast.color }}
                 initial={{ width: "100%" }}
                 animate={{ width: "0%" }}
@@ -94,7 +92,7 @@ export function AchievementToast() {
 
               {/* Content */}
               <div className="relative flex items-center gap-3 p-4">
-                {/* Icon with pulse */}
+                {/* Icon */}
                 <motion.div
                   className="text-2xl flex-shrink-0"
                   animate={{ scale: [1, 1.2, 1] }}
@@ -105,7 +103,7 @@ export function AchievementToast() {
 
                 <div className="flex-1 min-w-0">
                   <div
-                    className="text-sm font-bold truncate"
+                    className="text-xs font-bold truncate uppercase tracking-wider"
                     style={{
                       color: toast.color,
                       fontFamily: "var(--font-display)",
@@ -123,10 +121,11 @@ export function AchievementToast() {
                 {/* XP badge */}
                 {toast.xp && (
                   <motion.div
-                    className="flex-shrink-0 px-2 py-1 rounded-full text-xs font-bold"
+                    className="flex-shrink-0 px-2 py-1 text-xs font-bold uppercase"
                     style={{
                       background: `${toast.color}20`,
                       color: toast.color,
+                      border: `2px solid ${toast.color}40`,
                     }}
                     initial={{ scale: 0 }}
                     animate={{ scale: 1 }}
@@ -143,7 +142,7 @@ export function AchievementToast() {
                   {[...Array(8)].map((_, i) => (
                     <motion.div
                       key={i}
-                      className="absolute w-1 h-1 rounded-full"
+                      className="absolute w-1 h-1"
                       style={{ background: toast.color }}
                       initial={{
                         x: "50%",

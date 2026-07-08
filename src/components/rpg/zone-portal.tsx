@@ -47,15 +47,16 @@ export function ZonePortal({
     >
       {/* Portal frame */}
       <div
-        className={`relative w-full h-56 sm:h-72 rounded-xl overflow-hidden ${glowClass}`}
+        className={`relative w-full h-56 sm:h-72 overflow-hidden ${glowClass}`}
         style={{
           background: `linear-gradient(135deg, ${color}15, ${color}05)`,
-          border: '1px solid rgba(255,255,255,0.1)',
+          border: `3px solid ${color}40`,
+          boxShadow: `4px 4px 0px #000`,
         }}
       >
         {/* Animated border */}
         <motion.div
-          className="absolute inset-0 rounded-xl"
+          className="absolute inset-0"
           style={{
             background: `linear-gradient(90deg, ${color}, transparent, ${color})`,
             opacity: 0.1,
@@ -79,25 +80,25 @@ export function ZonePortal({
 
           {/* Title */}
           <h3
-            className="font-display text-lg sm:text-xl font-bold"
-            style={{ color, fontFamily: "var(--font-display)" }}
+            className="font-bold uppercase tracking-wider"
+            style={{ color, fontFamily: "var(--font-display)", fontSize: "10px" }}
           >
             {title}
           </h3>
 
           {/* Subtitle */}
-          <p className="text-sm text-gray-400 text-center">{subtitle}</p>
+          <p className="text-sm text-gray-400 text-center uppercase tracking-wider">{subtitle}</p>
 
           {/* Status */}
           {locked && !isUnlocked ? (
             <div className="flex items-center gap-2 text-gray-500">
               <span>🔒</span>
-              <span className="text-xs">Reach Level 3 to unlock</span>
+              <span className="text-xs uppercase">Reach Level 3 to unlock</span>
             </div>
           ) : (
             <motion.div
-              className="text-xs font-medium px-3 py-1 rounded-full"
-              style={{ background: `${color}20`, color }}
+              className="text-xs font-bold px-3 py-1 uppercase tracking-widest"
+              style={{ background: `${color}20`, color, border: `2px solid ${color}60` }}
               animate={{ opacity: [0.6, 1, 0.6] }}
               transition={{ duration: 2, repeat: Infinity }}
             >

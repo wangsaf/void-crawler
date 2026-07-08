@@ -1,17 +1,18 @@
 @import "tailwindcss";
+@import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&family=VT323&display=swap');
 
 @theme {
   --color-void-black: #0a0a0f;
   --color-void-deep: #0d0d1a;
   --color-void-purple: #1a0a2e;
-  --color-void-surface: #15152a;
-  --color-void-card: #1e1e3a;
-  --color-void-border: #2a2a4a;
+  --color-void-surface: #1a1a2e;
+  --color-void-card: #1a1a2e;
+  --color-void-border: #3a3a5a;
   
   --color-neon-blue: #00d4ff;
   --color-neon-purple: #b000ff;
   --color-neon-pink: #ff006e;
-  --color-neon-green: #00ff88;
+  --color-neon-green: #00ff41;
   --color-neon-gold: #ffd700;
   --color-neon-red: #ff3333;
   --color-neon-cyan: #00ffff;
@@ -20,18 +21,23 @@
   --color-market-gold: #ffc107;
   --color-market-pink: #ff4081;
   
-  --color-panel-blue: #0288d1;
-  --color-panel-cyan: #00bcd4;
-  --color-panel-white: #e0f7fa;
+  --color-panel-blue: #00d4ff;
+  --color-panel-cyan: #00d4ff;
+  --color-panel-white: #e0e0e0;
   
   --color-cyber-green: #00ff41;
-  --color-cyber-dark: #0d1117;
-  --color-cyber-terminal: #0a1628;
+  --color-cyber-dark: #0a0a0f;
+  --color-cyber-terminal: #0a0a0f;
   
-  --font-display: "Space Grotesk", system-ui, sans-serif;
-  --font-body: "Inter", system-ui, sans-serif;
-  --font-code: "JetBrains Mono", monospace;
-  --font-retro: "Silkscreen", cursive;
+  --font-display: 'Press Start 2P', monospace;
+  --font-body: 'VT323', monospace;
+  --font-code: 'VT323', monospace;
+  --font-retro: 'Press Start 2P', monospace;
+}
+
+/* ==================== GLOBAL BORDER RADIUS OVERRIDE ==================== */
+*, *::before, *::after {
+  border-radius: 0 !important;
 }
 
 /* ==================== BASE STYLES ==================== */
@@ -44,84 +50,153 @@
 
 html {
   scroll-behavior: smooth;
+  image-rendering: pixelated;
 }
 
 body {
   background: var(--color-void-black);
   color: #e0e0e0;
   font-family: var(--font-body);
+  font-size: 18px;
   overflow-x: hidden;
   min-height: 100vh;
+  text-transform: none;
+}
+
+/* ==================== PIXEL GRID BACKGROUND ==================== */
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  background-image: 
+    linear-gradient(rgba(58, 58, 90, 0.08) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(58, 58, 90, 0.08) 1px, transparent 1px);
+  background-size: 16px 16px;
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* ==================== CRT SCANLINES OVERLAY ==================== */
+body::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  background: repeating-linear-gradient(
+    0deg,
+    transparent,
+    transparent 2px,
+    rgba(0, 0, 0, 0.08) 2px,
+    rgba(0, 0, 0, 0.08) 4px
+  );
+  pointer-events: none;
+  z-index: 9999;
 }
 
 /* ==================== SCROLLBAR ==================== */
 
 ::-webkit-scrollbar {
-  width: 6px;
+  width: 8px;
 }
 
 ::-webkit-scrollbar-track {
-  background: var(--color-void-deep);
+  background: var(--color-void-black);
+  border-left: 2px solid var(--color-void-border);
 }
 
 ::-webkit-scrollbar-thumb {
   background: var(--color-neon-purple);
-  border-radius: 3px;
+  border: 2px solid var(--color-void-border);
 }
 
 ::-webkit-scrollbar-thumb:hover {
   background: var(--color-neon-blue);
 }
 
+/* ==================== PIXEL SHADOW UTILITIES ==================== */
+
+.pixel-shadow {
+  box-shadow: 4px 4px 0px #000;
+}
+
+.pixel-shadow-sm {
+  box-shadow: 3px 3px 0px #000;
+}
+
+.pixel-shadow-lg {
+  box-shadow: 6px 6px 0px #000;
+}
+
 /* ==================== GLOW EFFECTS ==================== */
 
 .glow-blue {
-  text-shadow: 0 0 10px rgba(0, 212, 255, 0.5), 0 0 40px rgba(0, 212, 255, 0.2);
+  text-shadow: 0 0 8px rgba(0, 212, 255, 0.6), 0 0 20px rgba(0, 212, 255, 0.3);
 }
 
 .glow-purple {
-  text-shadow: 0 0 10px rgba(176, 0, 255, 0.5), 0 0 40px rgba(176, 0, 255, 0.2);
+  text-shadow: 0 0 8px rgba(176, 0, 255, 0.6), 0 0 20px rgba(176, 0, 255, 0.3);
 }
 
 .glow-green {
-  text-shadow: 0 0 10px rgba(0, 255, 136, 0.5), 0 0 40px rgba(0, 255, 136, 0.2);
+  text-shadow: 0 0 8px rgba(0, 255, 65, 0.6), 0 0 20px rgba(0, 255, 65, 0.3);
 }
 
 .glow-gold {
-  text-shadow: 0 0 10px rgba(255, 215, 0, 0.5), 0 0 40px rgba(255, 215, 0, 0.2);
+  text-shadow: 0 0 8px rgba(255, 215, 0, 0.6), 0 0 20px rgba(255, 215, 0, 0.3);
 }
 
 .glow-pink {
-  text-shadow: 0 0 10px rgba(255, 0, 110, 0.5), 0 0 40px rgba(255, 0, 110, 0.2);
+  text-shadow: 0 0 8px rgba(255, 0, 110, 0.6), 0 0 20px rgba(255, 0, 110, 0.3);
+}
+
+.glow-cyan {
+  text-shadow: 0 0 8px rgba(0, 255, 255, 0.6), 0 0 20px rgba(0, 255, 255, 0.3);
 }
 
 .box-glow-blue {
-  box-shadow: 0 0 15px rgba(0, 212, 255, 0.3), 0 0 45px rgba(0, 212, 255, 0.1), inset 0 0 15px rgba(0, 212, 255, 0.05);
+  box-shadow: 4px 4px 0px #000, 0 0 15px rgba(0, 212, 255, 0.25), 0 0 30px rgba(0, 212, 255, 0.1);
 }
 
 .box-glow-purple {
-  box-shadow: 0 0 15px rgba(176, 0, 255, 0.3), 0 0 45px rgba(176, 0, 255, 0.1), inset 0 0 15px rgba(176, 0, 255, 0.05);
+  box-shadow: 4px 4px 0px #000, 0 0 15px rgba(176, 0, 255, 0.25), 0 0 30px rgba(176, 0, 255, 0.1);
 }
 
 .box-glow-green {
-  box-shadow: 0 0 15px rgba(0, 255, 136, 0.3), 0 0 45px rgba(0, 255, 136, 0.1), inset 0 0 15px rgba(0, 255, 136, 0.05);
+  box-shadow: 4px 4px 0px #000, 0 0 15px rgba(0, 255, 65, 0.25), 0 0 30px rgba(0, 255, 65, 0.1);
 }
 
-/* ==================== GLASS MORPHISM ==================== */
+.box-glow-pink {
+  box-shadow: 4px 4px 0px #000, 0 0 15px rgba(255, 0, 110, 0.25), 0 0 30px rgba(255, 0, 110, 0.1);
+}
+
+.box-glow-gold {
+  box-shadow: 4px 4px 0px #000, 0 0 15px rgba(255, 215, 0, 0.25), 0 0 30px rgba(255, 215, 0, 0.1);
+}
+
+/* ==================== RETRO CARD STYLE ==================== */
+
+.retro-card {
+  background: var(--color-void-surface);
+  border: 3px solid var(--color-void-border);
+  box-shadow: 4px 4px 0px #000;
+  position: relative;
+}
+
+.retro-card:hover {
+  box-shadow: 6px 6px 0px #000;
+}
+
+/* ==================== GLASS MORPHISM (RETRO OVERRIDE) ==================== */
 
 .glass {
-  background: rgba(30, 30, 58, 0.65);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: rgba(26, 26, 46, 0.9);
+  border: 3px solid var(--color-void-border);
+  box-shadow: 4px 4px 0px #000;
 }
 
 .glass-strong {
-  background: rgba(30, 30, 58, 0.85);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
-  border: 1px solid rgba(255, 255, 255, 0.15);
-  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.3), 0 1px 3px rgba(0, 0, 0, 0.2);
+  background: rgba(26, 26, 46, 0.95);
+  border: 3px solid var(--color-void-border);
+  box-shadow: 4px 4px 0px #000;
 }
 
 /* ==================== NOISE TEXTURE ==================== */
@@ -145,8 +220,8 @@ body {
     0deg,
     transparent,
     transparent 2px,
-    rgba(0, 0, 0, 0.05) 2px,
-    rgba(0, 0, 0, 0.05) 4px
+    rgba(0, 0, 0, 0.08) 2px,
+    rgba(0, 0, 0, 0.08) 4px
   );
   pointer-events: none;
   z-index: 2;
@@ -239,7 +314,6 @@ body {
 
 .animated-border {
   position: relative;
-  border-radius: 12px;
   padding: 1px;
   background: linear-gradient(90deg, var(--color-neon-blue), var(--color-neon-purple), var(--color-neon-pink), var(--color-neon-blue));
   background-size: 300% 300%;
@@ -248,7 +322,6 @@ body {
 
 .animated-border > * {
   background: var(--color-void-surface);
-  border-radius: 11px;
 }
 
 /* ==================== SPIN SLOW ==================== */

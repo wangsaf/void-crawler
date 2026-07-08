@@ -280,7 +280,7 @@ function InterpretationCard({ type, icon, children }: { type: string; icon: stri
       animate={{ opacity: 1, y: 0, scale: 1 }}
       exit={{ opacity: 0, y: -20, scale: 0.95 }}
       transition={{ duration: 0.5 }}
-      className="glass-strong rounded-xl p-6 box-glow-purple relative overflow-hidden"
+      className="retro-card p-6 box-glow-purple relative overflow-hidden"
     >
       <motion.div
         className="absolute inset-0 bg-gradient-to-br from-purple-500/5 to-transparent"

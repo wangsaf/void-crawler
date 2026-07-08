@@ -112,7 +112,7 @@ function PortScanner({ addXP }: { addXP: (n: number) => void }) {
   };
 
   return (
-    <div className="glass-strong rounded-xl p-6 h-full">
+    <div className="retro-card p-6 h-full">
       <h3 className="text-[#00ff41] font-mono text-lg font-bold mb-4 flex items-center gap-4">
         <span className="text-2xl">🔍</span> PORT SCANNER
       </h3>
@@ -182,7 +182,7 @@ function PasswordChecker() {
   const colors = ['#ff0040', '#ff6600', '#ffaa00', '#00aaff', '#aa00ff', '#00ff41'];
 
   return (
-    <div className="glass-strong rounded-xl p-6 h-full">
+    <div className="retro-card p-6 h-full">
       <h3 className="text-[#00ff41] font-mono text-lg font-bold mb-4 flex items-center gap-4">
         <span className="text-2xl">🔐</span> PASSWORD STRENGTH
       </h3>
@@ -259,7 +259,7 @@ function FirewallSim({ addXP }: { addXP: (n: number) => void }) {
   };
 
   return (
-    <div className="glass-strong rounded-xl p-6 h-full">
+    <div className="retro-card p-6 h-full">
       <h3 className="text-[#00ff41] font-mono text-lg font-bold mb-4 flex items-center gap-4">
         <span className="text-2xl">🧱</span> FIREWALL SIMULATOR
       </h3>
@@ -326,7 +326,7 @@ function XssPlayground({ addXP }: { addXP: (n: number) => void }) {
   };
 
   return (
-    <div className="glass-strong rounded-xl p-6 h-full">
+    <div className="retro-card p-6 h-full">
       <h3 className="text-[#00ff41] font-mono text-lg font-bold mb-4 flex items-center gap-4">
         <span className="text-2xl">💀</span> XSS PLAYGROUND
       </h3>
@@ -397,7 +397,7 @@ function SqlInjection({ addXP }: { addXP: (n: number) => void }) {
   };
 
   return (
-    <div className="glass-strong rounded-xl p-6 h-full">
+    <div className="retro-card p-6 h-full">
       <h3 className="text-[#00ff41] font-mono text-lg font-bold mb-4 flex items-center gap-4">
         <span className="text-2xl">💉</span> SQL INJECTION
       </h3>
@@ -475,7 +475,7 @@ function PhishingDetector({ addXP }: { addXP: (n: number) => void }) {
   };
 
   return (
-    <div className="glass-strong rounded-xl p-6 h-full">
+    <div className="retro-card p-6 h-full">
       <h3 className="text-[#00ff41] font-mono text-lg font-bold mb-4 flex items-center gap-4">
         <span className="text-2xl">🎣</span> PHISHING DETECTOR
       </h3>
@@ -549,7 +549,7 @@ function TerminalLog() {
   };
 
   return (
-    <div className="glass-strong rounded-xl p-6 h-52 sm:h-64 flex flex-col">
+    <div className="retro-card p-6 h-52 sm:h-64 flex flex-col">
       <div className="flex-1 overflow-y-auto font-mono text-xs space-y-2 mb-2" style={{ fontFamily: 'var(--font-code)' }}>
         {logs.map((l, i) => (
           <div key={i} className={`${l.startsWith('>') ? 'text-[#00ff41]' : l.includes('[WARN]') ? 'text-yellow-400' : l.includes('[ERR]') ? 'text-red-400' : 'text-[#00ff41]/70'}`}>
@@ -614,7 +614,7 @@ export default function CyberPage() {
           <Link href="/" className="inline-flex items-center gap-2 text-[#00ff41]/60 hover:text-[#00ff41] transition-colors font-mono text-sm mb-4">
             ← BACK TO HUB
           </Link>
-          <h1 className="text-4xl sm:text-5xl md:text-6xl font-black glow-green font-mono tracking-wider">
+          <h1 className="text-2xl sm:text-3xl md:text-4xl font-black glow-green uppercase tracking-wider" style={{ fontFamily: 'var(--font-display)' }}>
             EXPLOIT<span className="text-white/30">.</span>ME
           </h1>
           <p className="text-[#00ff41]/50 font-mono mt-2 text-sm">
