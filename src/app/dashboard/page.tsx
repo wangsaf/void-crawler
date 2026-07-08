@@ -61,7 +61,7 @@ function randomBetween(min: number, max: number) {
 // ─── Metric Bar ─────────────────────────────────────────────────────────────
 function MetricBar({ label, value, color }: { label: string; value: number; color: string }) {
   return (
-    <div className="flex items-center gap-3">
+    <div className="flex items-center gap-4">
       <span
         className="w-10 text-xs text-right font-bold"
         style={{ fontFamily: "var(--font-code)", color }}
@@ -257,14 +257,14 @@ function ErrorChat() {
   }, [messages]);
 
   return (
-    <div className="glass rounded-xl p-6 flex flex-col h-60 sm:h-72">
+    <div className="glass rounded-xl p-6 flex flex-col h-64 sm:h-80">
       <h3
         className="text-base font-bold mb-4 text-red-400 uppercase tracking-widest"
         style={{ fontFamily: "var(--font-display)" }}
       >
         🐛 Error Log Chat Room
       </h3>
-      <div className="flex-1 overflow-y-auto space-y-2 pr-1 scrollbar-thin">
+      <div className="flex-1 overflow-y-auto space-y-4 pr-1 scrollbar-thin">
         {messages.map((m) => (
           <motion.div
             key={m.id}
@@ -340,7 +340,7 @@ function StatusWeather() {
         </div>
       </div>
       {/* Mini service bars */}
-      <div className="mt-4 grid grid-cols-3 sm:grid-cols-6 gap-1">
+      <div className="mt-4 grid grid-cols-3 sm:grid-cols-6 gap-2">
         {["API", "DB", "CDN", "AUTH", "CACHE", "QUEUE"].map((svc, i) => {
           const up = status < 3 ? true : status === 3 ? i % 2 === 0 : false;
           return (
@@ -589,10 +589,10 @@ export default function DashboardPage() {
         {/* handled inside DeployNuke */}
       </AnimatePresence>
 
-      <div className="relative z-10 max-w-7xl mx-auto px-4 py-12">
+      <div className="relative z-10 max-w-7xl mx-auto px-6 py-12">
         {/* Header */}
         <motion.div
-          className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-8 sm:mb-10 gap-3"
+          className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-8 gap-4"
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5 }}
@@ -657,7 +657,7 @@ export default function DashboardPage() {
                   refresh: 1.2s
                 </span>
               </div>
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 {METRICS.map((m) => (
                   <MetricBar key={m} label={m} value={metrics[m]} color={metricColors[m]} />
                 ))}

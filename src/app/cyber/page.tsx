@@ -113,10 +113,10 @@ function PortScanner({ addXP }: { addXP: (n: number) => void }) {
 
   return (
     <div className="glass-strong rounded-xl p-6 h-full">
-      <h3 className="text-[#00ff41] font-mono text-lg font-bold mb-5 flex items-center gap-2">
+      <h3 className="text-[#00ff41] font-mono text-lg font-bold mb-4 flex items-center gap-4">
         <span className="text-2xl">🔍</span> PORT SCANNER
       </h3>
-      <div className="flex flex-col sm:flex-row items-center gap-2 mb-4">
+      <div className="flex flex-col sm:flex-row items-center gap-4 mb-4">
         <input
           value={url}
           onChange={e => setUrl(e.target.value)}
@@ -129,7 +129,7 @@ function PortScanner({ addXP }: { addXP: (n: number) => void }) {
           {scanning ? 'SCANNING...' : 'SCAN'}
         </button>
       </div>
-      <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 gap-1.5 sm:gap-2">
+      <div className="grid grid-cols-4 sm:grid-cols-5 gap-2">
         <AnimatePresence>
           {ports.map((p, i) => (
             <motion.div
@@ -183,7 +183,7 @@ function PasswordChecker() {
 
   return (
     <div className="glass-strong rounded-xl p-6 h-full">
-      <h3 className="text-[#00ff41] font-mono text-lg font-bold mb-5 flex items-center gap-2">
+      <h3 className="text-[#00ff41] font-mono text-lg font-bold mb-4 flex items-center gap-4">
         <span className="text-2xl">🔐</span> PASSWORD STRENGTH
       </h3>
       <input
@@ -194,9 +194,9 @@ function PasswordChecker() {
         className="w-full bg-black/60 border border-white/10 rounded-lg px-3 sm:px-4 py-2.5 sm:py-2 text-[#00ff41] font-mono placeholder:text-[#00ff41]/30 focus:outline-none focus:border-white/20"
         style={{ fontFamily: 'var(--font-code)' }}
       />
-      <div className="mt-4 space-y-2">
+      <div className="mt-4 space-y-4">
         {barriers.map((b, i) => (
-          <motion.div key={b} className="flex items-center gap-3">
+          <motion.div key={b} className="flex items-center gap-4">
             <span className="text-[10px] sm:text-xs font-mono w-14 sm:w-16 text-right text-gray-500 uppercase truncate">{b}</span>
             <div className="flex-1 h-3 bg-black/60 rounded-full overflow-hidden border border-white/10">
               <motion.div
@@ -260,7 +260,7 @@ function FirewallSim({ addXP }: { addXP: (n: number) => void }) {
 
   return (
     <div className="glass-strong rounded-xl p-6 h-full">
-      <h3 className="text-[#00ff41] font-mono text-lg font-bold mb-5 flex items-center gap-2">
+      <h3 className="text-[#00ff41] font-mono text-lg font-bold mb-4 flex items-center gap-4">
         <span className="text-2xl">🧱</span> FIREWALL SIMULATOR
       </h3>
       <div className="grid grid-cols-1 gap-2 mb-4">
@@ -327,10 +327,10 @@ function XssPlayground({ addXP }: { addXP: (n: number) => void }) {
 
   return (
     <div className="glass-strong rounded-xl p-6 h-full">
-      <h3 className="text-[#00ff41] font-mono text-lg font-bold mb-5 flex items-center gap-2">
+      <h3 className="text-[#00ff41] font-mono text-lg font-bold mb-4 flex items-center gap-4">
         <span className="text-2xl">💀</span> XSS PLAYGROUND
       </h3>
-      <div className="flex flex-col sm:flex-row items-center gap-2 mb-4">
+      <div className="flex flex-col sm:flex-row items-center gap-4 mb-4">
         <input
           value={payload}
           onChange={e => setPayload(e.target.value)}
@@ -398,10 +398,10 @@ function SqlInjection({ addXP }: { addXP: (n: number) => void }) {
 
   return (
     <div className="glass-strong rounded-xl p-6 h-full">
-      <h3 className="text-[#00ff41] font-mono text-lg font-bold mb-5 flex items-center gap-2">
+      <h3 className="text-[#00ff41] font-mono text-lg font-bold mb-4 flex items-center gap-4">
         <span className="text-2xl">💉</span> SQL INJECTION
       </h3>
-      <div className="flex flex-col sm:flex-row items-center gap-2 mb-4">
+      <div className="flex flex-col sm:flex-row items-center gap-4 mb-4">
         <input
           value={query}
           onChange={e => setQuery(e.target.value)}
@@ -415,7 +415,7 @@ function SqlInjection({ addXP }: { addXP: (n: number) => void }) {
         </button>
       </div>
       {cells.length > 0 && (
-        <div className="grid grid-cols-7 gap-0.5 sm:gap-1">
+        <div className="grid grid-cols-7 gap-2">
           {cells.map((alive, i) => (
             <motion.div
               key={i}
@@ -476,7 +476,7 @@ function PhishingDetector({ addXP }: { addXP: (n: number) => void }) {
 
   return (
     <div className="glass-strong rounded-xl p-6 h-full">
-      <h3 className="text-[#00ff41] font-mono text-lg font-bold mb-5 flex items-center gap-2">
+      <h3 className="text-[#00ff41] font-mono text-lg font-bold mb-4 flex items-center gap-4">
         <span className="text-2xl">🎣</span> PHISHING DETECTOR
       </h3>
       <textarea
@@ -550,7 +550,7 @@ function TerminalLog() {
 
   return (
     <div className="glass-strong rounded-xl p-6 h-52 sm:h-64 flex flex-col">
-      <div className="flex-1 overflow-y-auto font-mono text-xs space-y-1 mb-2" style={{ fontFamily: 'var(--font-code)' }}>
+      <div className="flex-1 overflow-y-auto font-mono text-xs space-y-2 mb-2" style={{ fontFamily: 'var(--font-code)' }}>
         {logs.map((l, i) => (
           <div key={i} className={`${l.startsWith('>') ? 'text-[#00ff41]' : l.includes('[WARN]') ? 'text-yellow-400' : l.includes('[ERR]') ? 'text-red-400' : 'text-[#00ff41]/70'}`}>
             {l}
@@ -558,7 +558,7 @@ function TerminalLog() {
         ))}
         <div ref={endRef} />
       </div>
-      <div className="flex items-center gap-2">
+      <div className="flex items-center gap-4">
         <span className="text-[#00ff41] font-mono text-sm">$</span>
         <input
           value={input}
@@ -608,9 +608,9 @@ export default function CyberPage() {
         {phantom && <XssPhantom onSanitize={handleSanitizePhantom} />}
       </AnimatePresence>
 
-      <div className="relative z-10 max-w-7xl mx-auto px-4 py-12">
+      <div className="relative z-10 max-w-7xl mx-auto px-6 py-12">
         {/* Header */}
-        <motion.div initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }} className="mb-10">
+        <motion.div initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }} className="mb-8">
           <Link href="/" className="inline-flex items-center gap-2 text-[#00ff41]/60 hover:text-[#00ff41] transition-colors font-mono text-sm mb-4">
             ← BACK TO HUB
           </Link>
@@ -623,7 +623,7 @@ export default function CyberPage() {
         </motion.div>
 
         {/* Grid */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           <motion.div className="h-full" initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.1 }}>
             <PortScanner addXP={wrappedAddXP} />
           </motion.div>
@@ -645,7 +645,7 @@ export default function CyberPage() {
         </div>
 
         {/* Terminal */}
-        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.7 }} className="mt-8">
+        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.7 }} className="mt-6">
           <TerminalLog />
         </motion.div>
 

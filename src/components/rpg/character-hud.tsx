@@ -35,7 +35,7 @@ export function CharacterHUD() {
       transition={{ type: "spring", damping: 20, delay: 0.5 }}
     >
       {/* Character Info */}
-      <div className="flex items-center gap-2 sm:gap-3 mb-3 sm:mb-4">
+      <div className="flex items-center gap-4 mb-4">
         <div
           className="w-8 h-8 sm:w-10 sm:h-10 rounded-full flex items-center justify-center text-base sm:text-lg shrink-0"
           style={{
@@ -73,8 +73,8 @@ export function CharacterHUD() {
       </div>
 
       {/* Health Bar */}
-      <div className="mb-2 sm:mb-3">
-        <div className="flex justify-between text-[10px] sm:text-xs mb-1">
+      <div className="mb-3">
+        <div className="flex justify-between text-[10px] sm:text-xs mb-2">
           <span className="text-neon-red font-semibold">HP</span>
           <span className="text-gray-400">
             {health}/{maxHealth}
@@ -95,8 +95,8 @@ export function CharacterHUD() {
       </div>
 
       {/* XP Bar - hidden on mobile when collapsed */}
-      <div className={`mb-3 sm:mb-4 ${expanded ? 'block' : 'hidden sm:block'}`}>
-        <div className="flex justify-between text-[10px] sm:text-xs mb-1">
+      <div className={`mb-4 ${expanded ? 'block' : 'hidden sm:block'}`}>
+        <div className="flex justify-between text-[10px] sm:text-xs mb-2">
           <span className="text-neon-purple font-semibold">XP</span>
           <span className="text-gray-400">
             {formatNumber(xp)}/{formatNumber(xpToNext)}
@@ -115,12 +115,12 @@ export function CharacterHUD() {
       </div>
 
       {/* Stats - hidden on mobile when collapsed */}
-      <div className={`grid grid-cols-2 gap-2 sm:gap-3 text-[10px] sm:text-xs ${expanded ? 'block' : 'hidden sm:block'}`}>
-        <div className="flex items-center gap-1">
+      <div className={`grid grid-cols-2 gap-4 text-[10px] sm:text-xs ${expanded ? 'block' : 'hidden sm:block'}`}>
+        <div className="flex items-center gap-2">
           <span className="text-neon-gold">💰</span>
           <span className="text-gray-300">{formatNumber(gold)}</span>
         </div>
-        <div className="flex items-center gap-1">
+        <div className="flex items-center gap-2">
           <span className="text-neon-red">⚔️</span>
           <span className="text-gray-300">{enemiesDefeated} killed</span>
         </div>

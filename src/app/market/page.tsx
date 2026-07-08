@@ -378,9 +378,9 @@ export default function CartChaosPage() {
         )}
       </AnimatePresence>
 
-      <div className="relative z-10 mx-auto max-w-7xl px-4 py-12">
+      <div className="relative z-10 mx-auto max-w-7xl px-6 py-12">
         {/* Header */}
-        <div className="mb-8 sm:mb-10 flex flex-wrap items-center justify-between gap-2">
+        <div className="mb-8 flex flex-wrap items-center justify-between gap-4">
           <motion.button
             onClick={goBack}
             whileHover={{ scale: 1.05 }}
@@ -419,7 +419,7 @@ export default function CartChaosPage() {
 
         {/* Price Roulette timer */}
         <motion.div
-          className="mx-auto mb-8 sm:mb-10 flex items-center w-fit gap-2 sm:gap-3 rounded-full border border-white/10 bg-black/40 px-3 sm:px-5 py-1.5 sm:py-2 backdrop-blur-sm text-xs sm:text-sm"
+          className="mx-auto mb-8 flex items-center w-fit gap-4 rounded-full border border-white/10 bg-black/40 px-4 py-2 backdrop-blur-sm text-xs sm:text-sm"
           animate={{ borderColor: priceRouletteCountdown <= 3 ? ['#ff6b35', '#ff4081', '#ff6b35'] : '#ff6b3566' }}
           transition={{ duration: 0.5, repeat: priceRouletteCountdown <= 3 ? Infinity : 0 }}
         >
@@ -435,13 +435,13 @@ export default function CartChaosPage() {
           </motion.span>
         </motion.div>
 
-        <div className="grid gap-8 lg:grid-cols-3">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           {/* ─── Shop Grid ──────────────────────────────────────────────────── */}
           <div className="lg:col-span-2">
-            <h2 className="mb-4 sm:mb-5 text-lg sm:text-xl font-bold uppercase tracking-wider text-orange-200" style={{ fontFamily: 'var(--font-display)' }}>
+            <h2 className="mb-4 text-lg sm:text-xl font-bold uppercase tracking-wider text-orange-200" style={{ fontFamily: 'var(--font-display)' }}>
               Market Stalls
             </h2>
-            <div className="grid gap-5 sm:grid-cols-2 xl:grid-cols-3">
+            <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4">
               {items.map((item, idx) => (
                 <motion.div
                   key={item.id}
@@ -575,7 +575,7 @@ export default function CartChaosPage() {
               )}
 
               {/* Stats */}
-              <div className="mt-5 grid grid-cols-2 gap-2 border-t border-white/10 pt-4">
+              <div className="mt-5 grid grid-cols-2 gap-4 border-t border-white/10 pt-4">
                 <div className="text-center">
                   <div className="text-lg font-bold text-orange-300" style={{ fontFamily: 'var(--font-code)' }}>{purchaseCount}</div>
                   <div className="text-[10px] text-gray-500">Items Bought</div>
@@ -683,7 +683,7 @@ export default function CartChaosPage() {
                   {taxGoblin.question}
                 </div>
 
-                <div className="grid grid-cols-2 gap-3">
+                <div className="grid grid-cols-2 gap-4">
                   {taxGoblin.answers.map((answer, idx) => (
                     <motion.button
                       key={idx}

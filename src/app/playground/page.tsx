@@ -102,7 +102,7 @@ function FibonacciSpiral({ number }: { number: number }) {
   }, [fibSequence]);
 
   return (
-    <div className="flex flex-col items-center gap-3">
+    <div className="flex flex-col items-center gap-4">
       <div className="text-sm font-mono text-purple-300/70">Fibonacci spiral from {fibSequence.length} terms</div>
       <svg width="400" height="400" viewBox="0 0 400 400" className="max-w-full w-full sm:w-auto" style={{ maxWidth: '400px' }}>
         <defs>
@@ -141,7 +141,7 @@ function FibonacciSpiral({ number }: { number: number }) {
           />
         ))}
       </svg>
-      <div className="flex flex-wrap gap-2 justify-center">
+      <div className="flex flex-wrap gap-4 justify-center">
         {fibSequence.slice(0, 12).map((f, i) => (
           <motion.span key={i} initial={{ opacity: 0, scale: 0 }} animate={{ opacity: 1, scale: 1 }} transition={{ delay: i * 0.1 }}
             className="px-2 py-1 bg-purple-500/10 border border-white/10 rounded text-purple-300 font-mono text-xs">
@@ -230,7 +230,7 @@ function ColorPalette({ color }: { color: string }) {
         <div className="font-mono text-purple-200">{color}</div>
       </div>
       <div className="text-sm font-mono text-purple-300/70">Harmony palette:</div>
-      <div className="grid grid-cols-3 sm:grid-cols-5 gap-2">
+      <div className="grid grid-cols-3 sm:grid-cols-5 gap-4">
         {palette.map((p, i) => (
           <motion.div key={i} initial={{ opacity: 0, scale: 0.8 }} animate={{ opacity: 1, scale: 1 }} transition={{ delay: i * 0.1 }}
             className="text-center">
@@ -470,9 +470,9 @@ export default function PlaygroundPage() {
         <ParticleBurst key={p.id} x={p.x} y={p.y} onDone={() => removeParticle(p.id)} />
       ))}
 
-      <div className="relative z-10 max-w-4xl mx-auto px-4 py-12">
+      <div className="relative z-10 max-w-4xl mx-auto px-6 py-12">
         {/* Header */}
-        <motion.div initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }} className="mb-10 text-center">
+        <motion.div initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }} className="mb-8 text-center">
           <Link href="/" className="inline-flex items-center gap-2 text-purple-400/60 hover:text-purple-400 transition-colors font-mono text-sm mb-4">
             ← BACK TO HUB
           </Link>
@@ -482,7 +482,7 @@ export default function PlaygroundPage() {
           <p className="text-purple-400/50 font-mono mt-2 text-sm tracking-widest">
             [GENERATIVE PLAYGROUND] — Input anything. See everything.
           </p>
-          <div className="flex flex-wrap justify-center gap-3 sm:gap-4 mt-3 text-[10px] font-mono text-purple-600">
+          <div className="flex flex-wrap justify-center gap-4 mt-4 text-[10px] font-mono text-purple-600">
             <span>🌀 KONAMI</span>
             <span>⏱ IDLE 30s</span>
             <span>🖱 TRIPLE-CLICK</span>
@@ -491,7 +491,7 @@ export default function PlaygroundPage() {
 
         {/* Input */}
         <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }}
-          className="glass-strong rounded-xl p-6 mb-10">
+          className="glass-strong rounded-xl p-6 mb-8">
           <div className="flex items-center gap-2 mb-3">
             <span className="text-2xl">🔮</span>
             <span className="text-purple-300 font-mono text-lg font-bold tracking-wider">INPUT PORTAL</span>
@@ -557,7 +557,7 @@ export default function PlaygroundPage() {
         </AnimatePresence>
 
         {/* Footer */}
-        <div className="mt-12 text-center text-purple-500/30 font-mono text-xs">
+        <div className="mt-8 text-center text-purple-500/30 font-mono text-xs">
           the void — generative playground — input transforms reality
         </div>
       </div>
