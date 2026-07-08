@@ -257,7 +257,7 @@ function ErrorChat() {
   }, [messages]);
 
   return (
-    <div className="glass rounded-xl p-4 sm:p-5 flex flex-col h-60 sm:h-72">
+    <div className="glass rounded-xl p-5 flex flex-col h-60 sm:h-72">
       <h3
         className="text-sm font-bold mb-3 text-red-400 uppercase tracking-widest"
         style={{ fontFamily: "var(--font-display)" }}
@@ -666,7 +666,7 @@ export default function DashboardPage() {
 
             {/* Live Chart */}
             <motion.div
-              className="glass rounded-xl p-4 sm:p-6"
+              className="glass rounded-xl p-5"
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.2 }}

@@ -280,7 +280,7 @@ function InterpretationCard({ type, icon, children }: { type: string; icon: stri
       animate={{ opacity: 1, y: 0, scale: 1 }}
       exit={{ opacity: 0, y: -20, scale: 0.95 }}
       transition={{ duration: 0.5 }}
-      className="glass-strong rounded-xl p-6 box-glow-purple relative overflow-hidden"
+      className="glass-strong rounded-xl p-5 box-glow-purple relative overflow-hidden"
     >
       <motion.div
         className="absolute inset-0 bg-gradient-to-br from-purple-500/5 to-transparent"
@@ -491,7 +491,7 @@ export default function PlaygroundPage() {
 
         {/* Input */}
         <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }}
-          className="glass-strong rounded-xl p-6 mb-8">
+          className="glass-strong rounded-xl p-5 mb-8">
           <div className="flex items-center gap-2 mb-3">
             <span className="text-2xl">🔮</span>
             <span className="text-purple-300 font-mono text-lg">INPUT PORTAL</span>

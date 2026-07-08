@@ -47,7 +47,7 @@ export function ZonePortal({
     >
       {/* Portal frame */}
       <div
-        className={`relative w-full max-w-[14rem] sm:max-w-[15rem] h-56 sm:h-72 rounded-2xl overflow-hidden ${glowClass}`}
+        className={`relative w-full max-w-[14rem] sm:max-w-[15rem] h-56 sm:h-72 rounded-xl overflow-hidden ${glowClass}`}
         style={{
           background: `linear-gradient(135deg, ${color}15, ${color}05)`,
           border: `1px solid ${color}30`,
@@ -55,7 +55,7 @@ export function ZonePortal({
       >
         {/* Animated border */}
         <motion.div
-          className="absolute inset-0 rounded-2xl"
+          className="absolute inset-0 rounded-xl"
           style={{
             background: `linear-gradient(90deg, ${color}, transparent, ${color})`,
             opacity: 0.1,

@@ -280,7 +280,7 @@ export default function Home() {
             transition={{ duration: 0.5 }}
           >
             <motion.div
-              className="glass-strong rounded-2xl p-8 max-w-md w-full text-center"
+              className="glass-strong rounded-xl p-5 max-w-md w-full text-center"
               initial={{ y: 30 }}
               animate={{ y: 0 }}
             >
@@ -385,6 +385,7 @@ export default function Home() {
               {zoneData.map((z, i) => (
                 <motion.div
                   key={z.zone}
+                  className="h-full"
                   initial={{ opacity: 0, y: 60 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{

@@ -451,7 +451,7 @@ export default function CartChaosPage() {
                   whileHover={{ scale: 1.03, y: -4 }}
                   whileTap={{ scale: 0.97 }}
                   onClick={() => addToCart(item)}
-                  className={`glass-strong group relative cursor-pointer rounded-2xl border p-5 transition-all ${
+                  className={`glass-strong group relative cursor-pointer rounded-xl border p-5 h-full transition-all ${
                     glitchingItem === item.id
                       ? 'border-pink-500 shadow-[0_0_30px_rgba(255,64,129,0.4)]'
                       : 'border-orange-500/20 hover:border-orange-400/50 hover:shadow-[0_0_20px_rgba(255,107,53,0.2)]'
@@ -465,7 +465,7 @@ export default function CartChaosPage() {
                         animate={{ opacity: [0, 1, 0, 1, 0] }}
                         exit={{ opacity: 0 }}
                         transition={{ duration: 0.6 }}
-                        className="pointer-events-none absolute inset-0 rounded-2xl bg-gradient-to-r from-pink-500/20 to-orange-500/20"
+                        className="pointer-events-none absolute inset-0 rounded-xl bg-gradient-to-r from-pink-500/20 to-orange-500/20"
                       />
                     )}
                   </AnimatePresence>
@@ -496,7 +496,7 @@ export default function CartChaosPage() {
           {/* ─── Cart Panel ─────────────────────────────────────────────────── */}
           <div className="lg:col-span-1">
             <motion.div
-              className="glass-strong lg:sticky top-0 lg:top-8 rounded-2xl border border-pink-500/30 p-4 sm:p-5"
+              className="glass-strong lg:sticky top-0 lg:top-8 rounded-xl border border-pink-500/30 p-5"
               initial={{ opacity: 0, x: 30 }}
               animate={{ opacity: 1, x: 0 }}
             >
@@ -602,7 +602,7 @@ export default function CartChaosPage() {
                 initial={{ scale: 0.7, y: 50 }}
                 animate={{ scale: 1, y: 0 }}
                 exit={{ scale: 0.7, y: 50 }}
-                className="glass-strong mx-4 w-full max-w-md rounded-3xl border border-yellow-500/40 p-8 box-glow-purple"
+                className="glass-strong mx-4 w-full max-w-md rounded-xl border border-yellow-500/40 p-5 box-glow-purple"
               >
                 <h3 className="mb-2 text-center text-2xl font-black text-yellow-300" style={{ fontFamily: 'var(--font-display)' }}>
                   🧮 Checkout Puzzle
@@ -611,7 +611,7 @@ export default function CartChaosPage() {
 
                 <div className="mb-6 text-center">
                   <motion.div
-                    className="inline-block rounded-2xl border border-yellow-500/30 bg-black/50 px-8 py-4 text-4xl font-black text-white"
+                    className="inline-block rounded-xl border border-yellow-500/30 bg-black/50 px-8 py-4 text-4xl font-black text-white"
                     style={{ fontFamily: 'var(--font-code)' }}
                     animate={{ scale: [1, 1.02, 1] }}
                     transition={{ duration: 1.5, repeat: Infinity }}
@@ -665,7 +665,7 @@ export default function CartChaosPage() {
                 initial={{ scale: 0.5, rotate: -10 }}
                 animate={{ scale: 1, rotate: 0 }}
                 exit={{ scale: 0.5, rotate: 10 }}
-                className="glass-strong mx-4 w-full max-w-md rounded-3xl border border-orange-500/40 p-8"
+                className="glass-strong mx-4 w-full max-w-md rounded-xl border border-orange-500/40 p-5"
               >
                 <motion.div
                   className="mb-4 text-center text-6xl"

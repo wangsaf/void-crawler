@@ -112,7 +112,7 @@ function PortScanner({ addXP }: { addXP: (n: number) => void }) {
   };
 
   return (
-    <div className="glass-strong rounded-xl p-6">
+    <div className="glass-strong rounded-xl p-5 h-full">
       <h3 className="text-[#00ff41] font-mono text-lg mb-4 flex items-center gap-2">
         <span className="text-2xl">🔍</span> PORT SCANNER
       </h3>
@@ -182,7 +182,7 @@ function PasswordChecker() {
   const colors = ['#ff0040', '#ff6600', '#ffaa00', '#00aaff', '#aa00ff', '#00ff41'];
 
   return (
-    <div className="glass-strong rounded-xl p-6">
+    <div className="glass-strong rounded-xl p-5 h-full">
       <h3 className="text-[#00ff41] font-mono text-lg mb-4 flex items-center gap-2">
         <span className="text-2xl">🔐</span> PASSWORD STRENGTH
       </h3>
@@ -259,7 +259,7 @@ function FirewallSim({ addXP }: { addXP: (n: number) => void }) {
   };
 
   return (
-    <div className="glass-strong rounded-xl p-6">
+    <div className="glass-strong rounded-xl p-5 h-full">
       <h3 className="text-[#00ff41] font-mono text-lg mb-4 flex items-center gap-2">
         <span className="text-2xl">🧱</span> FIREWALL SIMULATOR
       </h3>
@@ -326,7 +326,7 @@ function XssPlayground({ addXP }: { addXP: (n: number) => void }) {
   };
 
   return (
-    <div className="glass-strong rounded-xl p-6">
+    <div className="glass-strong rounded-xl p-5 h-full">
       <h3 className="text-[#00ff41] font-mono text-lg mb-4 flex items-center gap-2">
         <span className="text-2xl">💀</span> XSS PLAYGROUND
       </h3>
@@ -397,7 +397,7 @@ function SqlInjection({ addXP }: { addXP: (n: number) => void }) {
   };
 
   return (
-    <div className="glass-strong rounded-xl p-6">
+    <div className="glass-strong rounded-xl p-5 h-full">
       <h3 className="text-[#00ff41] font-mono text-lg mb-4 flex items-center gap-2">
         <span className="text-2xl">💉</span> SQL INJECTION
       </h3>
@@ -475,7 +475,7 @@ function PhishingDetector({ addXP }: { addXP: (n: number) => void }) {
   };
 
   return (
-    <div className="glass-strong rounded-xl p-6">
+    <div className="glass-strong rounded-xl p-5 h-full">
       <h3 className="text-[#00ff41] font-mono text-lg mb-4 flex items-center gap-2">
         <span className="text-2xl">🎣</span> PHISHING DETECTOR
       </h3>
@@ -549,7 +549,7 @@ function TerminalLog() {
   };
 
   return (
-    <div className="glass-strong rounded-xl p-3 sm:p-4 h-52 sm:h-64 flex flex-col">
+    <div className="glass-strong rounded-xl p-5 h-52 sm:h-64 flex flex-col">
       <div className="flex-1 overflow-y-auto font-mono text-xs space-y-1 mb-2" style={{ fontFamily: 'var(--font-code)' }}>
         {logs.map((l, i) => (
           <div key={i} className={`${l.startsWith('>') ? 'text-[#00ff41]' : l.includes('[WARN]') ? 'text-yellow-400' : l.includes('[ERR]') ? 'text-red-400' : 'text-[#00ff41]/70'}`}>
@@ -624,22 +624,22 @@ export default function CyberPage() {
 
         {/* Grid */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          <motion.div initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.1 }}>
+          <motion.div className="h-full" initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.1 }}>
             <PortScanner addXP={wrappedAddXP} />
           </motion.div>
-          <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.2 }}>
+          <motion.div className="h-full" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.2 }}>
             <PasswordChecker />
           </motion.div>
-          <motion.div initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.3 }}>
+          <motion.div className="h-full" initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.3 }}>
             <FirewallSim addXP={wrappedAddXP} />
           </motion.div>
-          <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.4 }}>
+          <motion.div className="h-full" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.4 }}>
             <XssPlayground addXP={wrappedAddXP} />
           </motion.div>
-          <motion.div initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.5 }}>
+          <motion.div className="h-full" initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.5 }}>
             <SqlInjection addXP={wrappedAddXP} />
           </motion.div>
-          <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.6 }}>
+          <motion.div className="h-full" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.6 }}>
             <PhishingDetector addXP={wrappedAddXP} />
           </motion.div>
         </div>

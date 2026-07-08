@@ -29,7 +29,7 @@ export function CharacterHUD() {
 
   return (
     <motion.div
-      className="fixed top-3 right-3 sm:top-4 sm:right-4 z-50 glass rounded-xl p-3 sm:p-4 w-48 sm:w-64"
+      className="fixed top-3 right-3 sm:top-4 sm:right-4 z-50 glass rounded-xl p-4 w-48 sm:w-64"
       initial={{ x: 300, opacity: 0 }}
       animate={{ x: 0, opacity: 1 }}
       transition={{ type: "spring", damping: 20, delay: 0.5 }}
