@@ -2,6 +2,7 @@
 
 import { motion } from "framer-motion";
 import { useGameStore, type Zone } from "@/stores/game-store";
+import { useRouter } from "next/navigation";
 import { soundEngine } from "@/lib/sound-engine";
 
 interface ZonePortalProps {
@@ -23,7 +24,7 @@ export function ZonePortal({
   glowClass,
   locked = false,
 }: ZonePortalProps) {
-  const setZone = useGameStore((s) => s.setZone);
+  const router = useRouter();
   const soundEnabled = useGameStore((s) => s.soundEnabled);
   const zonesUnlocked = useGameStore((s) => s.zonesUnlocked);
   const isUnlocked = zonesUnlocked.includes(zone);
@@ -31,7 +32,7 @@ export function ZonePortal({
   const handleClick = () => {
     if (locked && !isUnlocked) return;
     if (soundEnabled) soundEngine.playClick();
-    setZone(zone);
+    router.push(`/${zone}`);
   };
 
   return (
