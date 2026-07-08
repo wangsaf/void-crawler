@@ -68,7 +68,7 @@ function MetricBar({ label, value, color }: { label: string; value: number; colo
       >
         {label}
       </span>
-      <div className="flex-1 h-3 rounded-full bg-black/50 overflow-hidden border border-white/5">
+      <div className="flex-1 h-3 rounded-full bg-black/50 overflow-hidden border border-white/10">
         <motion.div
           className="h-full rounded-full"
           style={{ background: `linear-gradient(90deg, ${color}88, ${color})` }}
@@ -183,7 +183,7 @@ function SlotMachine() {
         {reels.map((r, i) => (
           <motion.div
             key={i}
-            className="w-14 h-14 rounded-lg bg-black/60 border border-cyan-500/30 flex items-center justify-center text-3xl"
+            className="w-14 h-14 rounded-lg bg-black/60 border border-white/10 flex items-center justify-center text-3xl"
             animate={spinning ? { y: [0, -5, 0, 5, 0] } : {}}
             transition={spinning ? { duration: 0.15, repeat: Infinity } : {}}
           >
@@ -383,12 +383,12 @@ function APIKeyHoroscope() {
         value={keyInput}
         onChange={(e) => setKeyInput(e.target.value)}
         placeholder="Enter your API key..."
-        className="w-full bg-black/40 border border-purple-500/20 rounded-lg px-3 py-2 text-xs text-purple-300 placeholder-gray-600 outline-none focus:border-purple-500/50 mb-3"
+        className="w-full bg-black/40 border border-white/10 rounded-lg px-3 py-2 text-xs text-purple-300 placeholder-gray-600 outline-none focus:border-white/20 mb-3"
         style={{ fontFamily: "var(--font-code)" }}
       />
       <motion.div
         key={horoscope}
-        className="text-sm text-purple-200 italic mb-3 p-3 rounded-lg bg-purple-500/5 border border-purple-500/10"
+        className="text-sm text-purple-200 italic mb-3 p-3 rounded-lg bg-purple-500/5 border border-white/10"
         initial={{ opacity: 0, rotateX: -10 }}
         animate={{ opacity: 1, rotateX: 0 }}
         transition={{ duration: 0.4 }}
@@ -623,7 +623,7 @@ export default function DashboardPage() {
             </div>
           </div>
           <motion.div
-            className="glass px-3 py-1.5 rounded-lg text-xs border border-cyan-500/20 shrink-0"
+            className="glass px-3 py-1.5 rounded-lg text-xs border border-white/10 shrink-0"
             style={{ fontFamily: "var(--font-code)" }}
             animate={{ opacity: [1, 0.6, 1] }}
             transition={{ duration: 2, repeat: Infinity }}

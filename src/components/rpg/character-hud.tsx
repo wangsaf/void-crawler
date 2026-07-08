@@ -40,7 +40,7 @@ export function CharacterHUD() {
           className="w-8 h-8 sm:w-10 sm:h-10 rounded-full flex items-center justify-center text-base sm:text-lg shrink-0"
           style={{
             background: "linear-gradient(135deg, #b000ff30, #00d4ff30)",
-            border: "1px solid #b000ff50",
+            border: "1px solid rgba(255,255,255,0.1)",
           }}
         >
           ⚔️

@@ -308,7 +308,7 @@ export default function Home() {
                   value={nameInput}
                   onChange={(e) => setNameInput(e.target.value)}
                   placeholder="Enter your name..."
-                  className="w-full bg-void-deep/50 border border-void-border rounded-lg px-4 py-3 text-white placeholder-gray-500 outline-none focus:border-neon-blue/50 transition-colors mb-4"
+                  className="w-full bg-void-deep/50 border border-white/10 rounded-lg px-4 py-3 text-white placeholder-gray-500 outline-none focus:border-white/20 transition-colors mb-4"
                   style={{ fontFamily: "var(--font-display)" }}
                   autoFocus
                 />

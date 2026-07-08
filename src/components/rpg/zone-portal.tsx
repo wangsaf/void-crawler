@@ -50,7 +50,7 @@ export function ZonePortal({
         className={`relative w-full max-w-[14rem] sm:max-w-[15rem] h-56 sm:h-72 rounded-xl overflow-hidden ${glowClass}`}
         style={{
           background: `linear-gradient(135deg, ${color}15, ${color}05)`,
-          border: `1px solid ${color}30`,
+          border: '1px solid rgba(255,255,255,0.1)',
         }}
       >
         {/* Animated border */}

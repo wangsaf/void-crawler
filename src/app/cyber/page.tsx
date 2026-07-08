@@ -116,12 +116,12 @@ function PortScanner({ addXP }: { addXP: (n: number) => void }) {
       <h3 className="text-[#00ff41] font-mono text-lg mb-4 flex items-center gap-2">
         <span className="text-2xl">🔍</span> PORT SCANNER
       </h3>
-      <div className="flex flex-col sm:flex-row gap-2 mb-4">
+      <div className="flex flex-col sm:flex-row items-center gap-2 mb-4">
         <input
           value={url}
           onChange={e => setUrl(e.target.value)}
           placeholder="target.domain.com"
-          className="flex-1 bg-black/60 border border-[#00ff41]/30 rounded-lg px-3 sm:px-4 py-2.5 sm:py-2 text-[#00ff41] font-mono placeholder:text-[#00ff41]/30 focus:outline-none focus:border-[#00ff41]"
+          className="flex-1 bg-black/60 border border-white/10 rounded-lg px-3 sm:px-4 py-2.5 sm:py-2 text-[#00ff41] font-mono placeholder:text-[#00ff41]/30 focus:outline-none focus:border-white/20"
           style={{ fontFamily: 'var(--font-code)' }}
         />
         <button onClick={startScan} disabled={scanning}
@@ -191,14 +191,14 @@ function PasswordChecker() {
         value={password}
         onChange={e => setPassword(e.target.value)}
         placeholder="Type a password..."
-        className="w-full bg-black/60 border border-[#00ff41]/30 rounded-lg px-3 sm:px-4 py-2.5 sm:py-2 text-[#00ff41] font-mono placeholder:text-[#00ff41]/30 focus:outline-none focus:border-[#00ff41]"
+        className="w-full bg-black/60 border border-white/10 rounded-lg px-3 sm:px-4 py-2.5 sm:py-2 text-[#00ff41] font-mono placeholder:text-[#00ff41]/30 focus:outline-none focus:border-white/20"
         style={{ fontFamily: 'var(--font-code)' }}
       />
       <div className="mt-4 space-y-2">
         {barriers.map((b, i) => (
           <motion.div key={b} className="flex items-center gap-3">
             <span className="text-[10px] sm:text-xs font-mono w-14 sm:w-16 text-right text-gray-500 uppercase truncate">{b}</span>
-            <div className="flex-1 h-3 bg-black/60 rounded-full overflow-hidden border border-white/5">
+            <div className="flex-1 h-3 bg-black/60 rounded-full overflow-hidden border border-white/10">
               <motion.div
                 initial={{ width: 0 }}
                 animate={{ width: strength > i ? '100%' : '0%' }}
@@ -330,12 +330,12 @@ function XssPlayground({ addXP }: { addXP: (n: number) => void }) {
       <h3 className="text-[#00ff41] font-mono text-lg mb-4 flex items-center gap-2">
         <span className="text-2xl">💀</span> XSS PLAYGROUND
       </h3>
-      <div className="flex flex-col sm:flex-row gap-2 mb-4">
+      <div className="flex flex-col sm:flex-row items-center gap-2 mb-4">
         <input
           value={payload}
           onChange={e => setPayload(e.target.value)}
           placeholder='<img src=x onerror=alert(1)>'
-          className="flex-1 bg-black/60 border border-[#00ff41]/30 rounded-lg px-4 py-2 text-[#00ff41] font-mono placeholder:text-[#00ff41]/30 focus:outline-none focus:border-[#00ff41]"
+          className="flex-1 bg-black/60 border border-white/10 rounded-lg px-4 py-2 text-[#00ff41] font-mono placeholder:text-[#00ff41]/30 focus:outline-none focus:border-white/20"
           style={{ fontFamily: 'var(--font-code)' }}
         />
         <button onClick={testPayload}
@@ -401,12 +401,12 @@ function SqlInjection({ addXP }: { addXP: (n: number) => void }) {
       <h3 className="text-[#00ff41] font-mono text-lg mb-4 flex items-center gap-2">
         <span className="text-2xl">💉</span> SQL INJECTION
       </h3>
-      <div className="flex flex-col sm:flex-row gap-2 mb-4">
+      <div className="flex flex-col sm:flex-row items-center gap-2 mb-4">
         <input
           value={query}
           onChange={e => setQuery(e.target.value)}
           placeholder="SELECT * FROM users WHERE id = '1' OR '1'='1'"
-          className="flex-1 bg-black/60 border border-[#00ff41]/30 rounded-lg px-4 py-2 text-[#00ff41] font-mono placeholder:text-[#00ff41]/30 focus:outline-none focus:border-[#00ff41]"
+          className="flex-1 bg-black/60 border border-white/10 rounded-lg px-4 py-2 text-[#00ff41] font-mono placeholder:text-[#00ff41]/30 focus:outline-none focus:border-white/20"
           style={{ fontFamily: 'var(--font-code)' }}
         />
         <button onClick={runQuery}
@@ -484,7 +484,7 @@ function PhishingDetector({ addXP }: { addXP: (n: number) => void }) {
         onChange={e => setEmail(e.target.value)}
         placeholder="Paste suspicious email text here..."
         rows={4}
-        className="w-full bg-black/60 border border-[#00ff41]/30 rounded-lg px-3 sm:px-4 py-2.5 sm:py-2 text-[#00ff41] font-mono placeholder:text-[#00ff41]/30 focus:outline-none focus:border-[#00ff41] resize-none"
+        className="w-full bg-black/60 border border-white/10 rounded-lg px-3 sm:px-4 py-2.5 sm:py-2 text-[#00ff41] font-mono placeholder:text-[#00ff41]/30 focus:outline-none focus:border-white/20 resize-none"
         style={{ fontFamily: 'var(--font-code)' }}
       />
       <button onClick={analyze}
@@ -495,7 +495,7 @@ function PhishingDetector({ addXP }: { addXP: (n: number) => void }) {
         <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="mt-4 space-y-2">
           <div className="flex items-center gap-2 mb-3">
             <span className="text-sm font-mono text-gray-400">THREAT SCORE:</span>
-            <div className="flex-1 h-3 bg-black/60 rounded-full overflow-hidden">
+            <div className="flex-1 h-3 bg-black/60 rounded-full overflow-hidden border border-white/10">
               <motion.div initial={{ width: 0 }} animate={{ width: `${score}%` }} className="h-full rounded-full"
                 style={{ backgroundColor: score > 60 ? '#ff0040' : score > 30 ? '#ffaa00' : '#00ff41' }} />
             </div>
@@ -558,7 +558,7 @@ function TerminalLog() {
         ))}
         <div ref={endRef} />
       </div>
-      <div className="flex gap-2">
+      <div className="flex items-center gap-2">
         <span className="text-[#00ff41] font-mono text-sm">$</span>
         <input
           value={input}

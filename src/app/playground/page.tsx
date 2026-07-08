@@ -144,7 +144,7 @@ function FibonacciSpiral({ number }: { number: number }) {
       <div className="flex flex-wrap gap-2 justify-center">
         {fibSequence.slice(0, 12).map((f, i) => (
           <motion.span key={i} initial={{ opacity: 0, scale: 0 }} animate={{ opacity: 1, scale: 1 }} transition={{ delay: i * 0.1 }}
-            className="px-2 py-1 bg-purple-500/10 border border-purple-500/30 rounded text-purple-300 font-mono text-xs">
+            className="px-2 py-1 bg-purple-500/10 border border-white/10 rounded text-purple-300 font-mono text-xs">
             {f}
           </motion.span>
         ))}
@@ -188,7 +188,7 @@ function PoetryGenerator({ input }: { input: string }) {
           initial={{ opacity: 0, x: -20 }}
           animate={{ opacity: 1, x: 0 }}
           transition={{ delay: i * 0.3, duration: 0.6 }}
-          className="p-4 bg-purple-500/5 border border-purple-500/20 rounded-lg relative overflow-hidden"
+          className="p-4 bg-purple-500/5 border border-white/10 rounded-lg relative overflow-hidden"
         >
           <motion.div
             className="absolute inset-0 bg-gradient-to-r from-purple-500/10 to-transparent"
@@ -226,7 +226,7 @@ function ColorPalette({ color }: { color: string }) {
   return (
     <div className="space-y-3">
       <div className="flex gap-2 items-center">
-        <div className="w-12 h-12 rounded-lg border border-purple-500/30" style={{ backgroundColor: color, boxShadow: `0 0 20px ${color}40` }} />
+        <div className="w-12 h-12 rounded-lg border border-white/10" style={{ backgroundColor: color, boxShadow: `0 0 20px ${color}40` }} />
         <div className="font-mono text-purple-200">{color}</div>
       </div>
       <div className="text-sm font-mono text-purple-300/70">Harmony palette:</div>
@@ -234,7 +234,7 @@ function ColorPalette({ color }: { color: string }) {
         {palette.map((p, i) => (
           <motion.div key={i} initial={{ opacity: 0, scale: 0.8 }} animate={{ opacity: 1, scale: 1 }} transition={{ delay: i * 0.1 }}
             className="text-center">
-            <div className="aspect-square rounded-lg border border-purple-500/20 mb-1" style={{ backgroundColor: p.hex, boxShadow: `0 0 15px ${p.hex}30` }} />
+            <div className="aspect-square rounded-lg border border-white/10 mb-1" style={{ backgroundColor: p.hex, boxShadow: `0 0 15px ${p.hex}30` }} />
             <div className="text-[10px] font-mono text-purple-400">{p.name}</div>
             <div className="text-[10px] font-mono text-purple-500">{p.hex}</div>
           </motion.div>
@@ -264,7 +264,7 @@ function CodeDisplay({ code }: { code: string }) {
   }, [code]);
 
   return (
-    <div className="bg-black/60 rounded-lg p-4 border border-purple-500/20 overflow-x-auto">
+    <div className="bg-black/60 rounded-lg p-4 border border-white/10 overflow-x-auto">
       <pre className="font-mono text-sm text-purple-200/80 leading-relaxed" style={{ fontFamily: 'var(--font-code)' }}>
         <code dangerouslySetInnerHTML={{ __html: highlighted }} />
       </pre>
@@ -497,7 +497,7 @@ export default function PlaygroundPage() {
             <span className="text-purple-300 font-mono text-lg">INPUT PORTAL</span>
             {inputType !== 'empty' && (
               <motion.span initial={{ opacity: 0, scale: 0 }} animate={{ opacity: 1, scale: 1 }}
-                className="ml-auto px-3 py-1 bg-purple-500/20 border border-purple-500/30 rounded-full text-purple-300 font-mono text-xs uppercase">
+                className="ml-auto px-3 py-1 bg-purple-500/20 border border-white/10 rounded-full text-purple-300 font-mono text-xs uppercase">
                 {inputType}
               </motion.span>
             )}
@@ -507,7 +507,7 @@ export default function PlaygroundPage() {
             onChange={e => { setInput(e.target.value); soundEngine.playClick(); }}
             placeholder="Enter a number, word, color hex, or code..."
             rows={3}
-            className="w-full bg-black/60 border border-purple-500/30 rounded-lg px-3 sm:px-4 py-2.5 sm:py-3 text-purple-200 font-mono placeholder:text-purple-500/30 focus:outline-none focus:border-purple-500 resize-none"
+            className="w-full bg-black/60 border border-white/10 rounded-lg px-3 sm:px-4 py-2.5 sm:py-3 text-purple-200 font-mono placeholder:text-purple-500/30 focus:outline-none focus:border-white/20 resize-none"
             style={{ fontFamily: 'var(--font-code)' }}
           />
           <div className="mt-2 text-[10px] font-mono text-purple-600">
