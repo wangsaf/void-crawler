@@ -41,15 +41,15 @@ export function ParticleField() {
     };
     window.addEventListener("mousemove", handleMouse);
 
-    // Initialize particles
-    const count = Math.min(80, Math.floor(window.innerWidth / 15));
+    // Initialize particles - reduced count for stability
+    const count = Math.min(30, Math.floor(window.innerWidth / 40));
     particlesRef.current = Array.from({ length: count }, () => ({
       x: Math.random() * canvas.width,
       y: Math.random() * canvas.height,
       vx: (Math.random() - 0.5) * 0.5,
       vy: (Math.random() - 0.5) * 0.5,
       size: Math.random() * 2 + 0.5,
-      opacity: Math.random() * 0.5 + 0.1,
+      opacity: Math.random() * 0.2 + 0.05,
       color: colors[Math.floor(Math.random() * colors.length)],
       life: Math.random() * 200,
       maxLife: 200 + Math.random() * 300,
@@ -64,19 +64,9 @@ export function ParticleField() {
         p.y += p.vy;
         p.life++;
 
-        // Mouse repel
-        const dx = p.x - mouseRef.current.x;
-        const dy = p.y - mouseRef.current.y;
-        const dist = Math.sqrt(dx * dx + dy * dy);
-        if (dist < 150) {
-          const force = (150 - dist) / 150;
-          p.vx += (dx / dist) * force * 0.3;
-          p.vy += (dy / dist) * force * 0.3;
-        }
-
-        // Damping
-        p.vx *= 0.99;
-        p.vy *= 0.99;
+        // Damping (no mouse repel - particles drift quietly)
+        p.vx *= 0.995;
+        p.vy *= 0.995;
 
         // Wrap
         if (p.x < 0) p.x = canvas.width;
@@ -110,11 +100,11 @@ export function ParticleField() {
           const dx = a.x - b.x;
           const dy = a.y - b.y;
           const dist = Math.sqrt(dx * dx + dy * dy);
-          if (dist < 120) {
+          if (dist < 80) {
             ctx.beginPath();
             ctx.moveTo(a.x, a.y);
             ctx.lineTo(b.x, b.y);
-            ctx.strokeStyle = `rgba(0, 212, 255, ${0.08 * (1 - dist / 120)})`;
+            ctx.strokeStyle = `rgba(0, 212, 255, ${0.03 * (1 - dist / 80)})`;
             ctx.lineWidth = 0.5;
             ctx.stroke();
           }
@@ -137,7 +127,7 @@ export function ParticleField() {
     <canvas
       ref={canvasRef}
       className="fixed inset-0 z-0 pointer-events-none"
-      style={{ opacity: 0.6 }}
+      style={{ opacity: 0.3 }}
     />
   );
 }

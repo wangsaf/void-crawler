@@ -67,18 +67,17 @@ function QuickStats() {
   return (
     <motion.div
       className="flex flex-wrap justify-center gap-4 sm:gap-6 mb-8 sm:mb-10"
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ delay: 0.6, duration: 0.5 }}
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      transition={{ delay: 0.3, duration: 0.3 }}
     >
       {stats.map((stat, i) => (
         <motion.div
           key={stat.label}
           className="glass rounded-xl px-4 sm:px-5 py-2.5 sm:py-3 text-center min-w-[80px] sm:min-w-[100px]"
-          initial={{ opacity: 0, scale: 0.8 }}
-          animate={{ opacity: 1, scale: 1 }}
-          transition={{ delay: 0.8 + i * 0.1 }}
-          whileHover={{ scale: 1.05, y: -2 }}
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 0.3 + i * 0.05, duration: 0.3 }}
         >
           <div
             className={`text-base sm:text-lg font-bold font-display ${stat.color}`}
@@ -107,9 +106,9 @@ function AnimatedDivider({ delay = 0 }: { delay?: number }) {
           background:
             "linear-gradient(90deg, transparent, rgba(176,0,255,0.4), transparent)",
         }}
-        initial={{ scaleX: 0 }}
-        animate={{ scaleX: 1 }}
-        transition={{ delay: delay + 0.2, duration: 0.8, ease: "easeOut" }}
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ delay: delay + 0.1, duration: 0.5, ease: "easeOut" }}
       />
       <motion.div
         className="text-neon-purple/40 text-xs tracking-widest uppercase font-code"
@@ -125,9 +124,9 @@ function AnimatedDivider({ delay = 0 }: { delay?: number }) {
           background:
             "linear-gradient(90deg, transparent, rgba(176,0,255,0.4), transparent)",
         }}
-        initial={{ scaleX: 0 }}
-        animate={{ scaleX: 1 }}
-        transition={{ delay: delay + 0.2, duration: 0.8, ease: "easeOut" }}
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ delay: delay + 0.1, duration: 0.5, ease: "easeOut" }}
       />
     </motion.div>
   );
@@ -202,15 +201,15 @@ export default function Home() {
           <motion.div
             key="landing"
             className="relative z-10 min-h-screen flex flex-col items-center justify-center px-4"
-            exit={{ opacity: 0, scale: 0.9, filter: "blur(10px)" }}
-            transition={{ duration: 0.5 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.3 }}
           >
             {/* Title */}
             <motion.div
               className="text-center mb-12"
-              initial={{ opacity: 0, y: -30 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.8, delay: 0.3 }}
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ duration: 0.4, delay: 0.1 }}
             >
               <h1
                 className="text-6xl md:text-8xl font-bold mb-4 glow-purple font-display"
@@ -231,9 +230,9 @@ export default function Home() {
             <motion.form
               onSubmit={handleLandingSubmit}
               className="w-full max-w-md"
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 2 }}
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 0.3, duration: 0.3 }}
             >
               <div className="animated-border p-[1px] rounded-xl">
                 <div className="flex gap-2 p-1 bg-void-surface rounded-xl">
@@ -270,15 +269,15 @@ export default function Home() {
           <motion.div
             key="naming"
             className="relative z-10 min-h-screen flex flex-col items-center justify-center px-4"
-            initial={{ opacity: 0, scale: 1.1, filter: "blur(10px)" }}
-            animate={{ opacity: 1, scale: 1, filter: "blur(0px)" }}
-            exit={{ opacity: 0, scale: 0.9, filter: "blur(10px)" }}
-            transition={{ duration: 0.5 }}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.3 }}
           >
             <motion.div
               className="glass-strong rounded-xl p-8 max-w-md w-full text-center"
-              initial={{ y: 30 }}
-              animate={{ y: 0 }}
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
             >
               <h2
                 className="text-3xl font-bold mb-2 glow-blue font-display"
@@ -332,9 +331,9 @@ export default function Home() {
             {/* Hub Title */}
             <motion.div
               className="text-center mb-6"
-              initial={{ y: -30, opacity: 0 }}
-              animate={{ y: 0, opacity: 1 }}
-              transition={{ delay: 0.2 }}
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 0.1, duration: 0.3 }}
             >
               <motion.p
                 className="text-xs sm:text-sm text-gray-500 mb-2 sm:mb-3 tracking-widest uppercase font-code"
@@ -349,9 +348,9 @@ export default function Home() {
               >
                 <motion.span
                   className="inline-block"
-                  initial={{ opacity: 0, letterSpacing: "0.2em" }}
-                  animate={{ opacity: 1, letterSpacing: "0.05em" }}
-                  transition={{ delay: 0.3, duration: 0.8 }}
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  transition={{ delay: 0.2, duration: 0.3 }}
                 >
                   The Void Hub
                 </motion.span>
@@ -377,13 +376,12 @@ export default function Home() {
               {zoneData.map((z, i) => (
                 <motion.div
                   key={z.zone}
-                  initial={{ opacity: 0, y: 60 }}
-                  animate={{ opacity: 1, y: 0 }}
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
                   transition={{
-                    delay: 1.2 + i * 0.15,
-                    type: "spring",
-                    damping: 20,
-                    stiffness: 180,
+                    delay: 0.2 + i * 0.08,
+                    duration: 0.3,
+                    ease: "easeOut",
                   }}
                 >
                   <ZonePortal
@@ -403,7 +401,7 @@ export default function Home() {
               className="mt-8 sm:mt-12 text-center text-xs sm:text-sm text-gray-500 px-4"
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
-              transition={{ delay: 2.0 }}
+              transition={{ delay: 0.5, duration: 0.3 }}
             >
               <p>
                 💡 Each zone has hidden easter eggs • Your browser determined<br className="sm:hidden" />
@@ -413,7 +411,7 @@ export default function Home() {
                 className="text-xs text-gray-600 mt-2 font-code"
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
-                transition={{ delay: 2.5 }}
+                transition={{ delay: 0.6, duration: 0.3 }}
               >
                 Level {level} • {zoneData.length} zones unlocked
               </motion.p>

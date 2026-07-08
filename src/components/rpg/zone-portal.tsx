@@ -39,11 +39,10 @@ export function ZonePortal({
     <motion.button
       onClick={handleClick}
       className={`relative group cursor-pointer ${locked && !isUnlocked ? "opacity-40 cursor-not-allowed" : ""}`}
-      whileHover={isUnlocked ? { scale: 1.05, y: -5 } : {}}
-      whileTap={isUnlocked ? { scale: 0.95 } : {}}
-      initial={{ opacity: 0, y: 50 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ type: "spring", damping: 20, stiffness: 200 }}
+      whileHover={isUnlocked ? { opacity: 0.85 } : {}}
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      transition={{ duration: 0.4, ease: "easeOut" }}
     >
       {/* Portal frame */}
       <div
@@ -69,13 +68,9 @@ export function ZonePortal({
         {/* Content */}
         <div className="relative z-10 flex flex-col items-center justify-center h-full p-4 sm:p-6 gap-3 sm:gap-4">
           {/* Icon */}
-          <motion.div
-            className="text-5xl sm:text-6xl"
-            animate={{ y: [0, -8, 0] }}
-            transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
-          >
+          <div className="text-5xl sm:text-6xl">
             {icon}
-          </motion.div>
+          </div>
 
           {/* Title */}
           <h3
@@ -95,14 +90,12 @@ export function ZonePortal({
               <span className="text-xs">Reach Level 3 to unlock</span>
             </div>
           ) : (
-            <motion.div
+            <div
               className="text-xs font-medium px-3 py-1 rounded-full"
               style={{ background: `${color}20`, color }}
-              animate={{ opacity: [0.6, 1, 0.6] }}
-              transition={{ duration: 2, repeat: Infinity }}
             >
               ENTER →
-            </motion.div>
+            </div>
           )}
         </div>
 

@@ -48,7 +48,7 @@ function MatrixRain() {
     return () => { clearInterval(interval); window.removeEventListener('resize', handleResize); };
   }, []);
 
-  return <canvas ref={canvasRef} className="fixed inset-0 z-0 opacity-30 pointer-events-none" />;
+  return <canvas ref={canvasRef} className="fixed inset-0 z-0 opacity-[0.15] pointer-events-none" />;
 }
 
 // XSS Phantom Enemy
@@ -61,10 +61,10 @@ function XssPhantom({ onSanitize }: { onSanitize: () => void }) {
 
   return (
     <motion.div
-      initial={{ opacity: 0, scale: 0 }}
-      animate={{ opacity: 1, scale: 1, x: [0, 20, -20, 10, 0], y: [0, -10, 5, -5, 0] }}
-      exit={{ opacity: 0, scale: 0, rotate: 360 }}
-      transition={{ duration: 2, x: { repeat: Infinity, duration: 4 }, y: { repeat: Infinity, duration: 3 } }}
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      transition={{ duration: 0.5, ease: "easeOut" }}
       className="fixed z-50 cursor-pointer select-none"
       style={{ left: `${pos.x}%`, top: `${pos.y}%` }}
       onClick={() => { soundEngine.playSuccess(); onSanitize(); }}
@@ -133,9 +133,9 @@ function PortScanner({ addXP }: { addXP: (n: number) => void }) {
           {ports.map((p, i) => (
             <motion.div
               key={p.port}
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: i * 0.05 }}
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: i * 0.05, duration: 0.3 }}
               className={`rounded-lg p-2 text-center font-mono font-code text-xs border transition-all duration-200 ${
                 p.status === 'pending' ? 'border-gray-700 text-gray-500 bg-black/40' :
                 p.status === 'open' ? 'border-cyber-green text-cyber-green bg-cyber-green/10 box-glow-green' :
@@ -149,7 +149,7 @@ function PortScanner({ addXP }: { addXP: (n: number) => void }) {
         </AnimatePresence>
       </div>
       {done && (
-        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="mt-3 text-cyber-green/60 text-sm font-mono font-code">
+        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.3 }} className="mt-3 text-cyber-green/60 text-sm font-mono font-code">
           ✓ Scan complete — {ports.filter(p => p.status === 'open').length} open ports found (+15 XP)
         </motion.div>
       )}
@@ -264,8 +264,6 @@ function FirewallSim({ addXP }: { addXP: (n: number) => void }) {
         {rules.map(r => (
           <motion.button
             key={r.id}
-            whileHover={{ scale: 1.02 }}
-            whileTap={{ scale: 0.98 }}
             onClick={() => toggleRule(r.id)}
             className={`flex items-center justify-between px-4 py-2 rounded-lg font-mono font-code text-sm border transition-all duration-200 ${
               r.action === 'ALLOW'
@@ -339,7 +337,7 @@ function XssPlayground({ addXP }: { addXP: (n: number) => void }) {
         </button>
       </div>
       {rendering && (
-        <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="relative">
+        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="relative">
           {warning && (
             <motion.div
               initial={{ opacity: 0 }}
@@ -413,7 +411,7 @@ function SqlInjection({ addXP }: { addXP: (n: number) => void }) {
           {cells.map((alive, i) => (
             <motion.div
               key={i}
-              animate={!alive ? { opacity: 0, scale: 0, rotate: 45 } : { opacity: 1, scale: 1, rotate: 0 }}
+              animate={!alive ? { opacity: 0 } : { opacity: 1 }}
               transition={{ duration: 0.3 }}
               className={`aspect-square rounded-sm ${alive ? 'bg-cyber-green/20 border border-cyber-green/30' : ''}`}
             />
@@ -485,7 +483,7 @@ function PhishingDetector({ addXP }: { addXP: (n: number) => void }) {
         ANALYZE
       </button>
       {result.length > 0 && (
-        <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="mt-4 space-y-2">
+        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="mt-4 space-y-2">
           <div className="flex items-center gap-2 mb-3">
             <span className="text-sm font-mono text-gray-400">THREAT SCORE:</span>
             <div className="flex-1 h-3 bg-black/60 rounded-full overflow-hidden">
@@ -601,7 +599,7 @@ export default function CyberPage() {
 
       <div className="relative z-10 max-w-7xl mx-auto px-4 py-8">
         {/* Header */}
-        <motion.div initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }} className="mb-8">
+        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="mb-8">
           <Link href="/" className="inline-flex items-center gap-2 text-cyber-green/60 hover:text-cyber-green transition-colors duration-200 font-mono text-sm mb-4">
             ← BACK TO HUB
           </Link>
@@ -615,28 +613,28 @@ export default function CyberPage() {
 
         {/* Grid */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          <motion.div initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.1 }}>
+          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.1, duration: 0.3 }}>
             <PortScanner addXP={wrappedAddXP} />
           </motion.div>
-          <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.2 }}>
+          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.2, duration: 0.3 }}>
             <PasswordChecker />
           </motion.div>
-          <motion.div initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.3 }}>
+          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.3, duration: 0.3 }}>
             <FirewallSim addXP={wrappedAddXP} />
           </motion.div>
-          <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.4 }}>
+          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.4, duration: 0.3 }}>
             <XssPlayground addXP={wrappedAddXP} />
           </motion.div>
-          <motion.div initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.5 }}>
+          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.5, duration: 0.3 }}>
             <SqlInjection addXP={wrappedAddXP} />
           </motion.div>
-          <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.6 }}>
+          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.6, duration: 0.3 }}>
             <PhishingDetector addXP={wrappedAddXP} />
           </motion.div>
         </div>
 
         {/* Terminal */}
-        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.7 }} className="mt-6">
+        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.7, duration: 0.3 }} className="mt-6">
           <TerminalLog />
         </motion.div>
 

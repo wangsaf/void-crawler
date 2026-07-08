@@ -14,7 +14,7 @@ export function AnimatedText({
   text,
   className = "",
   delay = 0,
-  stagger = 0.03,
+  stagger,
   glow,
 }: AnimatedTextProps) {
   const glowClass = glow ? `glow-${glow}` : "";
@@ -22,30 +22,11 @@ export function AnimatedText({
   return (
     <motion.span
       className={`inline-block ${glowClass} ${className}`}
-      initial="hidden"
-      animate="visible"
-      variants={{
-        hidden: {},
-        visible: { transition: { staggerChildren: stagger, delayChildren: delay } },
-      }}
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      transition={{ duration: 0.3, delay }}
     >
-      {text.split("").map((char, i) => (
-        <motion.span
-          key={i}
-          className="inline-block"
-          variants={{
-            hidden: { opacity: 0, y: 20, filter: "blur(8px)" },
-            visible: {
-              opacity: 1,
-              y: 0,
-              filter: "blur(0px)",
-              transition: { type: "spring", damping: 12, stiffness: 200 },
-            },
-          }}
-        >
-          {char === " " ? " " : char}
-        </motion.span>
-      ))}
+      {text}
     </motion.span>
   );
 }

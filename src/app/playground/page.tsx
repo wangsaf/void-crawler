@@ -28,7 +28,7 @@ function GenerativeBackground() {
   }, [seed]);
 
   return (
-    <svg className="fixed inset-0 w-full h-full z-0 pointer-events-none opacity-40" viewBox="0 0 100 100" preserveAspectRatio="none">
+    <svg className="fixed inset-0 w-full h-full z-0 pointer-events-none opacity-[0.2]" viewBox="0 0 100 100" preserveAspectRatio="none">
       {paths.map((p, i) => (
         <line key={i} x1={p.x1} y1={p.y1} x2={p.x2} y2={p.y2} stroke="#b000ff" strokeWidth="0.15" opacity={p.opacity} />
       ))}
@@ -62,13 +62,8 @@ function ParticleBurst({ x, y, onDone }: { x: number; y: number; onDone: () => v
       {particles.map(p => (
         <motion.div
           key={p.id}
-          initial={{ x, y, opacity: 1, scale: 1 }}
-          animate={{
-            x: x + Math.cos(p.angle) * p.distance,
-            y: y + Math.sin(p.angle) * p.distance,
-            opacity: 0,
-            scale: 0,
-          }}
+          initial={{ opacity: 1 }}
+          animate={{ opacity: 0 }}
           transition={{ duration: 1 + Math.random() * 0.5, ease: 'easeOut' }}
           className="absolute rounded-full"
           style={{ width: p.size, height: p.size, backgroundColor: p.color, boxShadow: `0 0 10px ${p.color}` }}
@@ -143,7 +138,7 @@ function FibonacciSpiral({ number }: { number: number }) {
       </svg>
       <div className="flex flex-wrap gap-2 justify-center">
         {fibSequence.slice(0, 12).map((f, i) => (
-          <motion.span key={i} initial={{ opacity: 0, scale: 0 }} animate={{ opacity: 1, scale: 1 }} transition={{ delay: i * 0.1 }}
+          <motion.span key={i} initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: i * 0.1, duration: 0.3 }}
             className="px-2 py-1 bg-purple-500/10 border border-purple-500/30 rounded-md text-purple-300 font-mono font-code text-xs">
             {f}
           </motion.span>
@@ -185,14 +180,14 @@ function PoetryGenerator({ input }: { input: string }) {
       {poems.map((poem, i) => (
         <motion.div
           key={i}
-          initial={{ opacity: 0, x: -20 }}
-          animate={{ opacity: 1, x: 0 }}
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
           transition={{ delay: i * 0.3, duration: 0.6 }}
           className="p-4 bg-purple-500/5 border border-purple-500/20 rounded-lg relative overflow-hidden"
         >
           <motion.div
             className="absolute inset-0 bg-gradient-to-r from-purple-500/10 to-transparent"
-            animate={{ x: ['-100%', '100%'] }}
+            animate={{ opacity: [0.1, 0.2, 0.1] }}
             transition={{ duration: 3, repeat: Infinity, repeatType: 'loop' }}
           />
           <p className="text-purple-200 font-mono text-sm italic relative z-10">&quot;{poem}&quot;</p>
@@ -232,7 +227,7 @@ function ColorPalette({ color }: { color: string }) {
       <div className="text-sm font-mono font-code text-purple-300/70">Harmony palette:</div>
       <div className="grid grid-cols-3 sm:grid-cols-5 gap-2">
         {palette.map((p, i) => (
-          <motion.div key={i} initial={{ opacity: 0, scale: 0.8 }} animate={{ opacity: 1, scale: 1 }} transition={{ delay: i * 0.1 }}
+          <motion.div key={i} initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: i * 0.1, duration: 0.3 }}
             className="text-center">
             <div className="aspect-square rounded-lg border border-purple-500/20 mb-1" style={{ backgroundColor: p.hex, boxShadow: `0 0 15px ${p.hex}30` }} />
             <div className="text-[10px] font-mono text-purple-400">{p.name}</div>
@@ -276,9 +271,9 @@ function CodeDisplay({ code }: { code: string }) {
 function InterpretationCard({ type, icon, children }: { type: string; icon: string; children: React.ReactNode }) {
   return (
     <motion.div
-      initial={{ opacity: 0, y: 20, scale: 0.95 }}
-      animate={{ opacity: 1, y: 0, scale: 1 }}
-      exit={{ opacity: 0, y: -20, scale: 0.95 }}
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
       transition={{ duration: 0.5 }}
       className="glass-strong rounded-xl p-6 box-glow-purple relative overflow-hidden"
     >
@@ -308,7 +303,7 @@ function BreathingScreen() {
       className="fixed inset-0 z-40 bg-black/90 flex items-center justify-center"
     >
       <motion.div
-        animate={{ scale: [1, 1.2, 1], opacity: [0.3, 0.8, 0.3] }}
+        animate={{ opacity: [0.3, 0.6, 0.3] }}
         transition={{ duration: 4, repeat: Infinity, ease: 'easeInOut' }}
         className="text-center"
       >
@@ -330,19 +325,15 @@ function BreathingScreen() {
 function KonamiDisplay() {
   return (
     <motion.div
-      initial={{ opacity: 0, scale: 0.5, rotate: -10 }}
-      animate={{ opacity: 1, scale: 1, rotate: 0 }}
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
       className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm"
     >
       <div className="text-center">
-        <motion.div
-          animate={{ rotate: [0, 360] }}
-          transition={{ duration: 2, repeat: Infinity, ease: 'linear' }}
-          className="text-8xl mb-6 inline-block"
-        >
+        <div className="text-8xl mb-6 inline-block">
           🌀
-        </motion.div>
-        <motion.h2 initial={{ y: 20 }} animate={{ y: 0 }} className="text-4xl font-bold text-purple-400 font-mono font-display glow-purple mb-4">
+        </div>
+        <motion.h2 initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="text-4xl font-bold text-purple-400 font-mono font-display glow-purple mb-4">
           KONAMI CODE ACTIVATED
         </motion.h2>
         <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.5 }}
@@ -472,7 +463,7 @@ export default function PlaygroundPage() {
 
       <div className="relative z-10 max-w-4xl mx-auto px-4 py-8">
         {/* Header */}
-        <motion.div initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }} className="mb-8 text-center">
+        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="mb-8 text-center">
           <Link href="/" className="inline-flex items-center gap-2 text-purple-400/60 hover:text-purple-400 transition-colors duration-200 font-mono text-sm mb-4">
             ← BACK TO HUB
           </Link>
@@ -490,13 +481,13 @@ export default function PlaygroundPage() {
         </motion.div>
 
         {/* Input */}
-        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }}
+        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.1, duration: 0.3 }}
           className="glass-strong rounded-xl p-6 mb-8">
           <div className="flex items-center gap-2 mb-3">
             <span className="text-2xl">🔮</span>
             <span className="text-purple-300 font-mono font-display text-lg">INPUT PORTAL</span>
             {inputType !== 'empty' && (
-              <motion.span initial={{ opacity: 0, scale: 0 }} animate={{ opacity: 1, scale: 1 }}
+              <motion.span initial={{ opacity: 0 }} animate={{ opacity: 1 }}
                 className="ml-auto px-3 py-1 bg-purple-500/20 border border-purple-500/30 rounded-full text-purple-300 font-mono text-xs uppercase">
                 {inputType}
               </motion.span>
@@ -543,7 +534,7 @@ export default function PlaygroundPage() {
           {inputType === 'empty' && (
             <motion.div key="empty" initial={{ opacity: 0 }} animate={{ opacity: 1 }}
               className="text-center py-20">
-              <motion.div animate={{ scale: [1, 1.1, 1], opacity: [0.3, 0.6, 0.3] }}
+              <motion.div animate={{ opacity: [0.3, 0.6, 0.3] }}
                 transition={{ duration: 4, repeat: Infinity }}
                 className="text-6xl mb-4"
               >
