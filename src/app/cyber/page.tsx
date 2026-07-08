@@ -48,7 +48,7 @@ function MatrixRain() {
     return () => { clearInterval(interval); window.removeEventListener('resize', handleResize); };
   }, []);
 
-  return <canvas ref={canvasRef} className="fixed inset-0 z-0 opacity-[0.15] pointer-events-none" />;
+  return <canvas ref={canvasRef} className="fixed inset-0 z-0 opacity-30 pointer-events-none" />;
 }
 
 // XSS Phantom Enemy
@@ -61,10 +61,10 @@ function XssPhantom({ onSanitize }: { onSanitize: () => void }) {
 
   return (
     <motion.div
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      exit={{ opacity: 0 }}
-      transition={{ duration: 0.5, ease: "easeOut" }}
+      initial={{ opacity: 0, scale: 0 }}
+      animate={{ opacity: 1, scale: 1, x: [0, 20, -20, 10, 0], y: [0, -10, 5, -5, 0] }}
+      exit={{ opacity: 0, scale: 0, rotate: 360 }}
+      transition={{ duration: 2, x: { repeat: Infinity, duration: 4 }, y: { repeat: Infinity, duration: 3 } }}
       className="fixed z-50 cursor-pointer select-none"
       style={{ left: `${pos.x}%`, top: `${pos.y}%` }}
       onClick={() => { soundEngine.playSuccess(); onSanitize(); }}
@@ -113,7 +113,7 @@ function PortScanner({ addXP }: { addXP: (n: number) => void }) {
 
   return (
     <div className="glass-strong rounded-xl p-6">
-      <h3 className="text-cyber-green font-mono text-lg font-semibold mb-4 flex items-center gap-2">
+      <h3 className="text-[#00ff41] font-mono text-lg mb-4 flex items-center gap-2">
         <span className="text-2xl">🔍</span> PORT SCANNER
       </h3>
       <div className="flex flex-col sm:flex-row gap-2 mb-4">
@@ -121,10 +121,11 @@ function PortScanner({ addXP }: { addXP: (n: number) => void }) {
           value={url}
           onChange={e => setUrl(e.target.value)}
           placeholder="target.domain.com"
-          className="flex-1 bg-black/60 border border-cyber-green/30 rounded-lg px-4 py-3 text-cyber-green font-mono placeholder:text-cyber-green/30 focus:outline-none focus:border-cyber-green focus:ring-2 focus:ring-cyber-green/20 transition-all duration-200 font-code"
+          className="flex-1 bg-black/60 border border-[#00ff41]/30 rounded-lg px-3 sm:px-4 py-2.5 sm:py-2 text-[#00ff41] font-mono placeholder:text-[#00ff41]/30 focus:outline-none focus:border-[#00ff41]"
+          style={{ fontFamily: 'var(--font-code)' }}
         />
         <button onClick={startScan} disabled={scanning}
-          className="px-4 py-2.5 sm:py-2 bg-cyber-green/20 border border-cyber-green/50 rounded-lg text-cyber-green font-mono hover:bg-cyber-green/30 disabled:opacity-50 transition-all duration-200 shrink-0">
+          className="px-4 py-2.5 sm:py-2 bg-[#00ff41]/20 border border-[#00ff41]/50 rounded-lg text-[#00ff41] font-mono hover:bg-[#00ff41]/30 disabled:opacity-50 transition-all shrink-0">
           {scanning ? 'SCANNING...' : 'SCAN'}
         </button>
       </div>
@@ -133,14 +134,15 @@ function PortScanner({ addXP }: { addXP: (n: number) => void }) {
           {ports.map((p, i) => (
             <motion.div
               key={p.port}
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ delay: i * 0.05, duration: 0.3 }}
-              className={`rounded-lg p-2 text-center font-mono font-code text-xs border transition-all duration-200 ${
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: i * 0.05 }}
+              className={`rounded-lg p-2 text-center font-mono text-xs border transition-all duration-300 ${
                 p.status === 'pending' ? 'border-gray-700 text-gray-500 bg-black/40' :
-                p.status === 'open' ? 'border-cyber-green text-cyber-green bg-cyber-green/10 box-glow-green' :
+                p.status === 'open' ? 'border-[#00ff41] text-[#00ff41] bg-[#00ff41]/10 box-glow-green' :
                 'border-red-900 text-red-500 bg-red-500/5'
               }`}
+              style={{ fontFamily: 'var(--font-code)' }}
             >
               <div className="text-sm font-bold">:{p.port}</div>
               <div className="text-[10px] mt-1">{p.status === 'pending' ? '...' : p.status.toUpperCase()}</div>
@@ -149,7 +151,7 @@ function PortScanner({ addXP }: { addXP: (n: number) => void }) {
         </AnimatePresence>
       </div>
       {done && (
-        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.3 }} className="mt-3 text-cyber-green/60 text-sm font-mono font-code">
+        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="mt-3 text-[#00ff41]/60 text-sm font-mono">
           ✓ Scan complete — {ports.filter(p => p.status === 'open').length} open ports found (+15 XP)
         </motion.div>
       )}
@@ -181,7 +183,7 @@ function PasswordChecker() {
 
   return (
     <div className="glass-strong rounded-xl p-6">
-      <h3 className="text-cyber-green font-mono text-lg font-semibold mb-4 flex items-center gap-2">
+      <h3 className="text-[#00ff41] font-mono text-lg mb-4 flex items-center gap-2">
         <span className="text-2xl">🔐</span> PASSWORD STRENGTH
       </h3>
       <input
@@ -189,7 +191,8 @@ function PasswordChecker() {
         value={password}
         onChange={e => setPassword(e.target.value)}
         placeholder="Type a password..."
-        className="w-full bg-black/60 border border-cyber-green/30 rounded-lg px-4 py-3 text-cyber-green font-mono placeholder:text-cyber-green/30 focus:outline-none focus:border-cyber-green focus:ring-2 focus:ring-cyber-green/20 transition-all duration-200 font-code"
+        className="w-full bg-black/60 border border-[#00ff41]/30 rounded-lg px-3 sm:px-4 py-2.5 sm:py-2 text-[#00ff41] font-mono placeholder:text-[#00ff41]/30 focus:outline-none focus:border-[#00ff41]"
+        style={{ fontFamily: 'var(--font-code)' }}
       />
       <div className="mt-4 space-y-2">
         {barriers.map((b, i) => (
@@ -257,19 +260,22 @@ function FirewallSim({ addXP }: { addXP: (n: number) => void }) {
 
   return (
     <div className="glass-strong rounded-xl p-6">
-      <h3 className="text-cyber-green font-mono text-lg font-semibold mb-4 flex items-center gap-2">
+      <h3 className="text-[#00ff41] font-mono text-lg mb-4 flex items-center gap-2">
         <span className="text-2xl">🧱</span> FIREWALL SIMULATOR
       </h3>
       <div className="grid grid-cols-1 gap-2 mb-4">
         {rules.map(r => (
           <motion.button
             key={r.id}
+            whileHover={{ scale: 1.02 }}
+            whileTap={{ scale: 0.98 }}
             onClick={() => toggleRule(r.id)}
-            className={`flex items-center justify-between px-4 py-2 rounded-lg font-mono font-code text-sm border transition-all duration-200 ${
+            className={`flex items-center justify-between px-4 py-2 rounded-lg font-mono text-sm border transition-all ${
               r.action === 'ALLOW'
-                ? 'border-cyber-green/50 bg-cyber-green/10 text-cyber-green'
+                ? 'border-[#00ff41]/50 bg-[#00ff41]/10 text-[#00ff41]'
                 : 'border-red-500/50 bg-red-500/10 text-red-400'
             }`}
+            style={{ fontFamily: 'var(--font-code)' }}
           >
             <span>:{r.port} ({r.proto})</span>
             <span className="font-bold">{r.action}</span>
@@ -321,7 +327,7 @@ function XssPlayground({ addXP }: { addXP: (n: number) => void }) {
 
   return (
     <div className="glass-strong rounded-xl p-6">
-      <h3 className="text-cyber-green font-mono text-lg font-semibold mb-4 flex items-center gap-2">
+      <h3 className="text-[#00ff41] font-mono text-lg mb-4 flex items-center gap-2">
         <span className="text-2xl">💀</span> XSS PLAYGROUND
       </h3>
       <div className="flex flex-col sm:flex-row gap-2 mb-4">
@@ -329,15 +335,16 @@ function XssPlayground({ addXP }: { addXP: (n: number) => void }) {
           value={payload}
           onChange={e => setPayload(e.target.value)}
           placeholder='<img src=x onerror=alert(1)>'
-          className="flex-1 bg-black/60 border border-cyber-green/30 rounded-lg px-4 py-3 text-cyber-green font-mono placeholder:text-cyber-green/30 focus:outline-none focus:border-cyber-green focus:ring-2 focus:ring-cyber-green/20 transition-all duration-200 font-code"
+          className="flex-1 bg-black/60 border border-[#00ff41]/30 rounded-lg px-4 py-2 text-[#00ff41] font-mono placeholder:text-[#00ff41]/30 focus:outline-none focus:border-[#00ff41]"
+          style={{ fontFamily: 'var(--font-code)' }}
         />
         <button onClick={testPayload}
-          className="px-4 py-2.5 sm:py-2 bg-red-500/20 border border-red-500/50 rounded-lg text-red-400 font-mono hover:bg-red-500/30 transition-all duration-200 shrink-0">
+          className="px-4 py-2.5 sm:py-2 bg-red-500/20 border border-red-500/50 rounded-lg text-red-400 font-mono hover:bg-red-500/30 transition-all shrink-0">
           INJECT
         </button>
       </div>
       {rendering && (
-        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="relative">
+        <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="relative">
           {warning && (
             <motion.div
               initial={{ opacity: 0 }}
@@ -351,7 +358,7 @@ function XssPlayground({ addXP }: { addXP: (n: number) => void }) {
               </div>
             </motion.div>
           )}
-          <div className="bg-black/80 rounded-lg p-4 border border-white/10 font-mono font-code text-sm">
+          <div className="bg-black/80 rounded-lg p-4 border border-white/10 font-mono text-sm" style={{ fontFamily: 'var(--font-code)' }}>
             <div className="text-gray-500 text-xs mb-2">// RAW OUTPUT (sanitized)</div>
             <div className="text-[#00ff41] break-all">{payload.replace(/</g, '&lt;').replace(/>/g, '&gt;')}</div>
           </div>
@@ -391,7 +398,7 @@ function SqlInjection({ addXP }: { addXP: (n: number) => void }) {
 
   return (
     <div className="glass-strong rounded-xl p-6">
-      <h3 className="text-cyber-green font-mono text-lg font-semibold mb-4 flex items-center gap-2">
+      <h3 className="text-[#00ff41] font-mono text-lg mb-4 flex items-center gap-2">
         <span className="text-2xl">💉</span> SQL INJECTION
       </h3>
       <div className="flex flex-col sm:flex-row gap-2 mb-4">
@@ -399,10 +406,11 @@ function SqlInjection({ addXP }: { addXP: (n: number) => void }) {
           value={query}
           onChange={e => setQuery(e.target.value)}
           placeholder="SELECT * FROM users WHERE id = '1' OR '1'='1'"
-          className="flex-1 bg-black/60 border border-cyber-green/30 rounded-lg px-4 py-3 text-cyber-green font-mono placeholder:text-cyber-green/30 focus:outline-none focus:border-cyber-green focus:ring-2 focus:ring-cyber-green/20 transition-all duration-200 font-code"
+          className="flex-1 bg-black/60 border border-[#00ff41]/30 rounded-lg px-4 py-2 text-[#00ff41] font-mono placeholder:text-[#00ff41]/30 focus:outline-none focus:border-[#00ff41]"
+          style={{ fontFamily: 'var(--font-code)' }}
         />
         <button onClick={runQuery}
-          className="px-4 py-2.5 sm:py-2 bg-orange-500/20 border border-orange-500/50 rounded-lg text-orange-400 font-mono hover:bg-orange-500/30 transition-all duration-200 shrink-0">
+          className="px-4 py-2.5 sm:py-2 bg-orange-500/20 border border-orange-500/50 rounded-lg text-orange-400 font-mono hover:bg-orange-500/30 transition-all shrink-0">
           EXECUTE
         </button>
       </div>
@@ -411,9 +419,9 @@ function SqlInjection({ addXP }: { addXP: (n: number) => void }) {
           {cells.map((alive, i) => (
             <motion.div
               key={i}
-              animate={!alive ? { opacity: 0 } : { opacity: 1 }}
+              animate={!alive ? { opacity: 0, scale: 0, rotate: 45 } : { opacity: 1, scale: 1, rotate: 0 }}
               transition={{ duration: 0.3 }}
-              className={`aspect-square rounded-sm ${alive ? 'bg-cyber-green/20 border border-cyber-green/30' : ''}`}
+              className={`aspect-square rounded-sm ${alive ? 'bg-[#00ff41]/20 border border-[#00ff41]/30' : ''}`}
             />
           ))}
         </div>
@@ -468,7 +476,7 @@ function PhishingDetector({ addXP }: { addXP: (n: number) => void }) {
 
   return (
     <div className="glass-strong rounded-xl p-6">
-      <h3 className="text-cyber-green font-mono text-lg font-semibold mb-4 flex items-center gap-2">
+      <h3 className="text-[#00ff41] font-mono text-lg mb-4 flex items-center gap-2">
         <span className="text-2xl">🎣</span> PHISHING DETECTOR
       </h3>
       <textarea
@@ -476,14 +484,15 @@ function PhishingDetector({ addXP }: { addXP: (n: number) => void }) {
         onChange={e => setEmail(e.target.value)}
         placeholder="Paste suspicious email text here..."
         rows={4}
-        className="w-full bg-black/60 border border-cyber-green/30 rounded-lg px-4 py-3 text-cyber-green font-mono placeholder:text-cyber-green/30 focus:outline-none focus:border-cyber-green focus:ring-2 focus:ring-cyber-green/20 transition-all duration-200 resize-none font-code"
+        className="w-full bg-black/60 border border-[#00ff41]/30 rounded-lg px-3 sm:px-4 py-2.5 sm:py-2 text-[#00ff41] font-mono placeholder:text-[#00ff41]/30 focus:outline-none focus:border-[#00ff41] resize-none"
+        style={{ fontFamily: 'var(--font-code)' }}
       />
       <button onClick={analyze}
-        className="mt-2 px-4 py-2 bg-yellow-500/20 border border-yellow-500/50 rounded-lg text-yellow-400 font-mono hover:bg-yellow-500/30 transition-all duration-200">
+        className="mt-2 px-4 py-2 bg-yellow-500/20 border border-yellow-500/50 rounded-lg text-yellow-400 font-mono hover:bg-yellow-500/30 transition-all">
         ANALYZE
       </button>
       {result.length > 0 && (
-        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="mt-4 space-y-2">
+        <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="mt-4 space-y-2">
           <div className="flex items-center gap-2 mb-3">
             <span className="text-sm font-mono text-gray-400">THREAT SCORE:</span>
             <div className="flex-1 h-3 bg-black/60 rounded-full overflow-hidden">
@@ -495,7 +504,8 @@ function PhishingDetector({ addXP }: { addXP: (n: number) => void }) {
             </span>
           </div>
           {result.map((r, i) => (
-            <div key={i} className={`text-sm font-mono font-code p-2 rounded-md ${r.suspicious ? 'bg-red-500/10 border border-red-500/30 text-red-400' : 'text-gray-400'}`}>
+            <div key={i} className={`text-sm font-mono p-2 rounded ${r.suspicious ? 'bg-red-500/10 border border-red-500/30 text-red-400' : 'text-gray-400'}`}
+              style={{ fontFamily: 'var(--font-code)' }}>
               {r.suspicious && <span className="mr-2">🚩</span>}
               {r.text}
             </div>
@@ -540,7 +550,7 @@ function TerminalLog() {
 
   return (
     <div className="glass-strong rounded-xl p-3 sm:p-4 h-52 sm:h-64 flex flex-col">
-      <div className="flex-1 overflow-y-auto font-mono font-code text-xs space-y-1 mb-2">
+      <div className="flex-1 overflow-y-auto font-mono text-xs space-y-1 mb-2" style={{ fontFamily: 'var(--font-code)' }}>
         {logs.map((l, i) => (
           <div key={i} className={`${l.startsWith('>') ? 'text-[#00ff41]' : l.includes('[WARN]') ? 'text-yellow-400' : l.includes('[ERR]') ? 'text-red-400' : 'text-[#00ff41]/70'}`}>
             {l}
@@ -549,12 +559,13 @@ function TerminalLog() {
         <div ref={endRef} />
       </div>
       <div className="flex gap-2">
-        <span className="text-cyber-green font-mono text-sm">$</span>
+        <span className="text-[#00ff41] font-mono text-sm">$</span>
         <input
           value={input}
           onChange={e => setInput(e.target.value)}
           onKeyDown={e => { if (e.key === 'Enter') { handleCommand(input); setInput(''); } }}
-          className="flex-1 bg-transparent text-cyber-green font-mono font-code text-sm focus:outline-none"
+          className="flex-1 bg-transparent text-[#00ff41] font-mono text-sm focus:outline-none"
+          style={{ fontFamily: 'var(--font-code)' }}
           placeholder="type a command..."
         />
       </div>
@@ -599,47 +610,47 @@ export default function CyberPage() {
 
       <div className="relative z-10 max-w-7xl mx-auto px-4 py-8">
         {/* Header */}
-        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="mb-8">
-          <Link href="/" className="inline-flex items-center gap-2 text-cyber-green/60 hover:text-cyber-green transition-colors duration-200 font-mono text-sm mb-4">
+        <motion.div initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }} className="mb-8">
+          <Link href="/" className="inline-flex items-center gap-2 text-[#00ff41]/60 hover:text-[#00ff41] transition-colors font-mono text-sm mb-4">
             ← BACK TO HUB
           </Link>
-          <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold glow-green font-mono font-display tracking-wider">
+          <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold glow-green font-mono tracking-wider">
             EXPLOIT<span className="text-white/30">.</span>ME
           </h1>
-          <p className="text-cyber-green/50 font-mono font-code mt-2 text-sm">
+          <p className="text-[#00ff41]/50 font-mono mt-2 text-sm">
             [CYBERSECURITY PLAYGROUND] — Practice. Learn. Defend.
           </p>
         </motion.div>
 
         {/* Grid */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.1, duration: 0.3 }}>
+          <motion.div initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.1 }}>
             <PortScanner addXP={wrappedAddXP} />
           </motion.div>
-          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.2, duration: 0.3 }}>
+          <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.2 }}>
             <PasswordChecker />
           </motion.div>
-          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.3, duration: 0.3 }}>
+          <motion.div initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.3 }}>
             <FirewallSim addXP={wrappedAddXP} />
           </motion.div>
-          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.4, duration: 0.3 }}>
+          <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.4 }}>
             <XssPlayground addXP={wrappedAddXP} />
           </motion.div>
-          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.5, duration: 0.3 }}>
+          <motion.div initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.5 }}>
             <SqlInjection addXP={wrappedAddXP} />
           </motion.div>
-          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.6, duration: 0.3 }}>
+          <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.6 }}>
             <PhishingDetector addXP={wrappedAddXP} />
           </motion.div>
         </div>
 
         {/* Terminal */}
-        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.7, duration: 0.3 }} className="mt-6">
+        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.7 }} className="mt-6">
           <TerminalLog />
         </motion.div>
 
         {/* Footer */}
-        <div className="mt-8 text-center text-cyber-green/30 font-mono font-code text-xs">
+        <div className="mt-8 text-center text-[#00ff41]/30 font-mono text-xs">
           exploit.me — Educational cybersecurity simulation — v2.4.1
         </div>
       </div>

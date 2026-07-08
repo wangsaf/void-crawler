@@ -288,66 +288,6 @@ body {
 
 /* ==================== RESPONSIVE ==================== */
 
-/* ==================== COMPONENT UTILITIES ==================== */
-
-.card {
-  background: rgba(30, 30, 58, 0.6);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  border-radius: 0.75rem;
-  padding: 1.25rem;
-  transition: all 0.2s ease;
-}
-
-.card-strong {
-  background: rgba(30, 30, 58, 0.8);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
-  border: 1px solid rgba(255, 255, 255, 0.12);
-  border-radius: 0.75rem;
-  padding: 1.5rem;
-  transition: all 0.2s ease;
-}
-
-.input-field {
-  background: rgba(255, 255, 255, 0.05);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: 0.5rem;
-  padding: 0.75rem 1rem;
-  color: inherit;
-  outline: none;
-  transition: all 0.2s ease;
-}
-
-.input-field:focus {
-  border-color: rgba(0, 212, 255, 0.5);
-  box-shadow: 0 0 0 3px rgba(0, 212, 255, 0.1);
-}
-
-.btn-primary {
-  border-radius: 0.5rem;
-  padding: 0.75rem 1.5rem;
-  font-weight: 600;
-  transition: all 0.2s ease;
-}
-
-.btn-primary:hover {
-  transform: translateY(-1px);
-}
-
-.btn-secondary {
-  border-radius: 0.5rem;
-  padding: 0.5rem 1rem;
-  transition: all 0.2s ease;
-}
-
-.btn-secondary:hover {
-  transform: translateY(-1px);
-}
-
-/* ==================== RESPONSIVE ==================== */
-
 @media (max-width: 768px) {
   .glow-blue, .glow-purple, .glow-green, .glow-gold, .glow-pink {
     text-shadow: 0 0 5px currentColor;

@@ -30,9 +30,9 @@ export function CharacterHUD() {
   return (
     <motion.div
       className="fixed top-3 right-3 sm:top-4 sm:right-4 z-50 glass rounded-xl p-3 sm:p-4 w-48 sm:w-64"
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      transition={{ duration: 0.4, delay: 0.3, ease: "easeOut" }}
+      initial={{ x: 300, opacity: 0 }}
+      animate={{ x: 0, opacity: 1 }}
+      transition={{ type: "spring", damping: 20, delay: 0.5 }}
     >
       {/* Character Info */}
       <div className="flex items-center gap-2 sm:gap-3 mb-2 sm:mb-3">
@@ -47,7 +47,8 @@ export function CharacterHUD() {
         </div>
         <div className="min-w-0 flex-1">
           <div
-            className="text-xs sm:text-sm font-bold text-neon-blue truncate font-display"
+            className="text-xs sm:text-sm font-bold text-neon-blue truncate"
+            style={{ fontFamily: "var(--font-display)" }}
           >
             {characterName}
           </div>
@@ -88,7 +89,7 @@ export function CharacterHUD() {
                 : "linear-gradient(90deg, #ff3333, #ff006e)",
             }}
             animate={{ width: `${healthPercent}%` }}
-            transition={{ duration: 0.5, ease: "easeOut" }}
+            transition={{ type: "spring", damping: 20 }}
           />
         </div>
       </div>
@@ -108,7 +109,7 @@ export function CharacterHUD() {
               background: "linear-gradient(90deg, #b000ff, #ff006e)",
             }}
             animate={{ width: `${xpPercent}%` }}
-            transition={{ duration: 0.5, ease: "easeOut" }}
+            transition={{ type: "spring", damping: 20 }}
           />
         </div>
       </div>

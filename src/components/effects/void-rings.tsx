@@ -38,7 +38,7 @@ export function VoidRings({
           animate={{
             width: [40, 600],
             height: [40, 600],
-            opacity: [0.15, 0],
+            opacity: [0.4, 0],
             x: "-50%",
             y: "-50%",
           }}

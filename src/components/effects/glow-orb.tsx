@@ -31,7 +31,9 @@ export function GlowOrb({
         filter: "blur(40px)",
       }}
       animate={{
-        opacity: [0.6, 0.8, 0.6],
+        x: [0, 30, -20, 10, 0],
+        y: [0, -20, 30, -10, 0],
+        scale: [1, 1.2, 0.9, 1.1, 1],
       }}
       transition={{
         duration,
