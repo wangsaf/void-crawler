@@ -47,8 +47,7 @@ export function CharacterHUD() {
         </div>
         <div className="min-w-0 flex-1">
           <div
-            className="text-xs sm:text-sm font-bold text-neon-blue truncate"
-            style={{ fontFamily: "var(--font-display)" }}
+            className="text-xs sm:text-sm font-bold text-neon-blue truncate font-display"
           >
             {characterName}
           </div>

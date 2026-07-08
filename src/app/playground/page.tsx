@@ -103,7 +103,7 @@ function FibonacciSpiral({ number }: { number: number }) {
 
   return (
     <div className="flex flex-col items-center gap-3">
-      <div className="text-sm font-mono text-purple-300/70">Fibonacci spiral from {fibSequence.length} terms</div>
+      <div className="text-sm font-mono font-code text-purple-300/70">Fibonacci spiral from {fibSequence.length} terms</div>
       <svg width="400" height="400" viewBox="0 0 400 400" className="max-w-full w-full sm:w-auto" style={{ maxWidth: '400px' }}>
         <defs>
           <filter id="glow">
@@ -144,7 +144,7 @@ function FibonacciSpiral({ number }: { number: number }) {
       <div className="flex flex-wrap gap-2 justify-center">
         {fibSequence.slice(0, 12).map((f, i) => (
           <motion.span key={i} initial={{ opacity: 0, scale: 0 }} animate={{ opacity: 1, scale: 1 }} transition={{ delay: i * 0.1 }}
-            className="px-2 py-1 bg-purple-500/10 border border-purple-500/30 rounded text-purple-300 font-mono text-xs">
+            className="px-2 py-1 bg-purple-500/10 border border-purple-500/30 rounded-md text-purple-300 font-mono font-code text-xs">
             {f}
           </motion.span>
         ))}
@@ -181,7 +181,7 @@ function PoetryGenerator({ input }: { input: string }) {
 
   return (
     <div className="space-y-4">
-      <div className="text-sm font-mono text-purple-300/70 mb-2">Generated from: &quot;{input}&quot;</div>
+      <div className="text-sm font-mono font-code text-purple-300/70 mb-2">Generated from: &quot;{input}&quot;</div>
       {poems.map((poem, i) => (
         <motion.div
           key={i}
@@ -227,9 +227,9 @@ function ColorPalette({ color }: { color: string }) {
     <div className="space-y-3">
       <div className="flex gap-2 items-center">
         <div className="w-12 h-12 rounded-lg border border-purple-500/30" style={{ backgroundColor: color, boxShadow: `0 0 20px ${color}40` }} />
-        <div className="font-mono text-purple-200">{color}</div>
+        <div className="font-mono font-code text-purple-200">{color}</div>
       </div>
-      <div className="text-sm font-mono text-purple-300/70">Harmony palette:</div>
+      <div className="text-sm font-mono font-code text-purple-300/70">Harmony palette:</div>
       <div className="grid grid-cols-3 sm:grid-cols-5 gap-2">
         {palette.map((p, i) => (
           <motion.div key={i} initial={{ opacity: 0, scale: 0.8 }} animate={{ opacity: 1, scale: 1 }} transition={{ delay: i * 0.1 }}
@@ -265,7 +265,7 @@ function CodeDisplay({ code }: { code: string }) {
 
   return (
     <div className="bg-black/60 rounded-lg p-4 border border-purple-500/20 overflow-x-auto">
-      <pre className="font-mono text-sm text-purple-200/80 leading-relaxed" style={{ fontFamily: 'var(--font-code)' }}>
+      <pre className="font-mono font-code text-sm text-purple-200/80 leading-relaxed">
         <code dangerouslySetInnerHTML={{ __html: highlighted }} />
       </pre>
     </div>
@@ -290,7 +290,7 @@ function InterpretationCard({ type, icon, children }: { type: string; icon: stri
       <div className="relative z-10">
         <div className="flex items-center gap-2 mb-4">
           <span className="text-2xl">{icon}</span>
-          <h3 className="text-purple-300 font-mono text-lg uppercase tracking-wider">{type}</h3>
+          <h3 className="text-purple-300 font-mono font-display text-lg uppercase tracking-wider">{type}</h3>
         </div>
         {children}
       </div>
@@ -316,11 +316,11 @@ function BreathingScreen() {
         <motion.div
           animate={{ opacity: [0.2, 0.7, 0.2] }}
           transition={{ duration: 4, repeat: Infinity, ease: 'easeInOut' }}
-          className="text-purple-400 font-mono text-lg tracking-[0.3em]"
+          className="text-purple-400 font-mono font-display text-lg tracking-[0.3em]"
         >
           THE VOID BREATHES
         </motion.div>
-        <div className="text-purple-600 font-mono text-xs mt-4 tracking-wider">move your cursor to awaken</div>
+        <div className="text-purple-600 font-mono font-code text-xs mt-4 tracking-wider">move your cursor to awaken</div>
       </motion.div>
     </motion.div>
   );
@@ -342,15 +342,15 @@ function KonamiDisplay() {
         >
           🌀
         </motion.div>
-        <motion.h2 initial={{ y: 20 }} animate={{ y: 0 }} className="text-4xl font-bold text-purple-400 font-mono glow-purple mb-4">
+        <motion.h2 initial={{ y: 20 }} animate={{ y: 0 }} className="text-4xl font-bold text-purple-400 font-mono font-display glow-purple mb-4">
           KONAMI CODE ACTIVATED
         </motion.h2>
         <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.5 }}
-          className="text-purple-300/60 font-mono">
+          className="text-purple-300/60 font-mono font-code">
           ↑↑↓↓←→←→BA — You know the ancient ways.
         </motion.p>
         <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 1 }}
-          className="mt-6 text-2xl text-purple-500 font-mono">
+          className="mt-6 text-2xl text-purple-500 font-mono font-display">
           +100 XP — +50 GOLD — SECRET UNLOCKED
         </motion.div>
       </div>
@@ -455,7 +455,7 @@ export default function PlaygroundPage() {
   const normalizedColor = input.startsWith('#') ? input : `#${input}`;
 
   return (
-    <div className="min-h-screen bg-[#0a0010] text-white relative overflow-hidden" onClick={handleBackgroundClick}>
+    <div className="min-h-screen bg-void-purple text-white relative overflow-hidden" onClick={handleBackgroundClick}>
       <GenerativeBackground />
 
       <AnimatePresence>
@@ -473,13 +473,13 @@ export default function PlaygroundPage() {
       <div className="relative z-10 max-w-4xl mx-auto px-4 py-8">
         {/* Header */}
         <motion.div initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }} className="mb-8 text-center">
-          <Link href="/" className="inline-flex items-center gap-2 text-purple-400/60 hover:text-purple-400 transition-colors font-mono text-sm mb-4">
+          <Link href="/" className="inline-flex items-center gap-2 text-purple-400/60 hover:text-purple-400 transition-colors duration-200 font-mono text-sm mb-4">
             ← BACK TO HUB
           </Link>
-          <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold glow-purple font-mono tracking-wider">
+          <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold glow-purple font-mono font-display tracking-wider">
             THE VOID
           </h1>
-          <p className="text-purple-400/50 font-mono mt-2 text-sm tracking-widest">
+          <p className="text-purple-400/50 font-mono font-code mt-2 text-sm tracking-widest">
             [GENERATIVE PLAYGROUND] — Input anything. See everything.
           </p>
           <div className="flex flex-wrap justify-center gap-3 sm:gap-4 mt-3 text-[10px] font-mono text-purple-600">
@@ -494,7 +494,7 @@ export default function PlaygroundPage() {
           className="glass-strong rounded-xl p-6 mb-8">
           <div className="flex items-center gap-2 mb-3">
             <span className="text-2xl">🔮</span>
-            <span className="text-purple-300 font-mono text-lg">INPUT PORTAL</span>
+            <span className="text-purple-300 font-mono font-display text-lg">INPUT PORTAL</span>
             {inputType !== 'empty' && (
               <motion.span initial={{ opacity: 0, scale: 0 }} animate={{ opacity: 1, scale: 1 }}
                 className="ml-auto px-3 py-1 bg-purple-500/20 border border-purple-500/30 rounded-full text-purple-300 font-mono text-xs uppercase">
@@ -507,8 +507,7 @@ export default function PlaygroundPage() {
             onChange={e => { setInput(e.target.value); soundEngine.playClick(); }}
             placeholder="Enter a number, word, color hex, or code..."
             rows={3}
-            className="w-full bg-black/60 border border-purple-500/30 rounded-lg px-3 sm:px-4 py-2.5 sm:py-3 text-purple-200 font-mono placeholder:text-purple-500/30 focus:outline-none focus:border-purple-500 resize-none"
-            style={{ fontFamily: 'var(--font-code)' }}
+            className="w-full bg-black/60 border border-purple-500/30 rounded-lg px-4 py-3 text-purple-200 font-mono placeholder:text-purple-500/30 focus:outline-none focus:border-purple-500 focus:ring-2 focus:ring-purple-500/20 transition-all duration-200 resize-none font-code"
           />
           <div className="mt-2 text-[10px] font-mono text-purple-600">
             Numbers → Fibonacci spiral • Words → Philosophical poetry • Colors (#hex) → Palette explorer • Code → Syntax view
@@ -557,7 +556,7 @@ export default function PlaygroundPage() {
         </AnimatePresence>
 
         {/* Footer */}
-        <div className="mt-12 text-center text-purple-500/30 font-mono text-xs">
+        <div className="mt-12 text-center text-purple-500/30 font-mono font-code text-xs">
           the void — generative playground — input transforms reality
         </div>
       </div>

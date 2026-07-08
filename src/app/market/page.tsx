@@ -302,8 +302,7 @@ export default function CartChaosPage() {
 
     return (
       <motion.span
-        className="font-mono"
-        style={{ fontFamily: 'var(--font-code)' }}
+        className="font-mono font-code"
         animate={isGlitching ? { x: [0, -3, 3, -2, 2, 0], skewX: [0, -5, 5, -3, 0] } : {}}
         transition={{ duration: 0.4 }}
       >
@@ -385,11 +384,11 @@ export default function CartChaosPage() {
             onClick={goBack}
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
-            className="glass rounded-xl border border-orange-500/30 px-4 py-2 text-sm text-orange-300 transition-colors hover:border-orange-400 hover:text-orange-200"
+            className="glass rounded-lg border border-orange-500/30 px-4 py-2 text-sm text-orange-300 transition-all duration-200 hover:border-orange-400 hover:text-orange-200"
           >
             ← Back to Hub
           </motion.button>
-          <div className="glass rounded-xl border border-yellow-500/30 px-3 sm:px-4 py-1.5 sm:py-2 text-xs sm:text-sm text-yellow-300" style={{ fontFamily: 'var(--font-code)' }}>
+          <div className="glass rounded-lg border border-yellow-500/30 px-3 sm:px-4 py-1.5 sm:py-2 text-xs sm:text-sm text-yellow-300 font-code">
             💰 {gold}g
           </div>
         </div>
@@ -401,9 +400,8 @@ export default function CartChaosPage() {
           className="mb-2 text-center"
         >
           <h1
-            className="animate-gradient bg-clip-text text-5xl font-black tracking-tight text-transparent md:text-7xl"
+            className="animate-gradient bg-clip-text text-5xl font-black tracking-tight text-transparent md:text-7xl font-display"
             style={{
-              fontFamily: 'var(--font-display)',
               backgroundImage: 'linear-gradient(90deg, #ff6b35, #ffc107, #ff4081, #ff6b35)',
               backgroundSize: '300% 100%',
               WebkitBackgroundClip: 'text',
@@ -412,7 +410,7 @@ export default function CartChaosPage() {
           >
             🛒 Cart Chaos
           </h1>
-          <p className="mt-2 text-sm text-orange-300/70" style={{ fontFamily: 'var(--font-code)' }}>
+          <p className="mt-2 text-sm text-orange-300/70 font-code">
             where shopping fights back — prices shift, carts rebel, goblins tax
           </p>
         </motion.div>
@@ -428,8 +426,7 @@ export default function CartChaosPage() {
             key={priceRouletteCountdown}
             initial={{ scale: 1.5, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
-            className="text-lg font-bold text-yellow-400"
-            style={{ fontFamily: 'var(--font-code)' }}
+            className="text-lg font-bold text-yellow-400 font-code"
           >
             {priceRouletteCountdown}s
           </motion.span>
@@ -438,7 +435,7 @@ export default function CartChaosPage() {
         <div className="grid gap-8 lg:grid-cols-3">
           {/* ─── Shop Grid ──────────────────────────────────────────────────── */}
           <div className="lg:col-span-2">
-            <h2 className="mb-3 sm:mb-4 text-lg sm:text-xl font-bold text-orange-200" style={{ fontFamily: 'var(--font-display)' }}>
+            <h2 className="mb-3 sm:mb-4 text-lg sm:text-xl font-bold text-orange-200 font-display">
               Market Stalls
             </h2>
             <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
@@ -451,7 +448,7 @@ export default function CartChaosPage() {
                   whileHover={{ scale: 1.03, y: -4 }}
                   whileTap={{ scale: 0.97 }}
                   onClick={() => addToCart(item)}
-                  className={`glass-strong group relative cursor-pointer rounded-2xl border p-5 transition-all ${
+                  className={`glass-strong group relative cursor-pointer rounded-xl border p-5 transition-all duration-200 ${
                     glitchingItem === item.id
                       ? 'border-pink-500 shadow-[0_0_30px_rgba(255,64,129,0.4)]'
                       : 'border-orange-500/20 hover:border-orange-400/50 hover:shadow-[0_0_20px_rgba(255,107,53,0.2)]'
@@ -465,7 +462,7 @@ export default function CartChaosPage() {
                         animate={{ opacity: [0, 1, 0, 1, 0] }}
                         exit={{ opacity: 0 }}
                         transition={{ duration: 0.6 }}
-                        className="pointer-events-none absolute inset-0 rounded-2xl bg-gradient-to-r from-pink-500/20 to-orange-500/20"
+                        className="pointer-events-none absolute inset-0 rounded-xl bg-gradient-to-r from-pink-500/20 to-orange-500/20"
                       />
                     )}
                   </AnimatePresence>
@@ -474,18 +471,17 @@ export default function CartChaosPage() {
                     {item.emoji}
                   </div>
                   <h3
-                    className="mb-1 text-base font-bold text-white"
-                    style={{ fontFamily: 'var(--font-display)' }}
+                    className="mb-1 text-base font-bold text-white font-display"
                   >
                     {item.name}
                   </h3>
                   <div className="flex items-baseline gap-2">
                     <GlitchPrice price={item.currentPrice} isGlitching={glitchingItem === item.id} />
-                    <span className="text-xs text-gray-500 line-through" style={{ fontFamily: 'var(--font-code)' }}>
+                    <span className="text-xs text-gray-500 line-through font-code">
                       {item.basePrice}g
                     </span>
                   </div>
-                  <div className="mt-2 text-[10px] text-gray-500" style={{ fontFamily: 'var(--font-code)' }}>
+                  <div className="mt-2 text-[10px] text-gray-500 font-code">
                     range: {item.minPrice}–{item.maxPrice}g
                   </div>
                 </motion.div>
@@ -496,11 +492,11 @@ export default function CartChaosPage() {
           {/* ─── Cart Panel ─────────────────────────────────────────────────── */}
           <div className="lg:col-span-1">
             <motion.div
-              className="glass-strong lg:sticky top-0 lg:top-8 rounded-2xl border border-pink-500/30 p-4 sm:p-5"
+              className="glass-strong lg:sticky top-0 lg:top-8 rounded-xl border border-pink-500/30 p-4 sm:p-5"
               initial={{ opacity: 0, x: 30 }}
               animate={{ opacity: 1, x: 0 }}
             >
-              <h2 className="mb-4 flex items-center gap-2 text-lg font-bold text-pink-200" style={{ fontFamily: 'var(--font-display)' }}>
+              <h2 className="mb-4 flex items-center gap-2 text-lg font-bold text-pink-200 font-display">
                 <motion.span
                   animate={{ rotate: [0, -10, 10, -5, 0] }}
                   transition={{ duration: 2, repeat: Infinity, repeatDelay: 3 }}
@@ -540,7 +536,7 @@ export default function CartChaosPage() {
                           <span className="text-sm text-white">{entry.item.name}</span>
                           <span className="text-xs text-gray-400">×{entry.quantity}</span>
                         </div>
-                        <span className="text-sm text-yellow-400" style={{ fontFamily: 'var(--font-code)' }}>
+                        <span className="text-sm text-yellow-400 font-code">
                           {entry.item.currentPrice * entry.quantity}g
                         </span>
                       </motion.div>
@@ -554,8 +550,7 @@ export default function CartChaosPage() {
                       key={cartTotal}
                       initial={{ scale: 1.3 }}
                       animate={{ scale: 1 }}
-                      className="text-lg font-bold text-yellow-400"
-                      style={{ fontFamily: 'var(--font-code)' }}
+                      className="text-lg font-bold text-yellow-400 font-code"
                     >
                       {cartTotal}g
                     </motion.span>
@@ -566,8 +561,7 @@ export default function CartChaosPage() {
                     onClick={startCheckout}
                     whileHover={{ scale: 1.02 }}
                     whileTap={{ scale: 0.98 }}
-                    className="mt-3 w-full rounded-xl border border-pink-500/40 bg-gradient-to-r from-orange-600/80 to-pink-600/80 py-3 text-sm font-bold text-white transition-all hover:from-orange-500 hover:to-pink-500 glow-pink"
-                    style={{ fontFamily: 'var(--font-display)' }}
+                    className="mt-3 w-full rounded-lg border border-pink-500/40 bg-gradient-to-r from-orange-600/80 to-pink-600/80 py-3 text-sm font-bold text-white transition-all duration-200 hover:from-orange-500 hover:to-pink-500 glow-pink font-display"
                   >
                     🧮 Checkout Puzzle
                   </motion.button>
@@ -577,11 +571,11 @@ export default function CartChaosPage() {
               {/* Stats */}
               <div className="mt-5 grid grid-cols-2 gap-2 border-t border-white/10 pt-4">
                 <div className="text-center">
-                  <div className="text-lg font-bold text-orange-300" style={{ fontFamily: 'var(--font-code)' }}>{purchaseCount}</div>
+                  <div className="text-lg font-bold text-orange-300 font-code">{purchaseCount}</div>
                   <div className="text-[10px] text-gray-500">Items Bought</div>
                 </div>
                 <div className="text-center">
-                  <div className="text-lg font-bold text-pink-300" style={{ fontFamily: 'var(--font-code)' }}>{totalSpent}g</div>
+                  <div className="text-lg font-bold text-pink-300 font-code">{totalSpent}g</div>
                   <div className="text-[10px] text-gray-500">Total Spent</div>
                 </div>
               </div>
@@ -602,17 +596,16 @@ export default function CartChaosPage() {
                 initial={{ scale: 0.7, y: 50 }}
                 animate={{ scale: 1, y: 0 }}
                 exit={{ scale: 0.7, y: 50 }}
-                className="glass-strong mx-4 w-full max-w-md rounded-3xl border border-yellow-500/40 p-8 box-glow-purple"
+                className="glass-strong mx-4 w-full max-w-md rounded-xl border border-yellow-500/40 p-8 box-glow-purple"
               >
-                <h3 className="mb-2 text-center text-2xl font-black text-yellow-300" style={{ fontFamily: 'var(--font-display)' }}>
+                <h3 className="mb-2 text-center text-2xl font-black text-yellow-300 font-display">
                   🧮 Checkout Puzzle
                 </h3>
                 <p className="mb-6 text-center text-xs text-gray-400">Solve to complete your purchase!</p>
 
                 <div className="mb-6 text-center">
                   <motion.div
-                    className="inline-block rounded-2xl border border-yellow-500/30 bg-black/50 px-8 py-4 text-4xl font-black text-white"
-                    style={{ fontFamily: 'var(--font-code)' }}
+                    className="inline-block rounded-xl border border-yellow-500/30 bg-black/50 px-8 py-4 text-4xl font-black text-white font-code"
                     animate={{ scale: [1, 1.02, 1] }}
                     transition={{ duration: 1.5, repeat: Infinity }}
                   >
@@ -634,14 +627,13 @@ export default function CartChaosPage() {
                     onChange={(e) => setCheckoutAnswer(e.target.value)}
                     autoFocus
                     placeholder="Your answer..."
-                    className="flex-1 rounded-xl border border-white/10 bg-white/5 px-4 py-3 text-center text-lg text-white placeholder-gray-600 outline-none focus:border-yellow-500/50"
-                    style={{ fontFamily: 'var(--font-code)' }}
+                    className="flex-1 rounded-lg border border-white/10 bg-white/5 px-4 py-3 text-center text-lg text-white placeholder-gray-600 outline-none focus:border-yellow-500/50 focus:ring-2 focus:ring-yellow-500/20 font-code"
                   />
                   <motion.button
                     type="submit"
                     whileHover={{ scale: 1.05 }}
                     whileTap={{ scale: 0.95 }}
-                    className="rounded-xl border border-yellow-500/40 bg-yellow-600/80 px-6 py-3 font-bold text-black hover:bg-yellow-500"
+                    className="rounded-lg border border-yellow-500/40 bg-yellow-600/80 px-6 py-3 font-bold text-black hover:bg-yellow-500 transition-all duration-200"
                   >
                     ✓
                   </motion.button>
@@ -665,7 +657,7 @@ export default function CartChaosPage() {
                 initial={{ scale: 0.5, rotate: -10 }}
                 animate={{ scale: 1, rotate: 0 }}
                 exit={{ scale: 0.5, rotate: 10 }}
-                className="glass-strong mx-4 w-full max-w-md rounded-3xl border border-orange-500/40 p-8"
+                className="glass-strong mx-4 w-full max-w-md rounded-xl border border-orange-500/40 p-8"
               >
                 <motion.div
                   className="mb-4 text-center text-6xl"
@@ -674,12 +666,12 @@ export default function CartChaosPage() {
                 >
                   🧾
                 </motion.div>
-                <h3 className="mb-1 text-center text-xl font-black text-orange-300" style={{ fontFamily: 'var(--font-display)' }}>
+                <h3 className="mb-1 text-center text-xl font-black text-orange-300 font-display">
                   Tax Goblin Attack!
                 </h3>
                 <p className="mb-4 text-center text-xs text-orange-400/70">Answer correctly for a reward, or pay the penalty!</p>
 
-                <div className="glass mb-5 rounded-xl border border-orange-500/20 p-4 text-center text-sm text-white">
+                <div className="glass mb-5 rounded-lg border border-orange-500/20 p-4 text-center text-sm text-white">
                   {taxGoblin.question}
                 </div>
 
@@ -690,8 +682,7 @@ export default function CartChaosPage() {
                       whileHover={{ scale: 1.05, borderColor: '#ff6b35' }}
                       whileTap={{ scale: 0.95 }}
                       onClick={() => answerTaxGoblin(idx)}
-                      className="rounded-xl border border-white/10 bg-white/5 px-4 py-3 text-sm text-white transition-colors hover:bg-orange-500/20"
-                      style={{ fontFamily: 'var(--font-code)' }}
+                      className="rounded-lg border border-white/10 bg-white/5 px-4 py-3 text-sm text-white transition-all duration-200 hover:bg-orange-500/20 font-code"
                     >
                       {answer}
                     </motion.button>

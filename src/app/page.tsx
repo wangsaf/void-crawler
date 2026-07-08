@@ -81,8 +81,7 @@ function QuickStats() {
           whileHover={{ scale: 1.05, y: -2 }}
         >
           <div
-            className={`text-base sm:text-lg font-bold ${stat.color}`}
-            style={{ fontFamily: "var(--font-display)" }}
+            className={`text-base sm:text-lg font-bold font-display ${stat.color}`}
           >
             {stat.value}
           </div>
@@ -113,8 +112,7 @@ function AnimatedDivider({ delay = 0 }: { delay?: number }) {
         transition={{ delay: delay + 0.2, duration: 0.8, ease: "easeOut" }}
       />
       <motion.div
-        className="text-neon-purple/40 text-xs tracking-widest uppercase"
-        style={{ fontFamily: "var(--font-code)" }}
+        className="text-neon-purple/40 text-xs tracking-widest uppercase font-code"
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ delay: delay + 0.5 }}
@@ -215,8 +213,7 @@ export default function Home() {
               transition={{ duration: 0.8, delay: 0.3 }}
             >
               <h1
-                className="text-6xl md:text-8xl font-bold mb-4 glow-purple"
-                style={{ fontFamily: "var(--font-display)" }}
+                className="text-6xl md:text-8xl font-bold mb-4 glow-purple font-display"
               >
                 <AnimatedText text="void.crawler()" glow="purple" delay={0.5} />
               </h1>
@@ -245,8 +242,7 @@ export default function Home() {
                     value={inputValue}
                     onChange={(e) => setInputValue(e.target.value)}
                     placeholder="Type anything to begin..."
-                    className="flex-1 bg-transparent px-4 py-3 text-white placeholder-gray-500 outline-none"
-                    style={{ fontFamily: "var(--font-code)" }}
+                    className="flex-1 bg-transparent px-4 py-3 text-white placeholder-gray-500 outline-none font-code"
                     autoFocus
                   />
                   <button
@@ -280,13 +276,12 @@ export default function Home() {
             transition={{ duration: 0.5 }}
           >
             <motion.div
-              className="glass-strong rounded-2xl p-8 max-w-md w-full text-center"
+              className="glass-strong rounded-xl p-8 max-w-md w-full text-center"
               initial={{ y: 30 }}
               animate={{ y: 0 }}
             >
               <h2
-                className="text-3xl font-bold mb-2 glow-blue"
-                style={{ fontFamily: "var(--font-display)" }}
+                className="text-3xl font-bold mb-2 glow-blue font-display"
               >
                 Choose Your Name
               </h2>
@@ -308,8 +303,7 @@ export default function Home() {
                   value={nameInput}
                   onChange={(e) => setNameInput(e.target.value)}
                   placeholder="Enter your name..."
-                  className="w-full bg-void-deep/50 border border-void-border rounded-lg px-4 py-3 text-white placeholder-gray-500 outline-none focus:border-neon-blue/50 transition-colors mb-4"
-                  style={{ fontFamily: "var(--font-display)" }}
+                  className="w-full bg-void-deep/50 border border-void-border rounded-lg px-4 py-3 text-white placeholder-gray-500 outline-none focus:border-neon-blue/50 focus:ring-2 focus:ring-neon-blue/30 transition-colors mb-4 font-display"
                   autoFocus
                 />
                 <button
@@ -343,8 +337,7 @@ export default function Home() {
               transition={{ delay: 0.2 }}
             >
               <motion.p
-                className="text-xs sm:text-sm text-gray-500 mb-2 sm:mb-3 tracking-widest uppercase"
-                style={{ fontFamily: "var(--font-code)" }}
+                className="text-xs sm:text-sm text-gray-500 mb-2 sm:mb-3 tracking-widest uppercase font-code"
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 0.6 }}
                 transition={{ delay: 0.3 }}
@@ -352,8 +345,7 @@ export default function Home() {
                 Welcome back, {characterName || "Crawler"}
               </motion.p>
               <h2
-                className="text-4xl md:text-5xl font-bold mb-3 glow-blue"
-                style={{ fontFamily: "var(--font-display)" }}
+                className="text-4xl md:text-5xl font-bold mb-3 glow-blue font-display"
               >
                 <motion.span
                   className="inline-block"
@@ -418,8 +410,7 @@ export default function Home() {
                 {" "}your class • Progress saves automatically
               </p>
               <motion.p
-                className="text-xs text-gray-600 mt-2"
-                style={{ fontFamily: "var(--font-code)" }}
+                className="text-xs text-gray-600 mt-2 font-code"
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 transition={{ delay: 2.5 }}

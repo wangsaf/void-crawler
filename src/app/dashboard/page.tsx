@@ -63,8 +63,8 @@ function MetricBar({ label, value, color }: { label: string; value: number; colo
   return (
     <div className="flex items-center gap-3">
       <span
-        className="w-10 text-xs text-right font-bold"
-        style={{ fontFamily: "var(--font-code)", color }}
+        className="w-10 text-xs text-right font-bold font-code"
+        style={{ color }}
       >
         {label}
       </span>
@@ -78,8 +78,8 @@ function MetricBar({ label, value, color }: { label: string; value: number; colo
         />
       </div>
       <span
-        className="w-10 text-xs font-mono text-right"
-        style={{ fontFamily: "var(--font-code)", color }}
+        className="w-10 text-xs font-mono text-right font-code"
+        style={{ color }}
       >
         {value}%
       </span>
@@ -174,8 +174,7 @@ function SlotMachine() {
   return (
     <div className="glass rounded-xl p-5">
       <h3
-        className="text-sm font-bold mb-3 text-cyan-300 uppercase tracking-widest"
-        style={{ fontFamily: "var(--font-display)" }}
+        className="text-sm font-bold mb-3 text-cyan-300 uppercase tracking-widest font-display"
       >
         💰 Billing Slot Machine
       </h3>
@@ -194,16 +193,14 @@ function SlotMachine() {
       <button
         onClick={pull}
         disabled={spinning}
-        className="w-full py-2 rounded-lg bg-gradient-to-r from-cyan-600/40 to-blue-600/40 border border-cyan-500/30 text-cyan-200 font-bold text-sm hover:from-cyan-600/60 hover:to-blue-600/60 transition-all disabled:opacity-50"
-        style={{ fontFamily: "var(--font-display)" }}
+        className="w-full py-2 rounded-lg bg-gradient-to-r from-cyan-600/40 to-blue-600/40 border border-cyan-500/30 text-cyan-200 font-bold text-sm hover:from-cyan-600/60 hover:to-blue-600/60 transition-all duration-200 disabled:opacity-50 font-display"
       >
         {spinning ? "SPINNING..." : "🎰 PULL LEVER"}
       </button>
       <AnimatePresence>
         {result && (
           <motion.p
-            className="text-center text-sm mt-2 font-bold"
-            style={{ fontFamily: "var(--font-code)" }}
+            className="text-center text-sm mt-2 font-bold font-code"
             initial={{ opacity: 0, y: 5 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0 }}
@@ -259,8 +256,7 @@ function ErrorChat() {
   return (
     <div className="glass rounded-xl p-4 sm:p-5 flex flex-col h-60 sm:h-72">
       <h3
-        className="text-sm font-bold mb-3 text-red-400 uppercase tracking-widest"
-        style={{ fontFamily: "var(--font-display)" }}
+        className="text-sm font-bold mb-3 text-red-400 uppercase tracking-widest font-display"
       >
         🐛 Error Log Chat Room
       </h3>
@@ -268,11 +264,10 @@ function ErrorChat() {
         {messages.map((m) => (
           <motion.div
             key={m.id}
-            className="text-xs rounded-lg p-2 border"
+            className="text-xs rounded-lg p-2 border font-code"
             style={{
               borderColor: `${m.type.color}33`,
               background: `${m.type.color}0a`,
-              fontFamily: "var(--font-code)",
             }}
             initial={{ opacity: 0, x: -20 }}
             animate={{ opacity: 1, x: 0 }}
@@ -311,8 +306,7 @@ function StatusWeather() {
   return (
     <div className="glass rounded-xl p-5">
       <h3
-        className="text-sm font-bold mb-3 text-yellow-300 uppercase tracking-widest"
-        style={{ fontFamily: "var(--font-display)" }}
+        className="text-sm font-bold mb-3 text-yellow-300 uppercase tracking-widest font-display"
       >
         🌤️ System Status
       </h3>
@@ -327,14 +321,14 @@ function StatusWeather() {
         <div>
           <motion.p
             key={ws.label}
-            className="font-bold text-lg"
-            style={{ color: ws.color, fontFamily: "var(--font-display)" }}
+            className="font-bold text-lg font-display"
+            style={{ color: ws.color }}
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
           >
             {ws.label}
           </motion.p>
-          <p className="text-xs text-gray-500" style={{ fontFamily: "var(--font-code)" }}>
+          <p className="text-xs text-gray-500 font-code">
             Last checked: {new Date().toLocaleTimeString()}
           </p>
         </div>
@@ -349,7 +343,7 @@ function StatusWeather() {
                 className={`h-2 rounded-full mb-1 ${up ? "bg-green-500" : "bg-red-500"}`}
                 style={{ opacity: up ? 0.8 : 0.6 }}
               />
-              <span className="text-[9px] sm:text-[10px] text-gray-500" style={{ fontFamily: "var(--font-code)" }}>
+              <span className="text-[9px] sm:text-[10px] text-gray-500 font-code">
                 {svc}
               </span>
             </div>
@@ -373,8 +367,7 @@ function APIKeyHoroscope() {
   return (
     <div className="glass rounded-xl p-5">
       <h3
-        className="text-sm font-bold mb-3 text-purple-300 uppercase tracking-widest"
-        style={{ fontFamily: "var(--font-display)" }}
+        className="text-sm font-bold mb-3 text-purple-300 uppercase tracking-widest font-display"
       >
         🔮 API Key Horoscope
       </h3>
@@ -383,8 +376,7 @@ function APIKeyHoroscope() {
         value={keyInput}
         onChange={(e) => setKeyInput(e.target.value)}
         placeholder="Enter your API key..."
-        className="w-full bg-black/40 border border-purple-500/20 rounded-lg px-3 py-2 text-xs text-purple-300 placeholder-gray-600 outline-none focus:border-purple-500/50 mb-3"
-        style={{ fontFamily: "var(--font-code)" }}
+        className="w-full bg-black/40 border border-purple-500/20 rounded-lg px-3 py-2 text-xs text-purple-300 placeholder-gray-600 outline-none focus:border-purple-500/50 focus:ring-2 focus:ring-purple-500/20 transition-all duration-200 mb-3 font-code"
       />
       <motion.div
         key={horoscope}
@@ -397,8 +389,7 @@ function APIKeyHoroscope() {
       </motion.div>
       <button
         onClick={generate}
-        className="w-full py-2 rounded-lg bg-gradient-to-r from-purple-600/30 to-pink-600/30 border border-purple-500/30 text-purple-200 font-bold text-sm hover:from-purple-600/50 hover:to-pink-600/50 transition-all"
-        style={{ fontFamily: "var(--font-display)" }}
+        className="w-full py-2 rounded-lg bg-gradient-to-r from-purple-600/30 to-pink-600/30 border border-purple-500/30 text-purple-200 font-bold text-sm hover:from-purple-600/50 hover:to-pink-600/50 transition-all duration-200 font-display"
       >
         🔮 Read My Key
       </button>
@@ -440,8 +431,7 @@ function DeployNuke() {
   return (
     <div className="glass rounded-xl p-5">
       <h3
-        className="text-sm font-bold mb-3 text-red-400 uppercase tracking-widest"
-        style={{ fontFamily: "var(--font-display)" }}
+        className="text-sm font-bold mb-3 text-red-400 uppercase tracking-widest font-display"
       >
         ☢️ Deploy Control
       </h3>
@@ -449,8 +439,7 @@ function DeployNuke() {
       {phase === "idle" && (
         <motion.button
           onClick={startDeploy}
-          className="w-full py-3 sm:py-4 rounded-xl bg-gradient-to-b from-red-600/40 to-red-900/40 border-2 border-red-500/50 text-red-300 font-black text-lg sm:text-xl hover:from-red-600/60 hover:to-red-900/60 transition-all relative overflow-hidden"
-          style={{ fontFamily: "var(--font-display)" }}
+          className="w-full py-3 sm:py-4 rounded-xl bg-gradient-to-b from-red-600/40 to-red-900/40 border-2 border-red-500/50 text-red-300 font-black text-lg sm:text-xl hover:from-red-600/60 hover:to-red-900/60 transition-all duration-200 relative overflow-hidden font-display"
           whileHover={{ scale: 1.02 }}
           whileTap={{ scale: 0.98 }}
         >
@@ -467,8 +456,7 @@ function DeployNuke() {
         <div className="text-center py-4">
           <motion.div
             key={count}
-            className="text-7xl font-black text-red-500"
-            style={{ fontFamily: "var(--font-display)" }}
+            className="text-7xl font-black text-red-500 font-display"
             initial={{ scale: 2, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
             exit={{ scale: 0, opacity: 0 }}
@@ -476,7 +464,7 @@ function DeployNuke() {
           >
             {count}
           </motion.div>
-          <p className="text-red-400 text-sm mt-2" style={{ fontFamily: "var(--font-code)" }}>
+          <p className="text-red-400 text-sm mt-2 font-code">
             DEPLOYING INCOMING...
           </p>
         </div>
@@ -510,12 +498,12 @@ function DeployNuke() {
           transition={{ type: "spring", damping: 10 }}
         >
           <p
-            className="text-3xl font-black glow-cyan"
-            style={{ fontFamily: "var(--font-display)", color: "#00e5ff" }}
+            className="text-3xl font-black glow-cyan font-display"
+            style={{ color: "#00e5ff" }}
           >
             ✅ DEPLOYED
           </p>
-          <p className="text-sm text-gray-400 mt-2" style={{ fontFamily: "var(--font-code)" }}>
+          <p className="text-sm text-gray-400 mt-2 font-code">
             +100 XP • +50 Gold • Achievement Unlocked!
           </p>
           <button
@@ -603,8 +591,7 @@ export default function DashboardPage() {
                 if (soundEnabled) soundEngine.playClick();
                 router.push("/");
               }}
-              className="glass px-4 py-2 rounded-lg text-cyan-300 text-sm hover:bg-white/5 transition-colors border border-cyan-500/20"
-              style={{ fontFamily: "var(--font-display)" }}
+              className="glass px-4 py-2 rounded-lg text-cyan-300 text-sm hover:bg-white/5 transition-all duration-200 border border-cyan-500/20 font-display"
               whileHover={{ x: -3 }}
               whileTap={{ scale: 0.95 }}
             >
@@ -612,19 +599,18 @@ export default function DashboardPage() {
             </motion.button>
             <div>
               <h1
-                className="text-2xl sm:text-3xl font-bold glow-blue"
-                style={{ fontFamily: "var(--font-display)", color: "#e0f7fa" }}
+                className="text-2xl sm:text-3xl font-bold glow-blue font-display"
+                style={{ color: "#e0f7fa" }}
               >
                 Panel Panic
               </h1>
-              <p className="text-xs text-gray-500" style={{ fontFamily: "var(--font-code)" }}>
+              <p className="text-xs text-gray-500 font-code">
                 dashboard.zone // interdimensional monitoring
               </p>
             </div>
           </div>
           <motion.div
-            className="glass px-3 py-1.5 rounded-lg text-xs border border-cyan-500/20 shrink-0"
-            style={{ fontFamily: "var(--font-code)" }}
+            className="glass px-3 py-1.5 rounded-lg text-xs border border-cyan-500/20 shrink-0 font-code"
             animate={{ opacity: [1, 0.6, 1] }}
             transition={{ duration: 2, repeat: Infinity }}
           >
@@ -645,14 +631,12 @@ export default function DashboardPage() {
             >
               <div className="flex items-center justify-between mb-4">
                 <h2
-                  className="text-sm font-bold text-cyan-300 uppercase tracking-widest"
-                  style={{ fontFamily: "var(--font-display)" }}
+                  className="text-sm font-bold text-cyan-300 uppercase tracking-widest font-display"
                 >
                   📊 Real-Time Metrics
                 </h2>
                 <span
-                  className="text-xs text-gray-500"
-                  style={{ fontFamily: "var(--font-code)" }}
+                  className="text-xs text-gray-500 font-code"
                 >
                   refresh: 1.2s
                 </span>
@@ -673,14 +657,12 @@ export default function DashboardPage() {
             >
               <div className="flex items-center justify-between mb-2">
                 <h2
-                  className="text-sm font-bold text-cyan-300 uppercase tracking-widest"
-                  style={{ fontFamily: "var(--font-display)" }}
+                  className="text-sm font-bold text-cyan-300 uppercase tracking-widest font-display"
                 >
                   📈 Request Throughput
                 </h2>
                 <span
-                  className="text-xs text-gray-500"
-                  style={{ fontFamily: "var(--font-code)" }}
+                  className="text-xs text-gray-500 font-code"
                 >
                   last 20 samples
                 </span>
@@ -740,8 +722,7 @@ export default function DashboardPage() {
 
         {/* Footer */}
         <motion.div
-          className="mt-12 text-center text-xs text-gray-600"
-          style={{ fontFamily: "var(--font-code)" }}
+          className="mt-12 text-center text-xs text-gray-600 font-code"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 0.6 }}

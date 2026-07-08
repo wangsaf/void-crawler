@@ -61,10 +61,9 @@ export function BackButton({ color = "#00d4ff" }: BackButtonProps) {
 
         {/* Text */}
         <span
-          className="relative z-10 text-sm font-medium"
+          className="relative z-10 text-sm font-medium font-display"
           style={{
             color,
-            fontFamily: "var(--font-display)",
             textShadow: `0 0 10px ${color}60`,
           }}
         >
