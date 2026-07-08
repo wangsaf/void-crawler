@@ -257,7 +257,7 @@ function ErrorChat() {
   }, [messages]);
 
   return (
-    <div className="glass rounded-xl p-5 flex flex-col h-72">
+    <div className="glass rounded-xl p-4 sm:p-5 flex flex-col h-60 sm:h-72">
       <h3
         className="text-sm font-bold mb-3 text-red-400 uppercase tracking-widest"
         style={{ fontFamily: "var(--font-display)" }}
@@ -340,7 +340,7 @@ function StatusWeather() {
         </div>
       </div>
       {/* Mini service bars */}
-      <div className="mt-4 grid grid-cols-6 gap-1">
+      <div className="mt-4 grid grid-cols-3 sm:grid-cols-6 gap-1">
         {["API", "DB", "CDN", "AUTH", "CACHE", "QUEUE"].map((svc, i) => {
           const up = status < 3 ? true : status === 3 ? i % 2 === 0 : false;
           return (
@@ -349,7 +349,7 @@ function StatusWeather() {
                 className={`h-2 rounded-full mb-1 ${up ? "bg-green-500" : "bg-red-500"}`}
                 style={{ opacity: up ? 0.8 : 0.6 }}
               />
-              <span className="text-[10px] text-gray-500" style={{ fontFamily: "var(--font-code)" }}>
+              <span className="text-[9px] sm:text-[10px] text-gray-500" style={{ fontFamily: "var(--font-code)" }}>
                 {svc}
               </span>
             </div>
@@ -449,7 +449,7 @@ function DeployNuke() {
       {phase === "idle" && (
         <motion.button
           onClick={startDeploy}
-          className="w-full py-4 rounded-xl bg-gradient-to-b from-red-600/40 to-red-900/40 border-2 border-red-500/50 text-red-300 font-black text-xl hover:from-red-600/60 hover:to-red-900/60 transition-all relative overflow-hidden"
+          className="w-full py-3 sm:py-4 rounded-xl bg-gradient-to-b from-red-600/40 to-red-900/40 border-2 border-red-500/50 text-red-300 font-black text-lg sm:text-xl hover:from-red-600/60 hover:to-red-900/60 transition-all relative overflow-hidden"
           style={{ fontFamily: "var(--font-display)" }}
           whileHover={{ scale: 1.02 }}
           whileTap={{ scale: 0.98 }}
@@ -592,7 +592,7 @@ export default function DashboardPage() {
       <div className="relative z-10 max-w-7xl mx-auto px-4 py-6">
         {/* Header */}
         <motion.div
-          className="flex items-center justify-between mb-8"
+          className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-6 sm:mb-8 gap-3"
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5 }}
@@ -612,7 +612,7 @@ export default function DashboardPage() {
             </motion.button>
             <div>
               <h1
-                className="text-3xl font-bold glow-blue"
+                className="text-2xl sm:text-3xl font-bold glow-blue"
                 style={{ fontFamily: "var(--font-display)", color: "#e0f7fa" }}
               >
                 Panel Panic
@@ -623,7 +623,7 @@ export default function DashboardPage() {
             </div>
           </div>
           <motion.div
-            className="glass px-3 py-1.5 rounded-lg text-xs border border-cyan-500/20"
+            className="glass px-3 py-1.5 rounded-lg text-xs border border-cyan-500/20 shrink-0"
             style={{ fontFamily: "var(--font-code)" }}
             animate={{ opacity: [1, 0.6, 1] }}
             transition={{ duration: 2, repeat: Infinity }}
@@ -666,7 +666,7 @@ export default function DashboardPage() {
 
             {/* Live Chart */}
             <motion.div
-              className="glass rounded-xl p-6"
+              className="glass rounded-xl p-4 sm:p-6"
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.2 }}

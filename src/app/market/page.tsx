@@ -343,7 +343,7 @@ export default function CartChaosPage() {
       ))}
 
       {/* Escape log */}
-      <div className="fixed top-4 right-4 z-50 w-64">
+      <div className="fixed top-3 right-3 sm:top-4 sm:right-4 z-50 w-48 sm:w-64">
         <AnimatePresence>
           {escapeLog.map((msg, i) => (
             <motion.div
@@ -351,7 +351,7 @@ export default function CartChaosPage() {
               initial={{ opacity: 0, x: 100 }}
               animate={{ opacity: 1, x: 0 }}
               exit={{ opacity: 0, x: 100 }}
-              className="mb-1 rounded-lg border border-pink-500/30 bg-black/60 px-3 py-1.5 text-xs text-pink-300 backdrop-blur-sm"
+              className="mb-1 rounded-lg border border-pink-500/30 bg-black/60 px-2 sm:px-3 py-1 sm:py-1.5 text-[10px] sm:text-xs text-pink-300 backdrop-blur-sm truncate"
             >
               🏃 {msg}
             </motion.div>
@@ -366,7 +366,7 @@ export default function CartChaosPage() {
             initial={{ opacity: 0, y: -50, scale: 0.8 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: -30, scale: 0.8 }}
-            className={`fixed left-1/2 top-6 z-[60] -translate-x-1/2 rounded-xl border px-6 py-3 text-sm font-semibold backdrop-blur-md ${
+            className={`fixed left-4 right-4 sm:left-1/2 top-4 sm:top-6 z-[60] sm:-translate-x-1/2 rounded-xl border px-4 sm:px-6 py-2 sm:py-3 text-xs sm:text-sm font-semibold backdrop-blur-md text-center max-w-lg sm:max-w-none mx-auto ${
               message.type === 'success' ? 'border-green-500/50 bg-green-900/60 text-green-300' :
               message.type === 'error' ? 'border-red-500/50 bg-red-900/60 text-red-300' :
               message.type === 'warning' ? 'border-orange-500/50 bg-orange-900/60 text-orange-300' :
@@ -380,7 +380,7 @@ export default function CartChaosPage() {
 
       <div className="relative z-10 mx-auto max-w-7xl px-4 py-8">
         {/* Header */}
-        <div className="mb-8 flex items-center justify-between">
+        <div className="mb-6 sm:mb-8 flex flex-wrap items-center justify-between gap-2">
           <motion.button
             onClick={goBack}
             whileHover={{ scale: 1.05 }}
@@ -389,7 +389,7 @@ export default function CartChaosPage() {
           >
             ← Back to Hub
           </motion.button>
-          <div className="glass rounded-xl border border-yellow-500/30 px-4 py-2 text-sm text-yellow-300" style={{ fontFamily: 'var(--font-code)' }}>
+          <div className="glass rounded-xl border border-yellow-500/30 px-3 sm:px-4 py-1.5 sm:py-2 text-xs sm:text-sm text-yellow-300" style={{ fontFamily: 'var(--font-code)' }}>
             💰 {gold}g
           </div>
         </div>
@@ -419,7 +419,7 @@ export default function CartChaosPage() {
 
         {/* Price Roulette timer */}
         <motion.div
-          className="mx-auto mb-8 flex w-fit items-center gap-3 rounded-full border border-orange-500/40 bg-black/40 px-5 py-2 backdrop-blur-sm"
+          className="mx-auto mb-6 sm:mb-8 flex w-fit items-center gap-2 sm:gap-3 rounded-full border border-orange-500/40 bg-black/40 px-3 sm:px-5 py-1.5 sm:py-2 backdrop-blur-sm text-xs sm:text-sm"
           animate={{ borderColor: priceRouletteCountdown <= 3 ? ['#ff6b35', '#ff4081', '#ff6b35'] : '#ff6b3566' }}
           transition={{ duration: 0.5, repeat: priceRouletteCountdown <= 3 ? Infinity : 0 }}
         >
@@ -438,7 +438,7 @@ export default function CartChaosPage() {
         <div className="grid gap-8 lg:grid-cols-3">
           {/* ─── Shop Grid ──────────────────────────────────────────────────── */}
           <div className="lg:col-span-2">
-            <h2 className="mb-4 text-xl font-bold text-orange-200" style={{ fontFamily: 'var(--font-display)' }}>
+            <h2 className="mb-3 sm:mb-4 text-lg sm:text-xl font-bold text-orange-200" style={{ fontFamily: 'var(--font-display)' }}>
               Market Stalls
             </h2>
             <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
@@ -496,7 +496,7 @@ export default function CartChaosPage() {
           {/* ─── Cart Panel ─────────────────────────────────────────────────── */}
           <div className="lg:col-span-1">
             <motion.div
-              className="glass-strong sticky top-8 rounded-2xl border border-pink-500/30 p-5"
+              className="glass-strong lg:sticky top-0 lg:top-8 rounded-2xl border border-pink-500/30 p-4 sm:p-5"
               initial={{ opacity: 0, x: 30 }}
               animate={{ opacity: 1, x: 0 }}
             >

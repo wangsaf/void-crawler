@@ -53,7 +53,7 @@ export function AchievementToast() {
   }, [addToast]);
 
   return (
-    <div className="fixed top-4 right-4 z-[100] flex flex-col gap-3 pointer-events-none w-80">
+    <div className="fixed top-14 sm:top-4 right-3 sm:right-4 z-[100] flex flex-col gap-2 sm:gap-3 pointer-events-none w-64 sm:w-80">
       <AnimatePresence mode="popLayout">
         {toasts.map((toast) => (
           <motion.div

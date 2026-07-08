@@ -66,7 +66,7 @@ function QuickStats() {
 
   return (
     <motion.div
-      className="flex flex-wrap justify-center gap-6 mb-10"
+      className="flex flex-wrap justify-center gap-4 sm:gap-6 mb-8 sm:mb-10"
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay: 0.6, duration: 0.5 }}
@@ -74,14 +74,14 @@ function QuickStats() {
       {stats.map((stat, i) => (
         <motion.div
           key={stat.label}
-          className="glass rounded-xl px-5 py-3 text-center min-w-[100px]"
+          className="glass rounded-xl px-4 sm:px-5 py-2.5 sm:py-3 text-center min-w-[80px] sm:min-w-[100px]"
           initial={{ opacity: 0, scale: 0.8 }}
           animate={{ opacity: 1, scale: 1 }}
           transition={{ delay: 0.8 + i * 0.1 }}
           whileHover={{ scale: 1.05, y: -2 }}
         >
           <div
-            className={`text-lg font-bold ${stat.color}`}
+            className={`text-base sm:text-lg font-bold ${stat.color}`}
             style={{ fontFamily: "var(--font-display)" }}
           >
             {stat.value}
@@ -343,7 +343,7 @@ export default function Home() {
               transition={{ delay: 0.2 }}
             >
               <motion.p
-                className="text-sm text-gray-500 mb-3 tracking-widest uppercase"
+                className="text-xs sm:text-sm text-gray-500 mb-2 sm:mb-3 tracking-widest uppercase"
                 style={{ fontFamily: "var(--font-code)" }}
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 0.6 }}
@@ -365,7 +365,7 @@ export default function Home() {
                 </motion.span>
               </h2>
               <motion.p
-                className="text-gray-400 text-lg"
+                className="text-gray-400 text-base sm:text-lg"
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 transition={{ delay: 0.5 }}
@@ -381,7 +381,7 @@ export default function Home() {
             <AnimatedDivider delay={1.0} />
 
             {/* Zone Portals */}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 max-w-6xl">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 max-w-6xl w-full">
               {zoneData.map((z, i) => (
                 <motion.div
                   key={z.zone}
@@ -408,14 +408,14 @@ export default function Home() {
 
             {/* Bottom info */}
             <motion.div
-              className="mt-12 text-center text-sm text-gray-500"
+              className="mt-8 sm:mt-12 text-center text-xs sm:text-sm text-gray-500 px-4"
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ delay: 2.0 }}
             >
               <p>
-                💡 Each zone has hidden easter eggs • Your browser determined
-                your class • Progress saves automatically
+                💡 Each zone has hidden easter eggs • Your browser determined<br className="sm:hidden" />
+                {" "}your class • Progress saves automatically
               </p>
               <motion.p
                 className="text-xs text-gray-600 mt-2"

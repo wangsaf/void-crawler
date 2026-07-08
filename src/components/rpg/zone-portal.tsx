@@ -47,7 +47,7 @@ export function ZonePortal({
     >
       {/* Portal frame */}
       <div
-        className={`relative w-56 h-72 rounded-2xl overflow-hidden ${glowClass}`}
+        className={`relative w-full max-w-[14rem] sm:max-w-[15rem] h-56 sm:h-72 rounded-2xl overflow-hidden ${glowClass}`}
         style={{
           background: `linear-gradient(135deg, ${color}15, ${color}05)`,
           border: `1px solid ${color}30`,
@@ -67,10 +67,10 @@ export function ZonePortal({
         />
 
         {/* Content */}
-        <div className="relative z-10 flex flex-col items-center justify-center h-full p-6 gap-4">
+        <div className="relative z-10 flex flex-col items-center justify-center h-full p-4 sm:p-6 gap-3 sm:gap-4">
           {/* Icon */}
           <motion.div
-            className="text-6xl"
+            className="text-5xl sm:text-6xl"
             animate={{ y: [0, -8, 0] }}
             transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
           >
@@ -79,7 +79,7 @@ export function ZonePortal({
 
           {/* Title */}
           <h3
-            className="font-display text-xl font-bold"
+            className="font-display text-lg sm:text-xl font-bold"
             style={{ color, fontFamily: "var(--font-display)" }}
           >
             {title}

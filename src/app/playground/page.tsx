@@ -104,7 +104,7 @@ function FibonacciSpiral({ number }: { number: number }) {
   return (
     <div className="flex flex-col items-center gap-3">
       <div className="text-sm font-mono text-purple-300/70">Fibonacci spiral from {fibSequence.length} terms</div>
-      <svg width="400" height="400" viewBox="0 0 400 400" className="max-w-full">
+      <svg width="400" height="400" viewBox="0 0 400 400" className="max-w-full w-full sm:w-auto" style={{ maxWidth: '400px' }}>
         <defs>
           <filter id="glow">
             <feGaussianBlur stdDeviation="3" result="coloredBlur" />
@@ -230,7 +230,7 @@ function ColorPalette({ color }: { color: string }) {
         <div className="font-mono text-purple-200">{color}</div>
       </div>
       <div className="text-sm font-mono text-purple-300/70">Harmony palette:</div>
-      <div className="grid grid-cols-5 gap-2">
+      <div className="grid grid-cols-3 sm:grid-cols-5 gap-2">
         {palette.map((p, i) => (
           <motion.div key={i} initial={{ opacity: 0, scale: 0.8 }} animate={{ opacity: 1, scale: 1 }} transition={{ delay: i * 0.1 }}
             className="text-center">
@@ -476,13 +476,13 @@ export default function PlaygroundPage() {
           <Link href="/" className="inline-flex items-center gap-2 text-purple-400/60 hover:text-purple-400 transition-colors font-mono text-sm mb-4">
             ← BACK TO HUB
           </Link>
-          <h1 className="text-5xl md:text-6xl font-bold glow-purple font-mono tracking-wider">
+          <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold glow-purple font-mono tracking-wider">
             THE VOID
           </h1>
           <p className="text-purple-400/50 font-mono mt-2 text-sm tracking-widest">
             [GENERATIVE PLAYGROUND] — Input anything. See everything.
           </p>
-          <div className="flex justify-center gap-4 mt-3 text-[10px] font-mono text-purple-600">
+          <div className="flex flex-wrap justify-center gap-3 sm:gap-4 mt-3 text-[10px] font-mono text-purple-600">
             <span>🌀 KONAMI</span>
             <span>⏱ IDLE 30s</span>
             <span>🖱 TRIPLE-CLICK</span>
@@ -507,7 +507,7 @@ export default function PlaygroundPage() {
             onChange={e => { setInput(e.target.value); soundEngine.playClick(); }}
             placeholder="Enter a number, word, color hex, or code..."
             rows={3}
-            className="w-full bg-black/60 border border-purple-500/30 rounded-lg px-4 py-3 text-purple-200 font-mono placeholder:text-purple-500/30 focus:outline-none focus:border-purple-500 resize-none"
+            className="w-full bg-black/60 border border-purple-500/30 rounded-lg px-3 sm:px-4 py-2.5 sm:py-3 text-purple-200 font-mono placeholder:text-purple-500/30 focus:outline-none focus:border-purple-500 resize-none"
             style={{ fontFamily: 'var(--font-code)' }}
           />
           <div className="mt-2 text-[10px] font-mono text-purple-600">

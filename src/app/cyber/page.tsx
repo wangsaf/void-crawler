@@ -116,20 +116,20 @@ function PortScanner({ addXP }: { addXP: (n: number) => void }) {
       <h3 className="text-[#00ff41] font-mono text-lg mb-4 flex items-center gap-2">
         <span className="text-2xl">🔍</span> PORT SCANNER
       </h3>
-      <div className="flex gap-2 mb-4">
+      <div className="flex flex-col sm:flex-row gap-2 mb-4">
         <input
           value={url}
           onChange={e => setUrl(e.target.value)}
           placeholder="target.domain.com"
-          className="flex-1 bg-black/60 border border-[#00ff41]/30 rounded-lg px-4 py-2 text-[#00ff41] font-mono placeholder:text-[#00ff41]/30 focus:outline-none focus:border-[#00ff41]"
+          className="flex-1 bg-black/60 border border-[#00ff41]/30 rounded-lg px-3 sm:px-4 py-2.5 sm:py-2 text-[#00ff41] font-mono placeholder:text-[#00ff41]/30 focus:outline-none focus:border-[#00ff41]"
           style={{ fontFamily: 'var(--font-code)' }}
         />
         <button onClick={startScan} disabled={scanning}
-          className="px-4 py-2 bg-[#00ff41]/20 border border-[#00ff41]/50 rounded-lg text-[#00ff41] font-mono hover:bg-[#00ff41]/30 disabled:opacity-50 transition-all">
+          className="px-4 py-2.5 sm:py-2 bg-[#00ff41]/20 border border-[#00ff41]/50 rounded-lg text-[#00ff41] font-mono hover:bg-[#00ff41]/30 disabled:opacity-50 transition-all shrink-0">
           {scanning ? 'SCANNING...' : 'SCAN'}
         </button>
       </div>
-      <div className="grid grid-cols-4 sm:grid-cols-5 gap-2">
+      <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 gap-1.5 sm:gap-2">
         <AnimatePresence>
           {ports.map((p, i) => (
             <motion.div
@@ -191,13 +191,13 @@ function PasswordChecker() {
         value={password}
         onChange={e => setPassword(e.target.value)}
         placeholder="Type a password..."
-        className="w-full bg-black/60 border border-[#00ff41]/30 rounded-lg px-4 py-2 text-[#00ff41] font-mono placeholder:text-[#00ff41]/30 focus:outline-none focus:border-[#00ff41]"
+        className="w-full bg-black/60 border border-[#00ff41]/30 rounded-lg px-3 sm:px-4 py-2.5 sm:py-2 text-[#00ff41] font-mono placeholder:text-[#00ff41]/30 focus:outline-none focus:border-[#00ff41]"
         style={{ fontFamily: 'var(--font-code)' }}
       />
       <div className="mt-4 space-y-2">
         {barriers.map((b, i) => (
           <motion.div key={b} className="flex items-center gap-3">
-            <span className="text-xs font-mono w-16 text-right text-gray-500 uppercase">{b}</span>
+            <span className="text-[10px] sm:text-xs font-mono w-14 sm:w-16 text-right text-gray-500 uppercase truncate">{b}</span>
             <div className="flex-1 h-3 bg-black/60 rounded-full overflow-hidden border border-white/5">
               <motion.div
                 initial={{ width: 0 }}
@@ -330,7 +330,7 @@ function XssPlayground({ addXP }: { addXP: (n: number) => void }) {
       <h3 className="text-[#00ff41] font-mono text-lg mb-4 flex items-center gap-2">
         <span className="text-2xl">💀</span> XSS PLAYGROUND
       </h3>
-      <div className="flex gap-2 mb-4">
+      <div className="flex flex-col sm:flex-row gap-2 mb-4">
         <input
           value={payload}
           onChange={e => setPayload(e.target.value)}
@@ -339,7 +339,7 @@ function XssPlayground({ addXP }: { addXP: (n: number) => void }) {
           style={{ fontFamily: 'var(--font-code)' }}
         />
         <button onClick={testPayload}
-          className="px-4 py-2 bg-red-500/20 border border-red-500/50 rounded-lg text-red-400 font-mono hover:bg-red-500/30 transition-all">
+          className="px-4 py-2.5 sm:py-2 bg-red-500/20 border border-red-500/50 rounded-lg text-red-400 font-mono hover:bg-red-500/30 transition-all shrink-0">
           INJECT
         </button>
       </div>
@@ -401,7 +401,7 @@ function SqlInjection({ addXP }: { addXP: (n: number) => void }) {
       <h3 className="text-[#00ff41] font-mono text-lg mb-4 flex items-center gap-2">
         <span className="text-2xl">💉</span> SQL INJECTION
       </h3>
-      <div className="flex gap-2 mb-4">
+      <div className="flex flex-col sm:flex-row gap-2 mb-4">
         <input
           value={query}
           onChange={e => setQuery(e.target.value)}
@@ -410,12 +410,12 @@ function SqlInjection({ addXP }: { addXP: (n: number) => void }) {
           style={{ fontFamily: 'var(--font-code)' }}
         />
         <button onClick={runQuery}
-          className="px-4 py-2 bg-orange-500/20 border border-orange-500/50 rounded-lg text-orange-400 font-mono hover:bg-orange-500/30 transition-all">
+          className="px-4 py-2.5 sm:py-2 bg-orange-500/20 border border-orange-500/50 rounded-lg text-orange-400 font-mono hover:bg-orange-500/30 transition-all shrink-0">
           EXECUTE
         </button>
       </div>
       {cells.length > 0 && (
-        <div className="grid grid-cols-7 gap-1">
+        <div className="grid grid-cols-7 gap-0.5 sm:gap-1">
           {cells.map((alive, i) => (
             <motion.div
               key={i}
@@ -484,7 +484,7 @@ function PhishingDetector({ addXP }: { addXP: (n: number) => void }) {
         onChange={e => setEmail(e.target.value)}
         placeholder="Paste suspicious email text here..."
         rows={4}
-        className="w-full bg-black/60 border border-[#00ff41]/30 rounded-lg px-4 py-2 text-[#00ff41] font-mono placeholder:text-[#00ff41]/30 focus:outline-none focus:border-[#00ff41] resize-none"
+        className="w-full bg-black/60 border border-[#00ff41]/30 rounded-lg px-3 sm:px-4 py-2.5 sm:py-2 text-[#00ff41] font-mono placeholder:text-[#00ff41]/30 focus:outline-none focus:border-[#00ff41] resize-none"
         style={{ fontFamily: 'var(--font-code)' }}
       />
       <button onClick={analyze}
@@ -549,7 +549,7 @@ function TerminalLog() {
   };
 
   return (
-    <div className="glass-strong rounded-xl p-4 h-64 flex flex-col">
+    <div className="glass-strong rounded-xl p-3 sm:p-4 h-52 sm:h-64 flex flex-col">
       <div className="flex-1 overflow-y-auto font-mono text-xs space-y-1 mb-2" style={{ fontFamily: 'var(--font-code)' }}>
         {logs.map((l, i) => (
           <div key={i} className={`${l.startsWith('>') ? 'text-[#00ff41]' : l.includes('[WARN]') ? 'text-yellow-400' : l.includes('[ERR]') ? 'text-red-400' : 'text-[#00ff41]/70'}`}>
@@ -614,7 +614,7 @@ export default function CyberPage() {
           <Link href="/" className="inline-flex items-center gap-2 text-[#00ff41]/60 hover:text-[#00ff41] transition-colors font-mono text-sm mb-4">
             ← BACK TO HUB
           </Link>
-          <h1 className="text-4xl md:text-5xl font-bold glow-green font-mono tracking-wider">
+          <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold glow-green font-mono tracking-wider">
             EXPLOIT<span className="text-white/30">.</span>ME
           </h1>
           <p className="text-[#00ff41]/50 font-mono mt-2 text-sm">

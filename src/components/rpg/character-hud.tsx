@@ -1,10 +1,12 @@
 "use client";
 
+import { useState } from "react";
 import { motion } from "framer-motion";
 import { useGameStore, LEVEL_TITLES } from "@/stores/game-store";
 import { formatNumber } from "@/lib/utils";
 
 export function CharacterHUD() {
+  const [expanded, setExpanded] = useState(false);
   const {
     characterName,
     characterClass,
@@ -27,15 +29,15 @@ export function CharacterHUD() {
 
   return (
     <motion.div
-      className="fixed top-4 right-4 z-50 glass rounded-xl p-4 w-64"
+      className="fixed top-3 right-3 sm:top-4 sm:right-4 z-50 glass rounded-xl p-3 sm:p-4 w-48 sm:w-64"
       initial={{ x: 300, opacity: 0 }}
       animate={{ x: 0, opacity: 1 }}
       transition={{ type: "spring", damping: 20, delay: 0.5 }}
     >
       {/* Character Info */}
-      <div className="flex items-center gap-3 mb-3">
+      <div className="flex items-center gap-2 sm:gap-3 mb-2 sm:mb-3">
         <div
-          className="w-10 h-10 rounded-full flex items-center justify-center text-lg"
+          className="w-8 h-8 sm:w-10 sm:h-10 rounded-full flex items-center justify-center text-base sm:text-lg shrink-0"
           style={{
             background: "linear-gradient(135deg, #b000ff30, #00d4ff30)",
             border: "1px solid #b000ff50",
@@ -43,28 +45,42 @@ export function CharacterHUD() {
         >
           ⚔️
         </div>
-        <div>
+        <div className="min-w-0 flex-1">
           <div
-            className="text-sm font-bold text-neon-blue"
+            className="text-xs sm:text-sm font-bold text-neon-blue truncate"
             style={{ fontFamily: "var(--font-display)" }}
           >
             {characterName}
           </div>
-          <div className="text-xs text-gray-400">
+          <div className="text-[10px] sm:text-xs text-gray-400 truncate">
             Lv.{level} {title} • {characterClass}
           </div>
         </div>
+        {/* Toggle button for mobile */}
+        <button
+          onClick={() => setExpanded(!expanded)}
+          className="sm:hidden text-gray-400 hover:text-white transition-colors p-1 shrink-0"
+          aria-label={expanded ? "Collapse stats" : "Expand stats"}
+        >
+          <motion.span
+            animate={{ rotate: expanded ? 180 : 0 }}
+            transition={{ duration: 0.2 }}
+            className="block text-xs"
+          >
+            ▼
+          </motion.span>
+        </button>
       </div>
 
       {/* Health Bar */}
-      <div className="mb-2">
-        <div className="flex justify-between text-xs mb-1">
+      <div className="mb-1.5 sm:mb-2">
+        <div className="flex justify-between text-[10px] sm:text-xs mb-1">
           <span className="text-neon-red">HP</span>
           <span className="text-gray-400">
             {health}/{maxHealth}
           </span>
         </div>
-        <div className="h-2 bg-void-deep rounded-full overflow-hidden">
+        <div className="h-1.5 sm:h-2 bg-void-deep rounded-full overflow-hidden">
           <motion.div
             className="h-full rounded-full"
             style={{
@@ -78,15 +94,15 @@ export function CharacterHUD() {
         </div>
       </div>
 
-      {/* XP Bar */}
-      <div className="mb-3">
-        <div className="flex justify-between text-xs mb-1">
+      {/* XP Bar - hidden on mobile when collapsed */}
+      <div className={`mb-2 sm:mb-3 ${expanded ? 'block' : 'hidden sm:block'}`}>
+        <div className="flex justify-between text-[10px] sm:text-xs mb-1">
           <span className="text-neon-purple">XP</span>
           <span className="text-gray-400">
             {formatNumber(xp)}/{formatNumber(xpToNext)}
           </span>
         </div>
-        <div className="h-2 bg-void-deep rounded-full overflow-hidden">
+        <div className="h-1.5 sm:h-2 bg-void-deep rounded-full overflow-hidden">
           <motion.div
             className="h-full rounded-full"
             style={{
@@ -98,8 +114,8 @@ export function CharacterHUD() {
         </div>
       </div>
 
-      {/* Stats */}
-      <div className="grid grid-cols-2 gap-2 text-xs">
+      {/* Stats - hidden on mobile when collapsed */}
+      <div className={`grid grid-cols-2 gap-1.5 sm:gap-2 text-[10px] sm:text-xs ${expanded ? 'block' : 'hidden sm:block'}`}>
         <div className="flex items-center gap-1">
           <span className="text-neon-gold">💰</span>
           <span className="text-gray-300">{formatNumber(gold)}</span>
