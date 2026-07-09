@@ -57,7 +57,9 @@ const zoneData = [
   },
 ];
 
-// Quick stats widget for the hub
+// ═══════════════════════════════════════════════════════
+// Quick Stats widget - horizontal row
+// ═══════════════════════════════════════════════════════
 function QuickStats() {
   const { level, xp, xpToNext, gold, enemiesDefeated } = useGameStore();
   const stats = [
@@ -69,7 +71,7 @@ function QuickStats() {
 
   return (
     <motion.div
-      className="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-8"
+      className="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4 mb-6"
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay: 0.6, duration: 0.5 }}
@@ -77,7 +79,7 @@ function QuickStats() {
       {stats.map((stat, i) => (
         <motion.div
           key={stat.label}
-          className="retro-card px-4 sm:px-5 py-2.5 sm:py-3 text-center min-w-[80px] sm:min-w-[100px]"
+          className="retro-card px-4 py-2.5 text-center"
           initial={{ opacity: 0, scale: 0.8 }}
           animate={{ opacity: 1, scale: 1 }}
           transition={{ delay: 0.8 + i * 0.1 }}
@@ -89,7 +91,12 @@ function QuickStats() {
           >
             {stat.value}
           </div>
-          <div className="text-[10px] text-gray-500 mt-1 uppercase tracking-widest" style={{ fontFamily: 'var(--font-display)' }}>{stat.label}</div>
+          <div
+            className="text-[10px] text-gray-500 mt-1 uppercase tracking-widest"
+            style={{ fontFamily: "var(--font-display)" }}
+          >
+            {stat.label}
+          </div>
         </motion.div>
       ))}
     </motion.div>
@@ -97,10 +104,16 @@ function QuickStats() {
 }
 
 // Animated divider line between sections
-function AnimatedDivider({ delay = 0, label = "◆ ZONES ◆" }: { delay?: number; label?: string }) {
+function AnimatedDivider({
+  delay = 0,
+  label = "◆ ZONES ◆",
+}: {
+  delay?: number;
+  label?: string;
+}) {
   return (
     <motion.div
-      className="flex items-center justify-center gap-4 mb-8 w-full max-w-2xl mx-auto"
+      className="flex items-center justify-center gap-4 mb-6 w-full max-w-2xl mx-auto"
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       transition={{ delay }}
@@ -113,7 +126,11 @@ function AnimatedDivider({ delay = 0, label = "◆ ZONES ◆" }: { delay?: numbe
         }}
         initial={{ scaleX: 0 }}
         animate={{ scaleX: 1 }}
-        transition={{ delay: delay + 0.2, duration: 0.8, ease: "easeOut" }}
+        transition={{
+          delay: delay + 0.2,
+          duration: 0.8,
+          ease: "easeOut",
+        }}
       />
       <motion.div
         className="text-neon-purple/40 text-xs tracking-widest uppercase"
@@ -132,7 +149,11 @@ function AnimatedDivider({ delay = 0, label = "◆ ZONES ◆" }: { delay?: numbe
         }}
         initial={{ scaleX: 0 }}
         animate={{ scaleX: 1 }}
-        transition={{ delay: delay + 0.2, duration: 0.8, ease: "easeOut" }}
+        transition={{
+          delay: delay + 0.2,
+          duration: 0.8,
+          ease: "easeOut",
+        }}
       />
     </motion.div>
   );
@@ -143,11 +164,13 @@ function AnimatedDivider({ delay = 0, label = "◆ ZONES ◆" }: { delay?: numbe
 // ═══════════════════════════════════════════════════════
 function ObjectivePanel() {
   const { currentQuest, questList } = useGameStore();
-  const active = currentQuest ? questList.find((q) => q.id === currentQuest) : null;
+  const active = currentQuest
+    ? questList.find((q) => q.id === currentQuest)
+    : null;
 
   return (
     <motion.div
-      className="p-4"
+      className="p-3"
       style={{
         background: "rgba(10, 10, 15, 0.95)",
         border: "3px solid #3a3a5a",
@@ -159,26 +182,29 @@ function ObjectivePanel() {
       whileHover={{ borderColor: "#b000ff60" }}
     >
       <h3
-        className="text-[10px] text-neon-purple uppercase tracking-widest mb-3"
+        className="text-[9px] text-neon-purple uppercase tracking-widest mb-2"
         style={{ fontFamily: "var(--font-display)" }}
       >
-        📋 Current Objective
+        📋 OBJECTIVE
       </h3>
       {active ? (
         <div>
           <p
-            className="text-sm text-neon-blue font-bold uppercase mb-1"
+            className="text-xs text-neon-blue font-bold uppercase mb-1"
             style={{ fontFamily: "var(--font-display)" }}
           >
             {active.name}
           </p>
           <p
-            className="text-xs text-gray-400 mb-2"
+            className="text-[13px] text-gray-400 mb-2"
             style={{ fontFamily: "var(--font-code)" }}
           >
             {active.description}
           </p>
-          <div className="flex gap-3 text-[10px]" style={{ fontFamily: "var(--font-code)" }}>
+          <div
+            className="flex gap-3 text-[11px]"
+            style={{ fontFamily: "var(--font-code)" }}
+          >
             <span className="text-neon-gold">+{active.xpReward} XP</span>
             <span className="text-neon-gold">+{active.goldReward}g</span>
             <span className="text-gray-500 uppercase">{active.zone}</span>
@@ -186,7 +212,7 @@ function ObjectivePanel() {
         </div>
       ) : (
         <p
-          className="text-xs text-gray-500"
+          className="text-[13px] text-gray-500"
           style={{ fontFamily: "var(--font-code)" }}
         >
           Visit a zone to start your adventure!
@@ -207,7 +233,7 @@ function AchievementsPanel() {
 
   return (
     <motion.div
-      className="p-4"
+      className="p-3"
       style={{
         background: "rgba(10, 10, 15, 0.95)",
         border: "3px solid #3a3a5a",
@@ -219,23 +245,23 @@ function AchievementsPanel() {
       whileHover={{ borderColor: "#ffd70060" }}
     >
       <h3
-        className="text-[10px] text-neon-gold uppercase tracking-widest mb-3"
+        className="text-[9px] text-neon-gold uppercase tracking-widest mb-2"
         style={{ fontFamily: "var(--font-display)" }}
       >
-        🏆 Achievements
+        🏆 ACHIEVEMENTS
       </h3>
       <p
-        className="text-[10px] text-gray-500 mb-3"
+        className="text-[11px] text-gray-500 mb-2"
         style={{ fontFamily: "var(--font-code)" }}
       >
         {achievements.length}/{total} Unlocked
       </p>
       {recent.length > 0 ? (
-        <div className="space-y-2">
+        <div className="space-y-1.5">
           {recent.map((a) => (
             <div
               key={a.id}
-              className="flex items-center gap-2 text-xs"
+              className="flex items-center gap-2 text-[13px]"
               style={{ fontFamily: "var(--font-code)" }}
             >
               <span>{a.icon}</span>
@@ -245,7 +271,7 @@ function AchievementsPanel() {
         </div>
       ) : (
         <p
-          className="text-xs text-gray-600"
+          className="text-[13px] text-gray-600"
           style={{ fontFamily: "var(--font-code)" }}
         >
           No achievements yet. Start exploring!
@@ -264,7 +290,7 @@ function RecentActivityPanel() {
 
   return (
     <motion.div
-      className="p-4"
+      className="p-3"
       style={{
         background: "rgba(10, 10, 15, 0.95)",
         border: "3px solid #3a3a5a",
@@ -276,17 +302,17 @@ function RecentActivityPanel() {
       whileHover={{ borderColor: "#00d4ff60" }}
     >
       <h3
-        className="text-[10px] text-neon-blue uppercase tracking-widest mb-3"
+        className="text-[9px] text-neon-blue uppercase tracking-widest mb-2"
         style={{ fontFamily: "var(--font-display)" }}
       >
-        📜 Recent Activity
+        📜 ACTIVITY
       </h3>
       {recent.length > 0 ? (
-        <div className="space-y-1.5">
+        <div className="space-y-1">
           {recent.map((text, i) => (
             <p
               key={i}
-              className="text-xs text-gray-400"
+              className="text-[13px] text-gray-400"
               style={{ fontFamily: "var(--font-code)" }}
             >
               {text}
@@ -295,7 +321,7 @@ function RecentActivityPanel() {
         </div>
       ) : (
         <p
-          className="text-xs text-gray-600"
+          className="text-[13px] text-gray-600"
           style={{ fontFamily: "var(--font-code)" }}
         >
           No activity yet. Go explore!
@@ -311,27 +337,35 @@ function RecentActivityPanel() {
 function ZoneProgressPanel() {
   const { stats } = useGameStore();
 
-  // Simple progress calculations (caps at 100%)
   const zones = [
     {
       name: "Market",
       icon: "🛒",
       color: "#ff6b35",
-      progress: Math.min(100, Math.round((stats.totalItemsBought / 10) * 100)),
+      progress: Math.min(
+        100,
+        Math.round((stats.totalItemsBought / 10) * 100)
+      ),
       detail: `${stats.totalItemsBought} items bought`,
     },
     {
       name: "Dashboard",
       icon: "📊",
       color: "#00bcd4",
-      progress: Math.min(100, Math.round((stats.totalPuzzlesSolved / 5) * 100)),
+      progress: Math.min(
+        100,
+        Math.round((stats.totalPuzzlesSolved / 5) * 100)
+      ),
       detail: `${stats.totalPuzzlesSolved} puzzles solved`,
     },
     {
       name: "Cyber",
       icon: "🔓",
       color: "#00ff41",
-      progress: Math.min(100, Math.round((stats.totalPortsScanned / 50) * 100)),
+      progress: Math.min(
+        100,
+        Math.round((stats.totalPortsScanned / 50) * 100)
+      ),
       detail: `${stats.totalPortsScanned} ports scanned`,
     },
     {
@@ -340,7 +374,7 @@ function ZoneProgressPanel() {
       color: "#b000ff",
       progress: Math.min(
         100,
-        Math.round((stats.secretsFound?.length || 0) / 5) * 100
+        Math.round(((stats.secretsFound?.length || 0) / 5) * 100)
       ),
       detail: `${stats.secretsFound?.length || 0} secrets found`,
     },
@@ -348,7 +382,7 @@ function ZoneProgressPanel() {
 
   return (
     <motion.div
-      className="p-4"
+      className="p-3"
       style={{
         background: "rgba(10, 10, 15, 0.95)",
         border: "3px solid #3a3a5a",
@@ -360,17 +394,17 @@ function ZoneProgressPanel() {
       whileHover={{ borderColor: "#00ff4160" }}
     >
       <h3
-        className="text-[10px] text-neon-green uppercase tracking-widest mb-3"
+        className="text-[9px] text-neon-green uppercase tracking-widest mb-2"
         style={{ fontFamily: "var(--font-display)" }}
       >
-        📈 Zone Progress
+        📈 PROGRESS
       </h3>
-      <div className="space-y-3">
+      <div className="space-y-2.5">
         {zones.map((z) => (
           <div key={z.name}>
-            <div className="flex items-center justify-between mb-1">
+            <div className="flex items-center justify-between mb-0.5">
               <span
-                className="text-xs text-gray-300"
+                className="text-[12px] text-gray-300"
                 style={{ fontFamily: "var(--font-code)" }}
               >
                 {z.icon} {z.name}
@@ -391,7 +425,11 @@ function ZoneProgressPanel() {
                 style={{ background: z.color }}
                 initial={{ width: 0 }}
                 animate={{ width: `${z.progress}%` }}
-                transition={{ delay: 2.5, duration: 0.8, ease: "easeOut" }}
+                transition={{
+                  delay: 2.5,
+                  duration: 0.8,
+                  ease: "easeOut",
+                }}
               />
             </div>
             <p
@@ -407,11 +445,57 @@ function ZoneProgressPanel() {
   );
 }
 
+// ═══════════════════════════════════════════════════════
+// Status Sidebar - Fixed right panel
+// ═══════════════════════════════════════════════════════
+function StatusSidebar() {
+  return (
+    <motion.div
+      className="fixed right-0 z-40 hidden lg:block game-sidebar-right"
+      style={{ top: "51px", bottom: 0, width: "280px" }}
+      initial={{ x: 300, opacity: 0 }}
+      animate={{ x: 0, opacity: 1 }}
+      transition={{ type: "spring", damping: 20, delay: 0.8 }}
+    >
+      <div
+        className="h-full overflow-y-auto"
+        style={{
+          background: "rgba(10, 10, 15, 0.85)",
+          borderLeft: "3px solid #3a3a5a",
+        }}
+      >
+        {/* Sidebar header */}
+        <div
+          className="sticky top-0 z-10 px-3 py-2 text-[7px] uppercase tracking-[0.15em] font-bold text-gray-400"
+          style={{
+            fontFamily: "var(--font-display)",
+            background: "rgba(10, 10, 15, 0.98)",
+            borderBottom: "2px solid #3a3a5a",
+          }}
+        >
+          📊 STATUS
+        </div>
+
+        <div className="p-2.5 space-y-2.5">
+          <ObjectivePanel />
+          <AchievementsPanel />
+          <RecentActivityPanel />
+          <ZoneProgressPanel />
+        </div>
+      </div>
+    </motion.div>
+  );
+}
+
 export default function Home() {
   const [screen, setScreen] = useState<Screen>("landing");
   const [inputValue, setInputValue] = useState("");
   const [nameInput, setNameInput] = useState("");
-  const [transitioning, setTransitioning] = useState<{ zone: string; color: string; name: string } | null>(null);
+  const [transitioning, setTransitioning] = useState<{
+    zone: string;
+    color: string;
+    name: string;
+  } | null>(null);
   const {
     setCharacterName,
     setCharacterClass,
@@ -478,17 +562,20 @@ export default function Home() {
   };
 
   return (
-    <main className="relative min-h-screen overflow-hidden bg-void-black" role="main">
+    <main
+      className="relative min-h-screen overflow-hidden bg-void-black"
+      role="main"
+    >
       {/* Particle Background */}
       <ParticleField />
 
       {/* Hex Grid - subtle cyber overlay */}
       {screen === "hub" && <HexGrid />}
 
-      {/* Ambient glow orbs */}
+      {/* Ambient glow orbs (reduced) */}
       {screen === "hub" && <AmbientOrbs />}
 
-      {/* Animated HUD */}
+      {/* Animated HUD - Top Bar */}
       <AnimatePresence>
         {screen === "hub" && <CharacterHUD />}
       </AnimatePresence>
@@ -501,8 +588,11 @@ export default function Home() {
         onComplete={handleTransitionComplete}
       />
 
-      {/* MiniMap on hub screen */}
+      {/* MiniMap - Left Sidebar */}
       {screen === "hub" && <MiniMap />}
+
+      {/* Status Panels - Right Sidebar */}
+      {screen === "hub" && <StatusSidebar />}
 
       {/* ====== LANDING SCREEN ====== */}
       <AnimatePresence mode="wait">
@@ -635,23 +725,24 @@ export default function Home() {
         {screen === "hub" && (
           <motion.div
             key="hub"
-            className="relative z-10 min-h-screen flex flex-col items-center justify-center px-6 py-12"
+            className="relative z-10 min-h-screen flex flex-col items-center px-4 sm:px-6 pb-12 game-hub-content"
+            style={{ paddingTop: "68px" }}
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ duration: 0.8 }}
           >
             {/* Void rings pulsing from center */}
-            <VoidRings color="#b000ff" count={6} />
+            <VoidRings color="#b000ff" count={4} />
 
             {/* Hub Title */}
             <motion.div
-              className="text-center mb-6"
+              className="text-center mb-5"
               initial={{ y: -30, opacity: 0 }}
               animate={{ y: 0, opacity: 1 }}
               transition={{ delay: 0.2 }}
             >
               <motion.p
-                className="text-xs sm:text-sm text-gray-500 mb-4 tracking-widest uppercase"
+                className="text-xs sm:text-sm text-gray-500 mb-3 tracking-widest uppercase"
                 style={{ fontFamily: "var(--font-code)" }}
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 0.6 }}
@@ -660,7 +751,7 @@ export default function Home() {
                 Welcome back, {characterName || "Crawler"}
               </motion.p>
               <h2
-                className="text-xl md:text-2xl font-black mb-4 glow-blue uppercase"
+                className="text-lg md:text-xl font-black mb-3 glow-blue uppercase"
                 style={{ fontFamily: "var(--font-display)" }}
               >
                 <motion.span
@@ -673,7 +764,7 @@ export default function Home() {
                 </motion.span>
               </h2>
               <motion.p
-                className="text-gray-400 text-sm sm:text-base"
+                className="text-gray-400 text-sm"
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 transition={{ delay: 0.5 }}
@@ -682,22 +773,24 @@ export default function Home() {
               </motion.p>
             </motion.div>
 
-            {/* Quick Stats */}
-            <QuickStats />
+            {/* Quick Stats Row */}
+            <div className="w-full max-w-4xl">
+              <QuickStats />
+            </div>
 
             {/* Animated Divider */}
             <AnimatedDivider delay={1.0} />
 
-            {/* Zone Portals */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 max-w-6xl w-full">
+            {/* Zone Portals Grid - 2x2 */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-5 max-w-3xl w-full mb-6">
               {zoneData.map((z, i) => (
                 <motion.div
                   key={z.zone}
                   className="h-full"
-                  initial={{ opacity: 0, y: 60 }}
+                  initial={{ opacity: 0, y: 40 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{
-                    delay: 1.2 + i * 0.15,
+                    delay: 1.2 + i * 0.12,
                     type: "spring",
                     damping: 20,
                     stiffness: 180,
@@ -710,32 +803,35 @@ export default function Home() {
                     icon={z.icon}
                     color={z.color}
                     glowClass={z.glowClass}
-                    onNavigate={() => handlePortalNavigate(z.zone, z.color, z.title)}
+                    onNavigate={() =>
+                      handlePortalNavigate(z.zone, z.color, z.title)
+                    }
                   />
                 </motion.div>
               ))}
             </div>
 
-            {/* Divider before panels */}
-            <AnimatedDivider delay={1.6} label="◆ STATUS ◆" />
-
-            {/* Hub Panels - 2 column grid */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-6xl w-full">
-              <ObjectivePanel />
-              <AchievementsPanel />
-              <RecentActivityPanel />
-              <ZoneProgressPanel />
+            {/* Mobile-only Status Panels (visible below lg breakpoint) */}
+            <div className="lg:hidden w-full max-w-3xl">
+              <AnimatedDivider delay={1.6} label="◆ STATUS ◆" />
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <ObjectivePanel />
+                <AchievementsPanel />
+                <RecentActivityPanel />
+                <ZoneProgressPanel />
+              </div>
             </div>
 
             {/* Bottom info */}
             <motion.div
-              className="mt-8 text-center text-xs sm:text-sm text-gray-500 px-4"
+              className="mt-6 text-center text-xs sm:text-sm text-gray-500 px-4"
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ delay: 2.5 }}
             >
               <p>
-                💡 Each zone has hidden easter eggs • Your browser determined<br className="sm:hidden" />
+                💡 Each zone has hidden easter eggs • Your browser determined
+                <br className="sm:hidden" />
                 {" "}your class • Progress saves automatically
               </p>
               <motion.p
@@ -752,6 +848,9 @@ export default function Home() {
         )}
       </AnimatePresence>
 
+      {/* Floating ambient particles - subtle game atmosphere */}
+      {screen === "hub" && <GameParticles />}
+
       {/* Global ambient glow */}
       <div
         className="fixed inset-0 pointer-events-none z-[1]"
@@ -764,5 +863,42 @@ export default function Home() {
       {/* Noise overlay for texture */}
       <div className="fixed inset-0 pointer-events-none z-[2] noise" />
     </main>
+  );
+}
+
+// ═══════════════════════════════════════════════════════
+// Subtle floating game particles (replaces chaotic emojis)
+// ═══════════════════════════════════════════════════════
+function GameParticles() {
+  const symbols = ["◆", "✦", "⬡", "◈"];
+
+  return (
+    <div className="fixed inset-0 pointer-events-none z-[3]">
+      {symbols.map((sym, i) => (
+        <motion.div
+          key={i}
+          className="absolute text-neon-purple/[0.07]"
+          style={{
+            left: `${15 + i * 22}%`,
+            top: `${20 + i * 18}%`,
+            fontSize: `${14 + i * 4}px`,
+            fontFamily: "var(--font-code)",
+          }}
+          animate={{
+            y: [0, -30, 0],
+            x: [0, i % 2 === 0 ? 10 : -10, 0],
+            opacity: [0.05, 0.1, 0.05],
+          }}
+          transition={{
+            duration: 8 + i * 2,
+            repeat: Infinity,
+            ease: "easeInOut",
+            delay: i * 1.5,
+          }}
+        >
+          {sym}
+        </motion.div>
+      ))}
+    </div>
   );
 }

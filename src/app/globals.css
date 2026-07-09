@@ -411,8 +411,58 @@ body::after {
   transform: translateZ(0);
   will-change: transform;
 }
-
 /* Reduce paint */
 .contain-layout {
   contain: layout;
+}
+
+/* ==================== GAME UI LAYOUT ==================== */
+
+/* Hub content margins for fixed sidebars */
+.game-hub-content {
+  /* On lg+ screens, add margins for the sidebars */
+  margin-left: 0;
+  margin-right: 0;
+}
+
+@media (min-width: 768px) {
+  .game-hub-content {
+    margin-left: 72px;
+  }
+}
+
+@media (min-width: 1024px) {
+  .game-hub-content {
+    margin-left: 80px;
+    margin-right: 280px;
+  }
+}
+
+/* Sidebar scrollbar styling */
+.game-sidebar-right ::-webkit-scrollbar {
+  width: 4px;
+}
+
+.game-sidebar-right ::-webkit-scrollbar-track {
+  background: rgba(10, 10, 15, 0.5);
+}
+
+.game-sidebar-right ::-webkit-scrollbar-thumb {
+  background: rgba(58, 58, 90, 0.5);
+}
+
+.game-sidebar-right ::-webkit-scrollbar-thumb:hover {
+  background: var(--color-neon-purple);
+}
+
+/* HUD bar z-index stacking */
+.game-hud-bar {
+  backdrop-filter: blur(4px);
+}
+
+/* Zone portal cards - slightly smaller in game layout */
+@media (min-width: 1024px) {
+  .game-hub-content .zone-portal-card {
+    height: 14rem;
+  }
 }
