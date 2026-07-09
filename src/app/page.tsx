@@ -10,17 +10,10 @@ import { AmbientOrbs } from "@/components/effects/glow-orb";
 import { ZoneTransition } from "@/components/effects/zone-transition";
 import { ZonePortal } from "@/components/rpg/zone-portal";
 import { CharacterHUD } from "@/components/rpg/character-hud";
-import { MiniMap } from "@/components/rpg/mini-map";
 import { useGameStore, detectCharacterClass } from "@/stores/game-store";
-import { showToast } from "@/components/rpg/achievement-toast";
 import { soundEngine } from "@/lib/sound-engine";
 
 type Screen = "landing" | "naming" | "hub";
-
-// Hub title lines for stagger reveal
-const hubTaglines = [
-  "Choose your path. Each zone holds different challenges.",
-];
 
 const zoneData = [
   {
@@ -57,351 +50,192 @@ const zoneData = [
   },
 ];
 
-// Quick stats widget for the hub
-function QuickStats() {
+// ═══════════════════════════════════════════════════════
+// SECTION 1: HERO — title + 4 stat boxes
+// ═══════════════════════════════════════════════════════
+function HeroSection({ characterName }: { characterName: string }) {
   const { level, xp, xpToNext, gold, enemiesDefeated } = useGameStore();
+
   const stats = [
-    { label: "Level", value: `${level}`, color: "text-neon-blue" },
-    { label: "XP", value: `${xp}/${xpToNext}`, color: "text-neon-purple" },
-    { label: "Gold", value: `${gold}`, color: "text-neon-gold" },
-    { label: "Defeated", value: `${enemiesDefeated}`, color: "text-neon-red" },
+    { label: "Level", value: `${level}`, color: "#00d4ff" },
+    { label: "XP", value: `${xp}/${xpToNext}`, color: "#b000ff" },
+    { label: "Gold", value: `${gold}`, color: "#ffd700" },
+    { label: "Defeated", value: `${enemiesDefeated}`, color: "#ff006e" },
   ];
 
   return (
     <motion.div
-      className="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-8"
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ delay: 0.6, duration: 0.5 }}
-    >
-      {stats.map((stat, i) => (
-        <motion.div
-          key={stat.label}
-          className="retro-card px-4 sm:px-5 py-2.5 sm:py-3 text-center min-w-[80px] sm:min-w-[100px]"
-          initial={{ opacity: 0, scale: 0.8 }}
-          animate={{ opacity: 1, scale: 1 }}
-          transition={{ delay: 0.8 + i * 0.1 }}
-          whileHover={{ scale: 1.05, y: -2 }}
-        >
-          <div
-            className={`text-lg sm:text-xl font-bold ${stat.color}`}
-            style={{ fontFamily: "var(--font-display)" }}
-          >
-            {stat.value}
-          </div>
-          <div className="text-[10px] text-gray-500 mt-1 uppercase tracking-widest" style={{ fontFamily: 'var(--font-display)' }}>{stat.label}</div>
-        </motion.div>
-      ))}
-    </motion.div>
-  );
-}
-
-// Animated divider line between sections
-function AnimatedDivider({ delay = 0, label = "◆ ZONES ◆" }: { delay?: number; label?: string }) {
-  return (
-    <motion.div
-      className="flex items-center justify-center gap-4 mb-8 w-full max-w-2xl mx-auto"
+      className="text-center pt-16 sm:pt-20 pb-8"
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
-      transition={{ delay }}
+      transition={{ duration: 0.6 }}
     >
-      <motion.div
-        className="h-px flex-1"
-        style={{
-          background:
-            "linear-gradient(90deg, transparent, rgba(176,0,255,0.4), transparent)",
-        }}
-        initial={{ scaleX: 0 }}
-        animate={{ scaleX: 1 }}
-        transition={{ delay: delay + 0.2, duration: 0.8, ease: "easeOut" }}
-      />
-      <motion.div
-        className="text-neon-purple/40 text-xs tracking-widest uppercase"
+      <motion.p
+        className="text-xs text-gray-500 mb-3 tracking-widest uppercase"
         style={{ fontFamily: "var(--font-code)" }}
         initial={{ opacity: 0 }}
+        animate={{ opacity: 0.6 }}
+        transition={{ delay: 0.2 }}
+      >
+        Welcome back, {characterName || "Crawler"}
+      </motion.p>
+
+      <motion.h2
+        className="text-xl md:text-2xl font-black mb-2 glow-blue uppercase"
+        style={{ fontFamily: "var(--font-display)" }}
+        initial={{ y: -20, opacity: 0 }}
+        animate={{ y: 0, opacity: 1 }}
+        transition={{ delay: 0.1 }}
+      >
+        THE VOID HUB
+      </motion.h2>
+
+      <motion.p
+        className="text-gray-400 text-sm mb-8"
+        initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
-        transition={{ delay: delay + 0.5 }}
+        transition={{ delay: 0.3 }}
       >
-        {label}
-      </motion.div>
-      <motion.div
-        className="h-px flex-1"
-        style={{
-          background:
-            "linear-gradient(90deg, transparent, rgba(176,0,255,0.4), transparent)",
-        }}
-        initial={{ scaleX: 0 }}
-        animate={{ scaleX: 1 }}
-        transition={{ delay: delay + 0.2, duration: 0.8, ease: "easeOut" }}
-      />
-    </motion.div>
-  );
-}
+        Choose your path. Each zone holds different challenges.
+      </motion.p>
 
-// ═══════════════════════════════════════════════════════
-// PANEL A: Current Objective
-// ═══════════════════════════════════════════════════════
-function ObjectivePanel() {
-  const { currentQuest, questList } = useGameStore();
-  const active = currentQuest ? questList.find((q) => q.id === currentQuest) : null;
-
-  return (
-    <motion.div
-      className="p-4"
-      style={{
-        background: "rgba(10, 10, 15, 0.95)",
-        border: "3px solid #3a3a5a",
-        boxShadow: "4px 4px 0px #000",
-      }}
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ delay: 1.8 }}
-      whileHover={{ borderColor: "#b000ff60" }}
-    >
-      <h3
-        className="text-[10px] text-neon-purple uppercase tracking-widest mb-3"
-        style={{ fontFamily: "var(--font-display)" }}
-      >
-        📋 Current Objective
-      </h3>
-      {active ? (
-        <div>
-          <p
-            className="text-sm text-neon-blue font-bold uppercase mb-1"
-            style={{ fontFamily: "var(--font-display)" }}
+      {/* 4 stat boxes in a row */}
+      <div className="flex justify-center gap-3 sm:gap-4 flex-wrap">
+        {stats.map((stat, i) => (
+          <motion.div
+            key={stat.label}
+            className="px-4 sm:px-6 py-2.5 text-center min-w-[80px]"
+            style={{
+              background: "rgba(10, 10, 15, 0.95)",
+              border: "3px solid #3a3a5a",
+              boxShadow: "4px 4px 0px #000",
+            }}
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.4 + i * 0.1 }}
+            whileHover={{ borderColor: stat.color + "60", y: -2 }}
           >
-            {active.name}
-          </p>
-          <p
-            className="text-xs text-gray-400 mb-2"
-            style={{ fontFamily: "var(--font-code)" }}
-          >
-            {active.description}
-          </p>
-          <div className="flex gap-3 text-[10px]" style={{ fontFamily: "var(--font-code)" }}>
-            <span className="text-neon-gold">+{active.xpReward} XP</span>
-            <span className="text-neon-gold">+{active.goldReward}g</span>
-            <span className="text-gray-500 uppercase">{active.zone}</span>
-          </div>
-        </div>
-      ) : (
-        <p
-          className="text-xs text-gray-500"
-          style={{ fontFamily: "var(--font-code)" }}
-        >
-          Visit a zone to start your adventure!
-        </p>
-      )}
-    </motion.div>
-  );
-}
-
-// ═══════════════════════════════════════════════════════
-// PANEL B: Achievements
-// ═══════════════════════════════════════════════════════
-function AchievementsPanel() {
-  const { achievementList, achievements } = useGameStore();
-  const unlocked = achievementList.filter((a) => a.unlocked);
-  const recent = unlocked.slice(-3).reverse();
-  const total = achievementList.length;
-
-  return (
-    <motion.div
-      className="p-4"
-      style={{
-        background: "rgba(10, 10, 15, 0.95)",
-        border: "3px solid #3a3a5a",
-        boxShadow: "4px 4px 0px #000",
-      }}
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ delay: 1.9 }}
-      whileHover={{ borderColor: "#ffd70060" }}
-    >
-      <h3
-        className="text-[10px] text-neon-gold uppercase tracking-widest mb-3"
-        style={{ fontFamily: "var(--font-display)" }}
-      >
-        🏆 Achievements
-      </h3>
-      <p
-        className="text-[10px] text-gray-500 mb-3"
-        style={{ fontFamily: "var(--font-code)" }}
-      >
-        {achievements.length}/{total} Unlocked
-      </p>
-      {recent.length > 0 ? (
-        <div className="space-y-2">
-          {recent.map((a) => (
             <div
-              key={a.id}
-              className="flex items-center gap-2 text-xs"
-              style={{ fontFamily: "var(--font-code)" }}
+              className="text-lg sm:text-xl font-bold"
+              style={{ color: stat.color, fontFamily: "var(--font-display)" }}
             >
-              <span>{a.icon}</span>
-              <span className="text-gray-300">{a.name}</span>
-            </div>
-          ))}
-        </div>
-      ) : (
-        <p
-          className="text-xs text-gray-600"
-          style={{ fontFamily: "var(--font-code)" }}
-        >
-          No achievements yet. Start exploring!
-        </p>
-      )}
-    </motion.div>
-  );
-}
-
-// ═══════════════════════════════════════════════════════
-// PANEL C: Recent Activity
-// ═══════════════════════════════════════════════════════
-function RecentActivityPanel() {
-  const { activities } = useGameStore();
-  const recent = activities.slice(0, 5);
-
-  return (
-    <motion.div
-      className="p-4"
-      style={{
-        background: "rgba(10, 10, 15, 0.95)",
-        border: "3px solid #3a3a5a",
-        boxShadow: "4px 4px 0px #000",
-      }}
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ delay: 2.0 }}
-      whileHover={{ borderColor: "#00d4ff60" }}
-    >
-      <h3
-        className="text-[10px] text-neon-blue uppercase tracking-widest mb-3"
-        style={{ fontFamily: "var(--font-display)" }}
-      >
-        📜 Recent Activity
-      </h3>
-      {recent.length > 0 ? (
-        <div className="space-y-1.5">
-          {recent.map((text, i) => (
-            <p
-              key={i}
-              className="text-xs text-gray-400"
-              style={{ fontFamily: "var(--font-code)" }}
-            >
-              {text}
-            </p>
-          ))}
-        </div>
-      ) : (
-        <p
-          className="text-xs text-gray-600"
-          style={{ fontFamily: "var(--font-code)" }}
-        >
-          No activity yet. Go explore!
-        </p>
-      )}
-    </motion.div>
-  );
-}
-
-// ═══════════════════════════════════════════════════════
-// PANEL D: Zone Progress
-// ═══════════════════════════════════════════════════════
-function ZoneProgressPanel() {
-  const { stats } = useGameStore();
-
-  // Simple progress calculations (caps at 100%)
-  const zones = [
-    {
-      name: "Market",
-      icon: "🛒",
-      color: "#ff6b35",
-      progress: Math.min(100, Math.round((stats.totalItemsBought / 10) * 100)),
-      detail: `${stats.totalItemsBought} items bought`,
-    },
-    {
-      name: "Dashboard",
-      icon: "📊",
-      color: "#00bcd4",
-      progress: Math.min(100, Math.round((stats.totalPuzzlesSolved / 5) * 100)),
-      detail: `${stats.totalPuzzlesSolved} puzzles solved`,
-    },
-    {
-      name: "Cyber",
-      icon: "🔓",
-      color: "#00ff41",
-      progress: Math.min(100, Math.round((stats.totalPortsScanned / 50) * 100)),
-      detail: `${stats.totalPortsScanned} ports scanned`,
-    },
-    {
-      name: "Void",
-      icon: "🌀",
-      color: "#b000ff",
-      progress: Math.min(
-        100,
-        Math.round((stats.secretsFound?.length || 0) / 5) * 100
-      ),
-      detail: `${stats.secretsFound?.length || 0} secrets found`,
-    },
-  ];
-
-  return (
-    <motion.div
-      className="p-4"
-      style={{
-        background: "rgba(10, 10, 15, 0.95)",
-        border: "3px solid #3a3a5a",
-        boxShadow: "4px 4px 0px #000",
-      }}
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ delay: 2.1 }}
-      whileHover={{ borderColor: "#00ff4160" }}
-    >
-      <h3
-        className="text-[10px] text-neon-green uppercase tracking-widest mb-3"
-        style={{ fontFamily: "var(--font-display)" }}
-      >
-        📈 Zone Progress
-      </h3>
-      <div className="space-y-3">
-        {zones.map((z) => (
-          <div key={z.name}>
-            <div className="flex items-center justify-between mb-1">
-              <span
-                className="text-xs text-gray-300"
-                style={{ fontFamily: "var(--font-code)" }}
-              >
-                {z.icon} {z.name}
-              </span>
-              <span
-                className="text-[10px]"
-                style={{ color: z.color, fontFamily: "var(--font-code)" }}
-              >
-                {z.progress}%
-              </span>
+              {stat.value}
             </div>
             <div
-              className="h-2 bg-void-deep overflow-hidden"
-              style={{ border: "1px solid #3a3a5a" }}
+              className="text-[10px] text-gray-500 mt-0.5 uppercase tracking-widest"
+              style={{ fontFamily: "var(--font-display)" }}
             >
-              <motion.div
-                className="h-full"
-                style={{ background: z.color }}
-                initial={{ width: 0 }}
-                animate={{ width: `${z.progress}%` }}
-                transition={{ delay: 2.5, duration: 0.8, ease: "easeOut" }}
-              />
+              {stat.label}
             </div>
-            <p
-              className="text-[9px] text-gray-600 mt-0.5"
-              style={{ fontFamily: "var(--font-code)" }}
-            >
-              {z.detail}
-            </p>
-          </div>
+          </motion.div>
         ))}
+      </div>
+    </motion.div>
+  );
+}
+
+// ═══════════════════════════════════════════════════════
+// SECTION 3: STATUS — objective, activity, achievements
+// ═══════════════════════════════════════════════════════
+function StatusSection() {
+  const { currentQuest, questList, activities, achievementList, achievements } = useGameStore();
+
+  const active = currentQuest ? questList.find((q) => q.id === currentQuest) : null;
+  const recentActivities = activities.slice(0, 4);
+  const unlocked = achievementList.filter((a) => a.unlocked);
+  const recentAchievements = unlocked.slice(-3).reverse();
+
+  const panelStyle = {
+    background: "rgba(10, 10, 15, 0.95)",
+    border: "3px solid #3a3a5a",
+    boxShadow: "4px 4px 0px #000",
+  };
+
+  return (
+    <motion.div
+      className="mt-8 mb-8"
+      initial={{ opacity: 0, y: 30 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ delay: 1.2 }}
+    >
+      {/* Divider */}
+      <div className="flex items-center justify-center gap-4 mb-6 w-full max-w-2xl mx-auto">
+        <div className="h-px flex-1" style={{ background: "linear-gradient(90deg, transparent, rgba(176,0,255,0.3), transparent)" }} />
+        <span className="text-neon-purple/40 text-[10px] tracking-widest uppercase" style={{ fontFamily: "var(--font-display)" }}>
+          STATUS
+        </span>
+        <div className="h-px flex-1" style={{ background: "linear-gradient(90deg, transparent, rgba(176,0,255,0.3), transparent)" }} />
+      </div>
+
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 max-w-5xl mx-auto">
+        {/* Current Objective */}
+        <div className="p-4" style={panelStyle}>
+          <h3 className="text-[10px] text-neon-purple uppercase tracking-widest mb-3" style={{ fontFamily: "var(--font-display)" }}>
+            📋 OBJECTIVE
+          </h3>
+          {active ? (
+            <div>
+              <p className="text-sm text-neon-blue font-bold uppercase mb-1" style={{ fontFamily: "var(--font-display)" }}>
+                {active.name}
+              </p>
+              <p className="text-xs text-gray-400 mb-2" style={{ fontFamily: "var(--font-code)" }}>
+                {active.description}
+              </p>
+              <div className="flex gap-3 text-[10px]" style={{ fontFamily: "var(--font-code)" }}>
+                <span className="text-neon-gold">+{active.xpReward} XP</span>
+                <span className="text-neon-gold">+{active.goldReward}g</span>
+              </div>
+            </div>
+          ) : (
+            <p className="text-xs text-gray-500" style={{ fontFamily: "var(--font-code)" }}>
+              Visit a zone to start your adventure!
+            </p>
+          )}
+        </div>
+
+        {/* Recent Activity */}
+        <div className="p-4" style={panelStyle}>
+          <h3 className="text-[10px] text-neon-blue uppercase tracking-widest mb-3" style={{ fontFamily: "var(--font-display)" }}>
+            📜 ACTIVITY
+          </h3>
+          {recentActivities.length > 0 ? (
+            <div className="space-y-1.5">
+              {recentActivities.map((text, i) => (
+                <p key={i} className="text-[11px] text-gray-400 truncate" style={{ fontFamily: "var(--font-code)" }}>
+                  {text}
+                </p>
+              ))}
+            </div>
+          ) : (
+            <p className="text-xs text-gray-600" style={{ fontFamily: "var(--font-code)" }}>
+              No activity yet. Go explore!
+            </p>
+          )}
+        </div>
+
+        {/* Achievements */}
+        <div className="p-4" style={panelStyle}>
+          <h3 className="text-[10px] text-neon-gold uppercase tracking-widest mb-3" style={{ fontFamily: "var(--font-display)" }}>
+            🏆 ACHIEVEMENTS
+          </h3>
+          <p className="text-[10px] text-gray-500 mb-2" style={{ fontFamily: "var(--font-code)" }}>
+            {achievements.length}/{achievementList.length} Unlocked
+          </p>
+          {recentAchievements.length > 0 ? (
+            <div className="space-y-1.5">
+              {recentAchievements.map((a) => (
+                <div key={a.id} className="flex items-center gap-2 text-[11px]" style={{ fontFamily: "var(--font-code)" }}>
+                  <span>{a.icon}</span>
+                  <span className="text-gray-300">{a.name}</span>
+                </div>
+              ))}
+            </div>
+          ) : (
+            <p className="text-xs text-gray-600" style={{ fontFamily: "var(--font-code)" }}>
+              No achievements yet. Start exploring!
+            </p>
+          )}
+        </div>
       </div>
     </motion.div>
   );
@@ -423,14 +257,12 @@ export default function Home() {
     characterName,
   } = useGameStore();
 
-  // Init sound on first interaction
   const initSound = useCallback(async () => {
     if (soundEnabled) {
       await soundEngine.init();
     }
   }, [soundEnabled]);
 
-  // Auto-detect: if character already created, skip to hub
   useEffect(() => {
     setCharacterClass(detectCharacterClass());
     if (characterName && characterName !== "Void Walker") {
@@ -438,7 +270,6 @@ export default function Home() {
     }
   }, [setCharacterClass, characterName]);
 
-  // Track first-login achievement
   useEffect(() => {
     if (screen === "hub") {
       unlockAchievement("first-login");
@@ -482,13 +313,13 @@ export default function Home() {
       {/* Particle Background */}
       <ParticleField />
 
-      {/* Hex Grid - subtle cyber overlay */}
+      {/* Hex Grid */}
       {screen === "hub" && <HexGrid />}
 
       {/* Ambient glow orbs */}
       {screen === "hub" && <AmbientOrbs />}
 
-      {/* Animated HUD */}
+      {/* Character HUD — top bar */}
       <AnimatePresence>
         {screen === "hub" && <CharacterHUD />}
       </AnimatePresence>
@@ -501,9 +332,6 @@ export default function Home() {
         onComplete={handleTransitionComplete}
       />
 
-      {/* MiniMap on hub screen */}
-      {screen === "hub" && <MiniMap />}
-
       {/* ====== LANDING SCREEN ====== */}
       <AnimatePresence mode="wait">
         {screen === "landing" && (
@@ -513,7 +341,6 @@ export default function Home() {
             exit={{ opacity: 0, scale: 0.9, filter: "blur(10px)" }}
             transition={{ duration: 0.5 }}
           >
-            {/* Title */}
             <motion.div
               className="text-center mb-12"
               initial={{ opacity: 0, y: -30 }}
@@ -536,7 +363,6 @@ export default function Home() {
               </motion.p>
             </motion.div>
 
-            {/* Input */}
             <motion.form
               onSubmit={handleLandingSubmit}
               className="w-full max-w-md"
@@ -631,122 +457,80 @@ export default function Home() {
           </motion.div>
         )}
 
-        {/* ====== HUB SCREEN ====== */}
+        {/* ====== HUB SCREEN — clean 3-section layout ====== */}
         {screen === "hub" && (
           <motion.div
             key="hub"
-            className="relative z-10 min-h-screen flex flex-col items-center justify-center px-6 py-12"
+            className="relative z-10 min-h-screen flex flex-col items-center px-4 sm:px-6"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ duration: 0.8 }}
           >
             {/* Void rings pulsing from center */}
-            <VoidRings color="#b000ff" count={6} />
+            <VoidRings color="#b000ff" count={4} />
 
-            {/* Hub Title */}
+            {/* ── SECTION 1: HERO ── */}
+            <HeroSection characterName={characterName || "Crawler"} />
+
+            {/* ── SECTION 2: ZONES ── */}
             <motion.div
-              className="text-center mb-6"
-              initial={{ y: -30, opacity: 0 }}
-              animate={{ y: 0, opacity: 1 }}
-              transition={{ delay: 0.2 }}
+              className="w-full max-w-5xl mb-8"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 0.6 }}
             >
-              <motion.p
-                className="text-xs sm:text-sm text-gray-500 mb-4 tracking-widest uppercase"
-                style={{ fontFamily: "var(--font-code)" }}
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 0.6 }}
-                transition={{ delay: 0.3 }}
-              >
-                Welcome back, {characterName || "Crawler"}
-              </motion.p>
-              <h2
-                className="text-xl md:text-2xl font-black mb-4 glow-blue uppercase"
-                style={{ fontFamily: "var(--font-display)" }}
-              >
-                <motion.span
-                  className="inline-block"
-                  initial={{ opacity: 0, letterSpacing: "0.2em" }}
-                  animate={{ opacity: 1, letterSpacing: "0.05em" }}
-                  transition={{ delay: 0.3, duration: 0.8 }}
-                >
-                  The Void Hub
-                </motion.span>
-              </h2>
-              <motion.p
-                className="text-gray-400 text-sm sm:text-base"
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ delay: 0.5 }}
-              >
-                {hubTaglines[0]}
-              </motion.p>
+              {/* Divider */}
+              <div className="flex items-center justify-center gap-4 mb-6 w-full max-w-2xl mx-auto">
+                <div className="h-px flex-1" style={{ background: "linear-gradient(90deg, transparent, rgba(176,0,255,0.3), transparent)" }} />
+                <span className="text-neon-purple/40 text-[10px] tracking-widest uppercase" style={{ fontFamily: "var(--font-display)" }}>
+                  ZONES
+                </span>
+                <div className="h-px flex-1" style={{ background: "linear-gradient(90deg, transparent, rgba(176,0,255,0.3), transparent)" }} />
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 max-w-3xl mx-auto">
+                {zoneData.map((z, i) => (
+                  <motion.div
+                    key={z.zone}
+                    className="h-full"
+                    initial={{ opacity: 0, y: 40 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{
+                      delay: 0.8 + i * 0.1,
+                      type: "spring",
+                      damping: 20,
+                      stiffness: 180,
+                    }}
+                  >
+                    <ZonePortal
+                      zone={z.zone}
+                      title={z.title}
+                      subtitle={z.subtitle}
+                      icon={z.icon}
+                      color={z.color}
+                      glowClass={z.glowClass}
+                      onNavigate={() => handlePortalNavigate(z.zone, z.color, z.title)}
+                    />
+                  </motion.div>
+                ))}
+              </div>
             </motion.div>
 
-            {/* Quick Stats */}
-            <QuickStats />
-
-            {/* Animated Divider */}
-            <AnimatedDivider delay={1.0} />
-
-            {/* Zone Portals */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 max-w-6xl w-full">
-              {zoneData.map((z, i) => (
-                <motion.div
-                  key={z.zone}
-                  className="h-full"
-                  initial={{ opacity: 0, y: 60 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{
-                    delay: 1.2 + i * 0.15,
-                    type: "spring",
-                    damping: 20,
-                    stiffness: 180,
-                  }}
-                >
-                  <ZonePortal
-                    zone={z.zone}
-                    title={z.title}
-                    subtitle={z.subtitle}
-                    icon={z.icon}
-                    color={z.color}
-                    glowClass={z.glowClass}
-                    onNavigate={() => handlePortalNavigate(z.zone, z.color, z.title)}
-                  />
-                </motion.div>
-              ))}
-            </div>
-
-            {/* Divider before panels */}
-            <AnimatedDivider delay={1.6} label="◆ STATUS ◆" />
-
-            {/* Hub Panels - 2 column grid */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-6xl w-full">
-              <ObjectivePanel />
-              <AchievementsPanel />
-              <RecentActivityPanel />
-              <ZoneProgressPanel />
-            </div>
+            {/* ── SECTION 3: STATUS ── */}
+            <StatusSection />
 
             {/* Bottom info */}
             <motion.div
-              className="mt-8 text-center text-xs sm:text-sm text-gray-500 px-4"
+              className="mt-auto mb-6 text-center text-xs text-gray-500 px-4"
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
-              transition={{ delay: 2.5 }}
+              transition={{ delay: 1.5 }}
             >
               <p>
-                💡 Each zone has hidden easter eggs • Your browser determined<br className="sm:hidden" />
-                {" "}your class • Progress saves automatically
+                💡 Each zone has hidden easter eggs • Your browser determined{" "}
+                <br className="sm:hidden" />
+                your class • Progress saves automatically
               </p>
-              <motion.p
-                className="text-xs text-gray-600 mt-2"
-                style={{ fontFamily: "var(--font-code)" }}
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ delay: 3.0 }}
-              >
-                Level {level} • {zoneData.length} zones unlocked
-              </motion.p>
             </motion.div>
           </motion.div>
         )}

@@ -4,7 +4,7 @@ import { useState, useEffect, useCallback, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { soundEngine } from '@/lib/sound-engine';
 import { useGameStore } from '@/stores/game-store';
-import { BackButton } from '@/components/rpg/back-button';
+import { ZoneHeader } from '@/components/rpg/back-button';
 
 // ─── Types ───────────────────────────────────────────────────────────────────
 
@@ -430,35 +430,21 @@ export default function CartChaosPage() {
       {/* Warm neon overlay */}
       <div className="pointer-events-none fixed inset-0 z-0 opacity-20" style={{ background: 'radial-gradient(ellipse at 30% 20%, #ff6b35 0%, transparent 50%), radial-gradient(ellipse at 70% 80%, #ff4081 0%, transparent 50%), radial-gradient(ellipse at 50% 50%, #ffc107 0%, transparent 40%)' }} />
 
-      {/* Floating ambient items */}
-      {floatingItems.map((f) => (
-        <motion.div
-          key={f.id}
-          className="pointer-events-none fixed z-0 text-3xl opacity-15 select-none"
-          animate={{ x: `${f.pos.x}vw`, y: `${f.pos.y}vh` }}
-          transition={{ duration: f.pos.duration, ease: 'easeInOut', delay: f.pos.delay }}
-        >
-          {f.emoji}
-        </motion.div>
-      ))}
-
-      {/* Escape log */}
-      <div className="fixed top-3 right-3 sm:top-4 sm:right-4 z-50 w-48 sm:w-64">
-        <AnimatePresence>
-          {escapeLog.map((msg, i) => (
-            <motion.div
-              key={`${msg}-${i}`}
-              initial={{ opacity: 0, x: 100 }}
-              animate={{ opacity: 1, x: 0 }}
-              exit={{ opacity: 0, x: 100 }}
-              className="mb-1 rounded-lg border border-white/10 bg-black/60 px-2 sm:px-3 py-1 sm:py-1.5 text-[10px] sm:text-xs text-pink-300 backdrop-blur-sm truncate"
-            >
-              🏃 {msg}
-            </motion.div>
-          ))}
-        </AnimatePresence>
-      </div>
-
+      {/* Escape log as inline notifications */}
+      <AnimatePresence>
+        {escapeLog.slice(0, 2).map((msg, i) => (
+          <motion.div
+            key={`${msg}-${i}`}
+            initial={{ opacity: 0, y: -20 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -20 }}
+            className="fixed right-4 z-[60] w-64 mb-1 border border-white/10 bg-black/80 px-3 py-1.5 text-xs text-pink-300 truncate"
+            style={{ top: `${60 + i * 32}px`, fontFamily: 'var(--font-code)' }}
+          >
+            🏃 {msg}
+          </motion.div>
+        ))}
+      </AnimatePresence>
       {/* Message toast */}
       <AnimatePresence>
         {message && (
@@ -540,13 +526,8 @@ export default function CartChaosPage() {
       </AnimatePresence>
 
       <div className="relative z-10 mx-auto max-w-7xl px-6 py-12">
-        {/* Header */}
-        <div className="mb-8 flex flex-wrap items-center justify-between gap-4">
-          <BackButton color="#ff6b35" />
-          <div className="glass rounded-xl border border-white/10 px-3 sm:px-4 py-1.5 sm:py-2 text-xs sm:text-sm text-yellow-300" style={{ fontFamily: 'var(--font-code)' }}>
-            💰 {gold}g
-          </div>
-        </div>
+        {/* Zone Header */}
+        <ZoneHeader color="#ff6b35" title="Cart Chaos" gold={gold} />
 
         {/* Title */}
         <motion.div
