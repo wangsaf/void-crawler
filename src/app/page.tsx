@@ -97,7 +97,7 @@ function QuickStats() {
 }
 
 // Animated divider line between sections
-function AnimatedDivider({ delay = 0 }: { delay?: number }) {
+function AnimatedDivider({ delay = 0, label = "◆ ZONES ◆" }: { delay?: number; label?: string }) {
   return (
     <motion.div
       className="flex items-center justify-center gap-4 mb-8 w-full max-w-2xl mx-auto"
@@ -122,7 +122,7 @@ function AnimatedDivider({ delay = 0 }: { delay?: number }) {
         animate={{ opacity: 1 }}
         transition={{ delay: delay + 0.5 }}
       >
-        ◆ ZONES ◆
+        {label}
       </motion.div>
       <motion.div
         className="h-px flex-1"
@@ -134,6 +134,275 @@ function AnimatedDivider({ delay = 0 }: { delay?: number }) {
         animate={{ scaleX: 1 }}
         transition={{ delay: delay + 0.2, duration: 0.8, ease: "easeOut" }}
       />
+    </motion.div>
+  );
+}
+
+// ═══════════════════════════════════════════════════════
+// PANEL A: Current Objective
+// ═══════════════════════════════════════════════════════
+function ObjectivePanel() {
+  const { currentQuest, questList } = useGameStore();
+  const active = currentQuest ? questList.find((q) => q.id === currentQuest) : null;
+
+  return (
+    <motion.div
+      className="p-4"
+      style={{
+        background: "rgba(10, 10, 15, 0.95)",
+        border: "3px solid #3a3a5a",
+        boxShadow: "4px 4px 0px #000",
+      }}
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ delay: 1.8 }}
+      whileHover={{ borderColor: "#b000ff60" }}
+    >
+      <h3
+        className="text-[10px] text-neon-purple uppercase tracking-widest mb-3"
+        style={{ fontFamily: "var(--font-display)" }}
+      >
+        📋 Current Objective
+      </h3>
+      {active ? (
+        <div>
+          <p
+            className="text-sm text-neon-blue font-bold uppercase mb-1"
+            style={{ fontFamily: "var(--font-display)" }}
+          >
+            {active.name}
+          </p>
+          <p
+            className="text-xs text-gray-400 mb-2"
+            style={{ fontFamily: "var(--font-code)" }}
+          >
+            {active.description}
+          </p>
+          <div className="flex gap-3 text-[10px]" style={{ fontFamily: "var(--font-code)" }}>
+            <span className="text-neon-gold">+{active.xpReward} XP</span>
+            <span className="text-neon-gold">+{active.goldReward}g</span>
+            <span className="text-gray-500 uppercase">{active.zone}</span>
+          </div>
+        </div>
+      ) : (
+        <p
+          className="text-xs text-gray-500"
+          style={{ fontFamily: "var(--font-code)" }}
+        >
+          Visit a zone to start your adventure!
+        </p>
+      )}
+    </motion.div>
+  );
+}
+
+// ═══════════════════════════════════════════════════════
+// PANEL B: Achievements
+// ═══════════════════════════════════════════════════════
+function AchievementsPanel() {
+  const { achievementList, achievements } = useGameStore();
+  const unlocked = achievementList.filter((a) => a.unlocked);
+  const recent = unlocked.slice(-3).reverse();
+  const total = achievementList.length;
+
+  return (
+    <motion.div
+      className="p-4"
+      style={{
+        background: "rgba(10, 10, 15, 0.95)",
+        border: "3px solid #3a3a5a",
+        boxShadow: "4px 4px 0px #000",
+      }}
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ delay: 1.9 }}
+      whileHover={{ borderColor: "#ffd70060" }}
+    >
+      <h3
+        className="text-[10px] text-neon-gold uppercase tracking-widest mb-3"
+        style={{ fontFamily: "var(--font-display)" }}
+      >
+        🏆 Achievements
+      </h3>
+      <p
+        className="text-[10px] text-gray-500 mb-3"
+        style={{ fontFamily: "var(--font-code)" }}
+      >
+        {achievements.length}/{total} Unlocked
+      </p>
+      {recent.length > 0 ? (
+        <div className="space-y-2">
+          {recent.map((a) => (
+            <div
+              key={a.id}
+              className="flex items-center gap-2 text-xs"
+              style={{ fontFamily: "var(--font-code)" }}
+            >
+              <span>{a.icon}</span>
+              <span className="text-gray-300">{a.name}</span>
+            </div>
+          ))}
+        </div>
+      ) : (
+        <p
+          className="text-xs text-gray-600"
+          style={{ fontFamily: "var(--font-code)" }}
+        >
+          No achievements yet. Start exploring!
+        </p>
+      )}
+    </motion.div>
+  );
+}
+
+// ═══════════════════════════════════════════════════════
+// PANEL C: Recent Activity
+// ═══════════════════════════════════════════════════════
+function RecentActivityPanel() {
+  const { activities } = useGameStore();
+  const recent = activities.slice(0, 5);
+
+  return (
+    <motion.div
+      className="p-4"
+      style={{
+        background: "rgba(10, 10, 15, 0.95)",
+        border: "3px solid #3a3a5a",
+        boxShadow: "4px 4px 0px #000",
+      }}
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ delay: 2.0 }}
+      whileHover={{ borderColor: "#00d4ff60" }}
+    >
+      <h3
+        className="text-[10px] text-neon-blue uppercase tracking-widest mb-3"
+        style={{ fontFamily: "var(--font-display)" }}
+      >
+        📜 Recent Activity
+      </h3>
+      {recent.length > 0 ? (
+        <div className="space-y-1.5">
+          {recent.map((text, i) => (
+            <p
+              key={i}
+              className="text-xs text-gray-400"
+              style={{ fontFamily: "var(--font-code)" }}
+            >
+              {text}
+            </p>
+          ))}
+        </div>
+      ) : (
+        <p
+          className="text-xs text-gray-600"
+          style={{ fontFamily: "var(--font-code)" }}
+        >
+          No activity yet. Go explore!
+        </p>
+      )}
+    </motion.div>
+  );
+}
+
+// ═══════════════════════════════════════════════════════
+// PANEL D: Zone Progress
+// ═══════════════════════════════════════════════════════
+function ZoneProgressPanel() {
+  const { stats } = useGameStore();
+
+  // Simple progress calculations (caps at 100%)
+  const zones = [
+    {
+      name: "Market",
+      icon: "🛒",
+      color: "#ff6b35",
+      progress: Math.min(100, Math.round((stats.totalItemsBought / 10) * 100)),
+      detail: `${stats.totalItemsBought} items bought`,
+    },
+    {
+      name: "Dashboard",
+      icon: "📊",
+      color: "#00bcd4",
+      progress: Math.min(100, Math.round((stats.totalPuzzlesSolved / 5) * 100)),
+      detail: `${stats.totalPuzzlesSolved} puzzles solved`,
+    },
+    {
+      name: "Cyber",
+      icon: "🔓",
+      color: "#00ff41",
+      progress: Math.min(100, Math.round((stats.totalPortsScanned / 50) * 100)),
+      detail: `${stats.totalPortsScanned} ports scanned`,
+    },
+    {
+      name: "Void",
+      icon: "🌀",
+      color: "#b000ff",
+      progress: Math.min(
+        100,
+        Math.round((stats.secretsFound?.length || 0) / 5) * 100
+      ),
+      detail: `${stats.secretsFound?.length || 0} secrets found`,
+    },
+  ];
+
+  return (
+    <motion.div
+      className="p-4"
+      style={{
+        background: "rgba(10, 10, 15, 0.95)",
+        border: "3px solid #3a3a5a",
+        boxShadow: "4px 4px 0px #000",
+      }}
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ delay: 2.1 }}
+      whileHover={{ borderColor: "#00ff4160" }}
+    >
+      <h3
+        className="text-[10px] text-neon-green uppercase tracking-widest mb-3"
+        style={{ fontFamily: "var(--font-display)" }}
+      >
+        📈 Zone Progress
+      </h3>
+      <div className="space-y-3">
+        {zones.map((z) => (
+          <div key={z.name}>
+            <div className="flex items-center justify-between mb-1">
+              <span
+                className="text-xs text-gray-300"
+                style={{ fontFamily: "var(--font-code)" }}
+              >
+                {z.icon} {z.name}
+              </span>
+              <span
+                className="text-[10px]"
+                style={{ color: z.color, fontFamily: "var(--font-code)" }}
+              >
+                {z.progress}%
+              </span>
+            </div>
+            <div
+              className="h-2 bg-void-deep overflow-hidden"
+              style={{ border: "1px solid #3a3a5a" }}
+            >
+              <motion.div
+                className="h-full"
+                style={{ background: z.color }}
+                initial={{ width: 0 }}
+                animate={{ width: `${z.progress}%` }}
+                transition={{ delay: 2.5, duration: 0.8, ease: "easeOut" }}
+              />
+            </div>
+            <p
+              className="text-[9px] text-gray-600 mt-0.5"
+              style={{ fontFamily: "var(--font-code)" }}
+            >
+              {z.detail}
+            </p>
+          </div>
+        ))}
+      </div>
     </motion.div>
   );
 }
@@ -445,12 +714,23 @@ export default function Home() {
               ))}
             </div>
 
+            {/* Divider before panels */}
+            <AnimatedDivider delay={1.6} label="◆ STATUS ◆" />
+
+            {/* Hub Panels - 2 column grid */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-6xl w-full">
+              <ObjectivePanel />
+              <AchievementsPanel />
+              <RecentActivityPanel />
+              <ZoneProgressPanel />
+            </div>
+
             {/* Bottom info */}
             <motion.div
               className="mt-8 text-center text-xs sm:text-sm text-gray-500 px-4"
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
-              transition={{ delay: 2.0 }}
+              transition={{ delay: 2.5 }}
             >
               <p>
                 💡 Each zone has hidden easter eggs • Your browser determined<br className="sm:hidden" />
@@ -461,7 +741,7 @@ export default function Home() {
                 style={{ fontFamily: "var(--font-code)" }}
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
-                transition={{ delay: 2.5 }}
+                transition={{ delay: 3.0 }}
               >
                 Level {level} • {zoneData.length} zones unlocked
               </motion.p>

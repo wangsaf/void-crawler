@@ -133,6 +133,8 @@ export interface GameState {
   stats: GameStats;
   currentQuest: string | null;
   sessionStartTime: number;
+  // Activity log
+  activities: string[];
 
   // Sound
   soundEnabled: boolean;
@@ -158,6 +160,7 @@ export interface GameState {
   resetGame: () => void;
   trackStat: (key: keyof GameStats, value?: number) => void;
   startQuest: (id: string) => void;
+  addActivity: (text: string) => void;
 }
 
 const INITIAL_STATE = {
@@ -183,6 +186,7 @@ const INITIAL_STATE = {
   stats: { ...DEFAULT_STATS },
   currentQuest: null,
   sessionStartTime: Date.now(),
+  activities: [],
   soundEnabled: true,
   musicEnabled: true,
 };
@@ -359,6 +363,12 @@ export const useGameStore = create<GameState>()(
       startQuest: (id) => {
         set({ currentQuest: id });
       },
+
+      addActivity: (text) => {
+        set((s) => ({
+          activities: [text, ...s.activities].slice(0, 50),
+        }));
+      },
     }),
     {
       name: "void-crawler-save",
@@ -381,6 +391,7 @@ export const useGameStore = create<GameState>()(
         enemiesDefeated: state.enemiesDefeated,
         easterEggsFound: state.easterEggsFound,
         stats: state.stats,
+        activities: state.activities,
       }),
     },
   ),

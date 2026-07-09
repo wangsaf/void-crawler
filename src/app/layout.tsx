@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import "./globals.css";
 import { Providers } from "@/components/providers";
 import { AchievementToast } from "@/components/rpg/achievement-toast";
+import { NotificationStack } from "@/components/rpg/notification-stack";
 
 export const metadata: Metadata = {
   title: "void.crawler() — The Web That Is Alive",
@@ -24,6 +25,7 @@ export default function RootLayout({
         <Providers>
           {children}
           <AchievementToast />
+          <NotificationStack />
         </Providers>
       </body>
     </html>
