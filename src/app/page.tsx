@@ -8,7 +8,7 @@ import { useChaosStore } from "@/stores/chaos-store";
 import { soundEngine } from "@/lib/sound-engine";
 import { ChaosDrift, CorruptedText, Redacted, BreathingText } from "@/components/effects/corruption";
 
-type Screen = "landing" | "naming" | "hub";
+type Screen = "boot" | "landing" | "naming" | "hub";
 
 // ─── Typewriter text effect ─────────────────────────────────────────────────
 function Typewriter({ text, delay = 0, speed = 30 }: { text: string; delay?: number; speed?: number }) {
@@ -69,10 +69,11 @@ function VoidHub({ characterName, characterClass }: { characterName: string; cha
   }, [tickBuffs]);
 
   const zones = [
-    { id: "market" as const, name: "CART_CHAOS", desc: "sector.market // the marketplace fights back", color: "text-signal-red" },
-    { id: "dashboard" as const, name: "PANEL_PANIC", desc: "sector.dashboard // dimension.shift", color: "text-signal-blue" },
-    { id: "cyber" as const, name: "EXPLOIT.ME", desc: "sector.security // interactive playground", color: "text-signal-green" },
-    { id: "playground" as const, name: "THE_VOID", desc: "sector.void // anything can happen", color: "text-signal-purple" },
+    { id: "market" as const, name: "CART_CHAOS", desc: "Buy items, fight the Tax Goblin, survive price crashes", color: "text-signal-red" },
+    { id: "dashboard" as const, name: "PANEL_PANIC", desc: "Monitor systems, pull slot machine, deploy with NUKE", color: "text-signal-blue" },
+    { id: "cyber" as const, name: "EXPLOIT.ME", desc: "Scan ports, hunt XSS phantoms, crack passwords", color: "text-signal-green" },
+    { id: "playground" as const, name: "THE_VOID", desc: "Generate art, explore numbers, interpret the void", color: "text-signal-purple" },
+    ...(level >= 10 ? [{ id: "void-core" as const, name: "VOID_CORE", desc: "Multi-phase boss fight — defeat the Anomaly Core", color: "text-signal-gold" }] : []),
   ];
 
   const chaosStatus = chaosLevel >= 70 ? "CRITICAL" : chaosLevel >= 40 ? "UNSTABLE" : "STABLE";
@@ -369,7 +370,7 @@ function VoidHub({ characterName, characterClass }: { characterName: string; cha
 
 // ─── Main Page ──────────────────────────────────────────────────────────────
 export default function Home() {
-  const [screen, setScreen] = useState<Screen>("landing");
+  const [screen, setScreen] = useState<Screen>("boot");
   const [nameInput, setNameInput] = useState("");
   const {
     setCharacterName,
@@ -388,7 +389,7 @@ export default function Home() {
     }
   }, [soundEnabled]);
 
-  // Auto-detect returning user
+  // Auto-detect returning user (skip boot + landing)
   useEffect(() => {
     setCharacterClass(detectCharacterClass());
     if (zonesUnlocked.length > 1) {
@@ -422,6 +423,73 @@ export default function Home() {
   return (
     <main className="relative min-h-screen" role="main">
       <AnimatePresence mode="wait">
+        {/* ═══ BOOT SEQUENCE ═══ */}
+        {screen === "boot" && (
+          <motion.div
+            key="boot"
+            className="relative z-10 min-h-screen flex flex-col items-center justify-center px-4 sm:px-6"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0, filter: "blur(4px)" }}
+            transition={{ duration: 0.4 }}
+          >
+            <div className="w-full max-w-lg">
+              {/* Terminal header */}
+              <div className="void-panel mb-4">
+                <div className="flex items-center gap-2 mb-3">
+                  <div className="w-2 h-2 rounded-full" style={{ background: "var(--color-signal-green)" }} />
+                  <div className="w-2 h-2 rounded-full" style={{ background: "var(--color-signal-gold)" }} />
+                  <div className="w-2 h-2 rounded-full" style={{ background: "var(--color-signal-red)" }} />
+                  <span className="void-label ml-2">void.crawler() — system.init()</span>
+                </div>
+                <div className="h-px bg-void-border" />
+              </div>
+
+              {/* Boot lines */}
+              <div className="void-panel font-mono text-sm space-y-2">
+                <Typewriter text="> Initializing void.crawler()..." delay={200} speed={25} />
+                <Typewriter text="> Loading reality matrix..." delay={1200} speed={25} />
+                <Typewriter text="> Status: ANOMALOUS" delay={2200} speed={25} />
+                <Typewriter text="" delay={3000} speed={25} />
+                <Typewriter text="> Welcome, Crawler." delay={3200} speed={30} />
+                <Typewriter text="> This is a web RPG. Explore 4 zones." delay={4500} speed={25} />
+                <Typewriter text="> Collect items. Fight chaos. Level up." delay={6000} speed={25} />
+                <Typewriter text="> Or don't. The void doesn't care." delay={7500} speed={25} />
+              </div>
+
+              {/* Skip button */}
+              <motion.div
+                className="mt-6 text-center"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ delay: 2 }}
+              >
+                <button
+                  onClick={() => setScreen("landing")}
+                  className="void-btn text-xs"
+                >
+                  SKIP // PROCEED TO ENTRY
+                </button>
+              </motion.div>
+
+              {/* Auto-advance after boot sequence */}
+              <motion.div
+                className="mt-4 text-center"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ delay: 9 }}
+              >
+                <button
+                  onClick={() => setScreen("landing")}
+                  className="void-btn void-btn--signal"
+                >
+                  INITIALIZE // ENTER THE VOID
+                </button>
+              </motion.div>
+            </div>
+          </motion.div>
+        )}
+
         {/* ═══ LANDING ═══ */}
         {screen === "landing" && (
           <motion.div

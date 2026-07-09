@@ -1,28 +1,28 @@
 @import "tailwindcss";
 
 @theme {
-  /* ─── VOID PALETTE ───────────────────────────────────────────────── */
-  --color-void-black:    #000000;
-  --color-void-deep:     #050508;
-  --color-void-surface:  #0a0a10;
-  --color-void-card:     #0e0e18;
-  --color-void-border:   #1a1a28;
-  --color-void-muted:    #2a2a3a;
+  /* ─── VOID PALETTE (brightened for readability) ──────────────────── */
+  --color-void-black:    #06060c;
+  --color-void-deep:     #0a0a14;
+  --color-void-surface:  #12121c;
+  --color-void-card:     #181826;
+  --color-void-border:   #28283a;
+  --color-void-muted:    #3a3a4e;
 
   /* ─── SIGNAL COLORS (desaturated, not neon) ──────────────────────── */
-  --color-signal-red:    #cc2244;
-  --color-signal-green:  #22cc66;
-  --color-signal-blue:   #2266cc;
-  --color-signal-purple: #6622cc;
-  --color-signal-gold:   #ccaa22;
-  --color-signal-cyan:   #22aaaa;
+  --color-signal-red:    #dd3355;
+  --color-signal-green:  #33dd77;
+  --color-signal-blue:   #3377dd;
+  --color-signal-purple: #7733dd;
+  --color-signal-gold:   #ddbb33;
+  --color-signal-cyan:   #33bbbb;
 
-  /* ─── TEXT ───────────────────────────────────────────────────────── */
-  --color-text-primary:   #b0b0b8;
-  --color-text-secondary: #6a6a78;
-  --color-text-ghost:     #3a3a48;
-  --color-text-danger:    #cc2244;
-  --color-text-ok:        #22cc66;
+  /* ─── TEXT (higher contrast) ─────────────────────────────────────── */
+  --color-text-primary:   #d0d0d8;
+  --color-text-secondary: #8a8a98;
+  --color-text-ghost:     #5a5a68;
+  --color-text-danger:    #dd3355;
+  --color-text-ok:        #33dd77;
 
   /* ─── TYPOGRAPHY ─────────────────────────────────────────────────── */
   --font-mono: 'JetBrains Mono', 'SF Mono', 'Cascadia Code', 'Consolas', monospace;

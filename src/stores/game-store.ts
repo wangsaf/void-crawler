@@ -1,7 +1,7 @@
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
 
-export type Zone = "void" | "hub" | "market" | "dashboard" | "cyber" | "playground";
+export type Zone = "void" | "hub" | "market" | "dashboard" | "cyber" | "playground" | "void-core";
 
 export interface Achievement {
   id: string;
@@ -53,6 +53,8 @@ export const ACHIEVEMENTS: Achievement[] = [
   { id: "level-5", name: "Rising Crawler", description: "Reach level 5", icon: "⭐", unlocked: false },
   { id: "level-10", name: "Senior Architect", description: "Reach level 10", icon: "🏆", unlocked: false },
   { id: "all-zones", name: "Explorer", description: "Visit all 4 zones", icon: "🗺️", unlocked: false },
+  { id: "void-core-enter", name: "Core Breach", description: "Enter the Void Core", icon: "🔮", unlocked: false },
+  { id: "void-core-defeat", name: "Void Slayer", description: "Defeat the Void Core Boss", icon: "⚡", unlocked: false },
   { id: "firewall-master", name: "Firewall Master", description: "Toggle all firewall rules", icon: "🧱", unlocked: false },
   { id: "password-pro", name: "Password Pro", description: "Achieve TITANIUM strength", icon: "🔐", unlocked: false },
 ];
