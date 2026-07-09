@@ -189,6 +189,7 @@ function SlotMachine({ totalPulls }: { totalPulls: number }) {
       stops++;
       if (stops > 15) {
         clearInterval(interval);
+         if (soundEnabled) soundEngine.playSlotSpin();
         const final = [
           SYMBOLS[randomBetween(0, SYMBOLS.length - 1)],
           SYMBOLS[randomBetween(0, SYMBOLS.length - 1)],
@@ -202,7 +203,7 @@ function SlotMachine({ totalPulls }: { totalPulls: number }) {
           addGold(goldWon);
           setResult(`🎉 JACKPOT! +${goldWon} Gold!`);
           unlockAchievement("slot-winner");
-          if (soundEnabled) soundEngine.playLevelUp();
+           if (soundEnabled) soundEngine.playJackpot();
           setShowConfetti(true);
           setTimeout(() => setShowConfetti(false), 2500);
         } else if (final[0] === final[1] || final[1] === final[2] || final[0] === final[2]) {
@@ -244,6 +245,7 @@ function SlotMachine({ totalPulls }: { totalPulls: number }) {
       <button
         onClick={pull}
         disabled={spinning}
+        aria-label={spinning ? "Slot machine spinning" : "Pull slot machine lever"}
         className="w-full py-2 rounded-lg bg-gradient-to-r from-cyan-600/40 to-blue-600/40 border border-cyan-500/30 text-cyan-200 font-bold text-sm hover:from-cyan-600/60 hover:to-blue-600/60 transition-all disabled:opacity-50"
         style={{ fontFamily: "var(--font-display)" }}
       >
@@ -449,6 +451,7 @@ function APIKeyHoroscope() {
       </motion.div>
       <button
         onClick={generate}
+        aria-label="Generate API key horoscope"
         className="w-full py-2 rounded-lg bg-gradient-to-r from-purple-600/30 to-pink-600/30 border border-purple-500/30 text-purple-200 font-bold text-sm hover:from-purple-600/50 hover:to-pink-600/50 transition-all"
         style={{ fontFamily: "var(--font-display)" }}
       >
@@ -509,6 +512,7 @@ function DeployNuke() {
       {phase === "idle" && (
         <motion.button
           onClick={startDeploy}
+          aria-label="Deploy using NUKE"
           className="w-full py-3 sm:py-4 rounded-xl bg-gradient-to-b from-red-600/40 to-red-900/40 border-2 border-red-500/50 text-red-300 font-black text-lg sm:text-xl hover:from-red-600/60 hover:to-red-900/60 transition-all relative overflow-hidden"
           style={{ fontFamily: "var(--font-display)" }}
           whileHover={{ scale: 1.02 }}
@@ -631,7 +635,7 @@ export default function DashboardPage() {
   };
 
   return (
-    <main className="relative min-h-screen overflow-hidden" style={{ background: "#0a0e1a" }}>
+    <main className="relative min-h-screen overflow-hidden" style={{ background: "#0a0e1a" }} role="main" aria-label="Panel Panic dashboard zone">
       <div className="fixed inset-0 pointer-events-none z-50 scanlines opacity-20" />
 
       <div

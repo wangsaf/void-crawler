@@ -32,6 +32,7 @@ export function ZonePortal({
   const handleClick = () => {
     if (locked && !isUnlocked) return;
     if (soundEnabled) soundEngine.playClick();
+    if (soundEnabled) soundEngine.playZoneEnter();
     if (onNavigate) {
       onNavigate();
     } else {
@@ -42,6 +43,8 @@ export function ZonePortal({
   return (
     <motion.button
       onClick={handleClick}
+      aria-label={`Navigate to ${title} zone`}
+      role="link"
       className={`relative group cursor-pointer w-full h-full ${locked && !isUnlocked ? "opacity-40 cursor-not-allowed" : ""}`}
       whileHover={isUnlocked ? { scale: 1.05, y: -5 } : {}}
       whileTap={isUnlocked ? { scale: 0.95 } : {}}

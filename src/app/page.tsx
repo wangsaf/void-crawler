@@ -478,7 +478,7 @@ export default function Home() {
   };
 
   return (
-    <main className="relative min-h-screen overflow-hidden bg-void-black">
+    <main className="relative min-h-screen overflow-hidden bg-void-black" role="main">
       {/* Particle Background */}
       <ParticleField />
 
@@ -557,6 +557,7 @@ export default function Home() {
                   />
                   <button
                     type="submit"
+                    aria-label="Enter the void"
                     className="px-6 py-3 bg-neon-purple/20 hover:bg-neon-purple/30 text-neon-purple transition-all duration-200 font-bold uppercase tracking-wider"
                   >
                     ENTER
@@ -620,6 +621,7 @@ export default function Home() {
                 />
                 <button
                   type="submit"
+                  aria-label="Begin your quest"
                   className="w-full py-3 bg-neon-purple/20 hover:bg-neon-purple/30 border-2 border-neon-purple text-neon-blue font-bold transition-all duration-300 uppercase tracking-wider"
                 >
                   ⚔️ BEGIN YOUR QUEST

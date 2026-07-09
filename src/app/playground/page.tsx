@@ -758,7 +758,7 @@ export default function PlaygroundPage() {
   const normalizedColor = input.startsWith('#') ? input : `#${input}`;
 
   return (
-    <div className="min-h-screen bg-[#0a0010] text-white relative overflow-hidden" onClick={handleBackgroundClick}>
+    <div className="min-h-screen bg-[#0a0010] text-white relative overflow-hidden" onClick={handleBackgroundClick} role="main" aria-label="The Void generative playground">
       <GenerativeBackground />
 
       <AnimatePresence>
@@ -815,6 +815,7 @@ export default function PlaygroundPage() {
           <textarea
             value={input}
             onChange={e => { setInput(e.target.value); soundEngine.playClick(); }}
+            aria-label="Void input portal - enter text, numbers, colors, or code"
             placeholder="Enter a number, word, color hex, code, or try: json, md, ascii, dream..."
             rows={3}
             className="w-full bg-black/60 border border-white/10 rounded-lg px-3 sm:px-4 py-2.5 sm:py-3 text-purple-200 font-mono placeholder:text-purple-500/30 focus:outline-none focus:border-white/20 resize-none"

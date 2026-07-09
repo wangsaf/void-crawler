@@ -134,6 +134,7 @@ function PortScanner({ addXP, onScanComplete }: { addXP: (n: number) => void; on
           style={{ fontFamily: 'var(--font-code)' }}
         />
         <button onClick={startScan} disabled={scanning}
+          aria-label={scanning ? "Port scan in progress" : "Start port scan"}
           className="px-4 py-2.5 sm:py-2 bg-[#00ff41]/20 border border-[#00ff41]/50 rounded-lg text-[#00ff41] font-mono hover:bg-[#00ff41]/30 disabled:opacity-50 transition-all shrink-0">
           {scanning ? 'SCANNING...' : 'SCAN'}
         </button>
@@ -466,6 +467,7 @@ function XssPlayground({ addXP }: { addXP: (n: number) => void }) {
           style={{ fontFamily: 'var(--font-code)' }}
         />
         <button onClick={testPayload}
+          aria-label="Inject XSS payload for testing"
           className="px-4 py-2.5 sm:py-2 bg-red-500/20 border border-red-500/50 rounded-lg text-red-400 font-mono hover:bg-red-500/30 transition-all shrink-0">
           INJECT
         </button>
@@ -537,6 +539,7 @@ function SqlInjection({ addXP }: { addXP: (n: number) => void }) {
           style={{ fontFamily: 'var(--font-code)' }}
         />
         <button onClick={runQuery}
+          aria-label="Execute SQL query"
           className="px-4 py-2.5 sm:py-2 bg-orange-500/20 border border-orange-500/50 rounded-lg text-orange-400 font-mono hover:bg-orange-500/30 transition-all shrink-0">
           EXECUTE
         </button>
@@ -775,7 +778,7 @@ export default function CyberPage() {
   const wrappedAddXP = useCallback((n: number) => addXP(n), [addXP]);
 
   return (
-    <div className="min-h-screen bg-[#0d1117] text-white relative overflow-hidden">
+    <div className="min-h-screen bg-[#0d1117] text-white relative overflow-hidden" role="main" aria-label="exploit.me cybersecurity zone">
       <MatrixRain />
 
       <AnimatePresence>

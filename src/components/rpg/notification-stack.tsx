@@ -2,7 +2,8 @@
 
 import { useState, useEffect, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { onGameEvent, type GameEvent } from "@/stores/game-store";
+import { onGameEvent, useGameStore, type GameEvent } from "@/stores/game-store";
+import { soundEngine } from "@/lib/sound-engine";
 
 export interface Notification {
   id: string;
@@ -27,15 +28,17 @@ export function showNotification(text: string, type: Notification["type"] = "inf
 
 export function NotificationStack() {
   const [notifications, setNotifications] = useState<Notification[]>([]);
+  const soundEnabled = useGameStore((s) => s.soundEnabled);
 
   const addNotification = useCallback((notif: Omit<Notification, "id">) => {
     const id = `notif-${++notifIdCounter}`;
     setNotifications((prev) => [{ ...notif, id }, ...prev].slice(0, 5));
+    if (soundEnabled) soundEngine.playNotification();
 
     setTimeout(() => {
       setNotifications((prev) => prev.filter((n) => n.id !== id));
     }, 3000);
-  }, []);
+  }, [soundEnabled]);
 
   // Register with singleton system
   useEffect(() => {
@@ -64,7 +67,7 @@ export function NotificationStack() {
   }, [addNotification]);
 
   return (
-    <div className="fixed bottom-4 right-4 z-[90] flex flex-col gap-2 pointer-events-none w-52">
+    <div className="fixed bottom-4 right-4 z-[90] flex flex-col gap-2 pointer-events-none w-52" aria-live="polite" role="status">
       <AnimatePresence>
         {notifications.map((notif) => {
           const config = TYPE_CONFIG[notif.type] || TYPE_CONFIG.info;

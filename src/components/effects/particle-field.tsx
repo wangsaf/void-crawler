@@ -41,8 +41,11 @@ export function ParticleField() {
     };
     window.addEventListener("mousemove", handleMouse);
 
-    // Initialize particles
-    const count = Math.min(80, Math.floor(window.innerWidth / 15));
+    // Reduce particle count on mobile
+    const isMobile = window.innerWidth < 768;
+    const count = isMobile
+      ? Math.min(30, Math.floor(window.innerWidth / 25))
+      : Math.min(80, Math.floor(window.innerWidth / 15));
     particlesRef.current = Array.from({ length: count }, () => ({
       x: Math.random() * canvas.width,
       y: Math.random() * canvas.height,
@@ -91,8 +94,8 @@ export function ParticleField() {
         // Draw
         ctx.beginPath();
         ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
-        ctx.fillStyle = p.color.replace(")", `, ${alpha})`).replace("rgb", "rgba");
         ctx.globalAlpha = alpha;
+        ctx.fillStyle = p.color;
         ctx.fill();
 
         // Reset if life exceeded
@@ -103,23 +106,25 @@ export function ParticleField() {
         }
       });
 
-      // Draw connections
+      // Draw connections (skip on mobile for perf)
       ctx.globalAlpha = 1;
-      particlesRef.current.forEach((a, i) => {
-        particlesRef.current.slice(i + 1).forEach((b) => {
-          const dx = a.x - b.x;
-          const dy = a.y - b.y;
-          const dist = Math.sqrt(dx * dx + dy * dy);
-          if (dist < 120) {
-            ctx.beginPath();
-            ctx.moveTo(a.x, a.y);
-            ctx.lineTo(b.x, b.y);
-            ctx.strokeStyle = `rgba(0, 212, 255, ${0.08 * (1 - dist / 120)})`;
-            ctx.lineWidth = 0.5;
-            ctx.stroke();
-          }
+      if (!isMobile) {
+        particlesRef.current.forEach((a, i) => {
+          particlesRef.current.slice(i + 1).forEach((b) => {
+            const dx = a.x - b.x;
+            const dy = a.y - b.y;
+            const dist = Math.sqrt(dx * dx + dy * dy);
+            if (dist < 120) {
+              ctx.beginPath();
+              ctx.moveTo(a.x, a.y);
+              ctx.lineTo(b.x, b.y);
+              ctx.strokeStyle = `rgba(0, 212, 255, ${0.08 * (1 - dist / 120)})`;
+              ctx.lineWidth = 0.5;
+              ctx.stroke();
+            }
+          });
         });
-      });
+      }
 
       animFrameRef.current = requestAnimationFrame(animate);
     };
@@ -136,7 +141,7 @@ export function ParticleField() {
   return (
     <canvas
       ref={canvasRef}
-      className="fixed inset-0 z-0 pointer-events-none"
+      className="fixed inset-0 z-0 pointer-events-none gpu-accelerated"
       style={{ opacity: 0.6 }}
     />
   );

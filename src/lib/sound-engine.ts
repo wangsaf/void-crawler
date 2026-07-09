@@ -8,7 +8,8 @@ class SoundEngine {
   private clickSynth: Tone.Synth | null = null;
   private successSynth: Tone.Synth | null = null;
   private errorSynth: Tone.NoiseSynth | null = null;
-  private ambientOscs: Tone.Oscillator[] | [];
+  private warningSynth: Tone.Synth | null = null;
+  private ambientOscs: Tone.Oscillator[];
   private masterGain: Tone.Gain | null = null;
 
   constructor() {
@@ -26,6 +27,12 @@ class SoundEngine {
       envelope: { attack: 0.001, decay: 0.05, sustain: 0, release: 0.1 },
     }).connect(this.masterGain);
     this.clickSynth.volume.value = -12;
+
+    this.warningSynth = new Tone.Synth({
+      oscillator: { type: "sawtooth" },
+      envelope: { attack: 0.01, decay: 0.15, sustain: 0.1, release: 0.2 },
+    }).connect(this.masterGain);
+    this.warningSynth.volume.value = -14;
 
     this.successSynth = new Tone.Synth({
       oscillator: { type: "triangle" },
@@ -85,6 +92,55 @@ class SoundEngine {
     this.successSynth.triggerAttackRelease("D6", "8n", now + 0.24);
   }
 
+  playWarning() {
+    if (!this.initialized || !this.warningSynth) return;
+    const now = Tone.now();
+    this.warningSynth.triggerAttackRelease("A4", "16n", now);
+    this.warningSynth.triggerAttackRelease("E4", "16n", now + 0.15);
+  }
+
+  playNotification() {
+    if (!this.initialized || !this.successSynth) return;
+    const now = Tone.now();
+    this.successSynth.triggerAttackRelease("C5", "32n", now);
+    this.successSynth.triggerAttackRelease("E5", "32n", now + 0.08);
+    this.successSynth.triggerAttackRelease("G5", "32n", now + 0.16);
+  }
+
+  playZoneEnter() {
+    if (!this.initialized || !this.masterGain) return;
+    const noise = new Tone.Noise("white").connect(this.masterGain);
+    noise.volume.value = -20;
+    const filter = new Tone.Filter(200, "lowpass").connect(this.masterGain);
+    noise.connect(filter);
+    filter.frequency.rampTo(4000, 0.4);
+    noise.start();
+    setTimeout(() => {
+      noise.stop();
+      noise.dispose();
+      filter.dispose();
+    }, 500);
+  }
+
+  playCartAdd() {
+    if (!this.initialized || !this.clickSynth) return;
+    this.clickSynth.triggerAttackRelease("B5", "32n");
+  }
+
+  playSlotSpin() {
+    if (!this.initialized || !this.clickSynth) return;
+    this.clickSynth.triggerAttackRelease("D5", "64n");
+  }
+
+  playJackpot() {
+    if (!this.initialized || !this.successSynth) return;
+    const now = Tone.now();
+    const scale = ["C4", "E4", "G4", "C5", "E5", "G5", "C6", "E6"];
+    scale.forEach((note, i) => {
+      this.successSynth!.triggerAttackRelease(note, "16n", now + i * 0.1);
+    });
+  }
+
   startAmbient(zone: string) {
     this.stopAmbient();
     if (!this.initialized) return;
@@ -137,6 +193,7 @@ class SoundEngine {
     this.clickSynth?.dispose();
     this.successSynth?.dispose();
     this.errorSynth?.dispose();
+    this.warningSynth?.dispose();
     this.masterGain?.dispose();
     this.initialized = false;
   }

@@ -220,6 +220,7 @@ export default function CartChaosPage() {
       setTaxGoblin({ active: true, ...q });
       if (soundEnabled) soundEngine.playError();
       showMessage('🧾 A Tax Goblin appears! Answer its trivia or pay up!', 'warning');
+      if (soundEnabled) soundEngine.playWarning();
     }, 20000);
     return () => clearInterval(interval);
   }, [taxGoblin.active, soundEnabled, showMessage]);
@@ -284,6 +285,7 @@ export default function CartChaosPage() {
         }
         return [...prev, { item: { ...item, stock: item.stock - 1 }, quantity: 1 }];
       });
+      if (soundEnabled) soundEngine.playCartAdd();
       showMessage(`Added ${item.emoji} ${item.name} (${item.currentPrice}g) to cart!`, 'info');
     },
     [soundEnabled, showMessage],
@@ -424,7 +426,7 @@ export default function CartChaosPage() {
   // ─── Render ──────────────────────────────────────────────────────────────
 
   return (
-    <div className="relative min-h-screen overflow-hidden" style={{ background: 'linear-gradient(135deg, #1a0a2e 0%, #2d1b4e 30%, #1a0a2e 60%, #0d0618 100%)' }}>
+    <div className="relative min-h-screen overflow-hidden" style={{ background: 'linear-gradient(135deg, #1a0a2e 0%, #2d1b4e 30%, #1a0a2e 60%, #0d0618 100%)' }} role="main" aria-label="Cart Chaos market zone">
       {/* Warm neon overlay */}
       <div className="pointer-events-none fixed inset-0 z-0 opacity-20" style={{ background: 'radial-gradient(ellipse at 30% 20%, #ff6b35 0%, transparent 50%), radial-gradient(ellipse at 70% 80%, #ff4081 0%, transparent 50%), radial-gradient(ellipse at 50% 50%, #ffc107 0%, transparent 40%)' }} />
 
@@ -464,6 +466,7 @@ export default function CartChaosPage() {
             initial={{ opacity: 0, y: -50, scale: 0.8 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: -30, scale: 0.8 }}
+            aria-live="polite"
             className={`fixed left-4 right-4 sm:left-1/2 top-4 sm:top-6 z-[60] sm:-translate-x-1/2 rounded-xl border px-4 sm:px-6 py-2 sm:py-3 text-xs sm:text-sm font-semibold backdrop-blur-md text-center max-w-lg sm:max-w-none mx-auto ${
               message.type === 'success' ? 'border-green-500/50 bg-green-900/60 text-green-300' :
               message.type === 'error' ? 'border-red-500/50 bg-red-900/60 text-red-300' :
@@ -758,6 +761,7 @@ export default function CartChaosPage() {
                   {/* Checkout button */}
                   <motion.button
                     onClick={startCheckout}
+                    aria-label="Proceed to checkout puzzle"
                     whileHover={{ scale: 1.02 }}
                     whileTap={{ scale: 0.98 }}
                     className="mt-3 w-full border-2 border-pink-500/40 bg-neon-pink/20 py-3 text-sm font-bold text-white transition-all hover:bg-neon-pink/30 glow-pink uppercase tracking-wider"

@@ -3,6 +3,7 @@ import "./globals.css";
 import { Providers } from "@/components/providers";
 import { AchievementToast } from "@/components/rpg/achievement-toast";
 import { NotificationStack } from "@/components/rpg/notification-stack";
+import { VolumeControl } from "@/components/rpg/volume-control";
 
 export const metadata: Metadata = {
   title: "void.crawler() — The Web That Is Alive",
@@ -22,10 +23,16 @@ export default function RootLayout({
         className="antialiased"
         style={{ fontFamily: "'VT323', monospace", fontSize: "18px" }}
       >
+        <a href="#main-content" className="skip-link">
+          Skip to main content
+        </a>
         <Providers>
-          {children}
+          <div id="main-content" role="main" aria-label="Void Crawler main content">
+            {children}
+          </div>
           <AchievementToast />
           <NotificationStack />
+          <VolumeControl />
         </Providers>
       </body>
     </html>

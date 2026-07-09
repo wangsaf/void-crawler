@@ -367,3 +367,52 @@ body::after {
     text-shadow: 0 0 5px currentColor;
   }
 }
+
+/* ==================== ACCESSIBILITY ==================== */
+
+/* Focus indicators */
+:focus-visible {
+  outline: 2px solid #00d4ff;
+  outline-offset: 2px;
+}
+
+/* Reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+  body::before, body::after {
+    display: none;
+  }
+}
+
+/* Skip to main content */
+.skip-link {
+  position: absolute;
+  top: -40px;
+  left: 0;
+  background: #b000ff;
+  color: white;
+  padding: 8px;
+  z-index: 100;
+  font-family: var(--font-code);
+  text-decoration: none;
+}
+.skip-link:focus {
+  top: 0;
+}
+
+/* ==================== PERFORMANCE ==================== */
+
+/* GPU acceleration */
+.gpu-accelerated {
+  transform: translateZ(0);
+  will-change: transform;
+}
+
+/* Reduce paint */
+.contain-layout {
+  contain: layout;
+}
