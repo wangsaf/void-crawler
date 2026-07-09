@@ -5,6 +5,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { useGameStore, detectCharacterClass } from "@/stores/game-store";
 import { useChaosStore } from "@/stores/chaos-store";
 import { soundEngine } from "@/lib/sound-engine";
+import { ChaosDrift, CorruptedText, Redacted } from "@/components/effects/corruption";
 
 type Screen = "landing" | "naming" | "hub";
 
@@ -85,10 +86,10 @@ function VoidHub({ characterName, characterClass }: { characterName: string; cha
         </div>
         <div className="h-px bg-void-border mb-4" />
         <h1 className="text-2xl font-bold tracking-tight text-text-primary mb-1">
-          void.crawler()
+          <CorruptedText text="void.crawler()" intensity={0.05} />
         </h1>
         <p className="void-label">
-          SUBJECT: {characterName.toUpperCase()} // CLASS: {characterClass.toUpperCase()} // STATUS: OPERATIONAL
+          SUBJECT: {characterName.toUpperCase()} // CLASS: {characterClass.toUpperCase()} // STATUS: <Redacted>OPERATIONAL</Redacted>
         </p>
       </motion.div>
 
@@ -130,13 +131,13 @@ function VoidHub({ characterName, characterClass }: { characterName: string; cha
       </motion.div>
 
       {/* Zone Access */}
-      <motion.div
-        className="w-full max-w-3xl void-panel mb-8"
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ delay: 0.4 }}
-      >
-        <div className="void-title mb-4">ZONE ACCESS</div>
+      <ChaosDrift className="w-full max-w-3xl void-panel mb-8" >
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 0.4 }}
+        >
+          <div className="void-title mb-4">ZONE ACCESS</div>
         <div className="space-y-2">
           {zones.map((zone, i) => (
             <motion.a
@@ -165,7 +166,8 @@ function VoidHub({ characterName, characterClass }: { characterName: string; cha
             </motion.a>
           ))}
         </div>
-      </motion.div>
+        </motion.div>
+      </ChaosDrift>
 
       {/* Achievements / Recent Activity */}
       <div className="w-full max-w-3xl grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
@@ -324,6 +326,7 @@ export default function Home() {
                 <StatusLine label="PROTOCOL" value="void.init()" delay={2.2} />
                 <StatusLine label="CLEARANCE" value="PENDING AUTHORIZATION" delay={2.4} />
                 <StatusLine label="WARNING" value="Subject may experience reality distortion" delay={2.6} />
+                <StatusLine label="NOTICE" value="████████ data restricted by order of ████" delay={2.8} />
               </div>
               <form onSubmit={handleLandingSubmit}>
                 <button type="submit" className="void-btn void-btn--signal w-full">
