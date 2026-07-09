@@ -15,6 +15,8 @@ import { RandomEventPopup, ChaosEventSpawner } from "@/components/rpg/random-eve
 import { EnhancedHUD } from "@/components/rpg/enhanced-hud";
 import { ChaosModeBody } from "@/components/effects/chaos-mode-body";
 import { ChaosEngine } from "@/components/rpg/chaos-engine";
+import { PerformanceBanner, PerformanceGate } from "@/components/effects/performance-banner";
+import { VoidDeathOverlay } from "@/components/rpg/void-death-overlay";
 
 export const metadata: Metadata = {
   title: "void.crawler()",
@@ -38,13 +40,16 @@ export default function RootLayout({
           Skip to main content
         </a>
         <Providers>
+          <PerformanceBanner />
           <ChaosModeBody />
           <BreathingViewport />
-          <VoidFlowField />
+          <PerformanceGate>
+            <VoidFlowField />
+            <ChaosEffects />
+            <LivingVoid />
+          </PerformanceGate>
           <CorruptionOverlay />
           <VoidCursor />
-          <ChaosEffects />
-          <LivingVoid />
           <div id="main-content" role="main" aria-label="Void Crawler main content">
             {children}
           </div>
@@ -55,6 +60,7 @@ export default function RootLayout({
           <RandomEventPopup />
           <ChaosEventSpawner />
           <ChaosEngine />
+          <VoidDeathOverlay />
           <VolumeControl />
         </Providers>
       </body>

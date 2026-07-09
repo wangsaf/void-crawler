@@ -2,6 +2,7 @@
 
 import { useEffect, useRef } from "react";
 import { useChaosStore } from "@/stores/chaos-store";
+import { getParticleMultiplier } from "@/lib/performance";
 
 // Simple 2D noise implementation (simplex-like)
 function createNoise() {
@@ -138,7 +139,9 @@ export function VoidFlowField() {
 
     // Create particles
     const isMobile = width < 768;
-    const count = isMobile ? 200 : 600;
+    const perfMultiplier = getParticleMultiplier();
+    const baseCount = isMobile ? 200 : 600;
+    const count = Math.floor(baseCount * perfMultiplier);
     const particles: Particle[] = Array.from({ length: count }, () =>
       createParticle(width, height),
     );

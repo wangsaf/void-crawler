@@ -8,7 +8,7 @@ import { soundEngine } from "@/lib/sound-engine";
 export interface Notification {
   id: string;
   text: string;
-  type: "xp" | "gold" | "quest" | "info";
+  type: "xp" | "gold" | "quest" | "info" | "danger";
 }
 
 const TYPE_CONFIG: Record<string, { icon: string; color: string }> = {
@@ -16,6 +16,7 @@ const TYPE_CONFIG: Record<string, { icon: string; color: string }> = {
   gold: { icon: "◆", color: "var(--color-signal-gold)" },
   quest: { icon: "✓", color: "var(--color-signal-blue)" },
   info: { icon: "·", color: "var(--color-signal-cyan)" },
+  danger: { icon: "△", color: "var(--color-signal-red)" },
 };
 
 let notifListeners: Array<(notif: Omit<Notification, "id">) => void> = [];
@@ -49,6 +50,16 @@ export function NotificationStack() {
           break;
         case "quest-complete":
           addNotification({ text: `QUEST: ${event.name}`, type: "quest" });
+          break;
+        case "void-death":
+          if (event.healedTo > 0) {
+            addNotification({ text: `VOID CONSUMED — Recovered ${event.healedTo} HP`, type: "danger" });
+          } else {
+            addNotification({ text: "THE VOID CONSUMED YOU", type: "danger" });
+          }
+          break;
+        case "max-level-reached":
+          addNotification({ text: "[][][] MAX LEVEL — VOID TRANSCENDED [][][]", type: "info" });
           break;
       }
     });

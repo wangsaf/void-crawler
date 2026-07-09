@@ -83,3 +83,31 @@
 - **What broke**: n/a
 - **Fix**: n/a
 - **Verify**: Vignette deepens with chaos, screen tear at 50%+, red tint at 70%+, cursor distorts, chaos sounds play at thresholds
+
+## Iteration 13: UX Overhaul + Void Core Boss Fight
+- **Maker**: Added brightness fix, onboarding boot sequence, zone descriptions, Void Core boss fight zone
+- **Checker**: TestSprite tested new user flow and boss fight
+- **What broke**: Initial chaos load was too high (+10 on new game)
+- **Fix**: Removed initial chaos, added natural decay on hub (-1 every 5s)
+- **Verify**: Boot sequence shows purpose, zone descriptions are clear, Void Core boss fight works at level 10+
+
+## Iteration 14: Void Aesthetic Compliance
+- **Maker**: Replaced all emojis with geometric symbols, fixed neon colors, de-hacker themed zones
+- **Checker**: TestSprite tested visual consistency
+- **What broke**: n/a
+- **Fix**: n/a
+- **Verify**: All icons use ◎◇⊞⊡◉△▣, colors are desaturated, zones renamed (ANOMALY.ZONE, Pattern Scanner, etc.)
+
+## Iteration 15: Chaos Balance + Natural Decay
+- **Maker**: Added chaos decay on hub, reduced penalties, increased rewards
+- **Checker**: TestSprite tested chaos progression
+- **What broke**: Chaos accumulated without reduction path
+- **Fix**: Added natural decay (-1/5s, -2/5s if >50%), reduced penalties (3→1, 5→2, 15→5), increased event reward (10→15)
+- **Verify**: Chaos builds during gameplay, decays on hub, balanced risk/reward
+
+## Iteration 16: New User Guidance + Comprehensive UX
+- **Maker**: Added tutorial overlay, tooltips, progression guide, save indicator, settings panel, mobile UX
+- **Checker**: TestSprite tested first-time user experience
+- **What broke**: n/a
+- **Fix**: n/a
+- **Verify**: Tutorial shows once, tooltips on all UI, progression guide tracks goals, save indicator shows, settings has reset option, 44px touch targets

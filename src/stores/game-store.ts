@@ -75,7 +75,9 @@ export type GameEvent =
   | { type: "achievement"; name: string; icon: string; description: string }
   | { type: "quest-complete"; name: string; xpReward: number; goldReward: number }
   | { type: "zone-unlock"; zone: Zone }
-  | { type: "gold-earned"; amount: number };
+  | { type: "gold-earned"; amount: number }
+  | { type: "void-death"; healedTo: number }
+  | { type: "max-level-reached"; level: number };
 
 let _eventListeners: Array<(event: GameEvent) => void> = [];
 
@@ -199,6 +201,9 @@ export interface GameState {
   soundEnabled: boolean;
   musicEnabled: boolean;
 
+  // Void death state
+  voidDeath: boolean;
+
   // Actions
   setZone: (zone: Zone) => void;
   addXP: (amount: number) => void;
@@ -225,6 +230,8 @@ export interface GameState {
   trackStat: (key: keyof GameStats, value?: number) => void;
   startQuest: (id: string) => void;
   addActivity: (text: string) => void;
+  triggerVoidDeath: () => void;
+  recoverFromVoidDeath: () => void;
 }
 
 const INITIAL_STATE = {
@@ -256,6 +263,7 @@ const INITIAL_STATE = {
   activities: [],
   soundEnabled: true,
   musicEnabled: true,
+  voidDeath: false,
 };
 
 export const useGameStore = create<GameState>()(
@@ -276,6 +284,11 @@ export const useGameStore = create<GameState>()(
 
       addXP: (amount) => {
         const state = get();
+        // Max level cap at 50
+        if (state.level >= 50) {
+          set({ xp: 0, xpToNext: state.xpToNext });
+          return;
+        }
         let newXP = state.xp + amount;
         let newLevel = state.level;
         let newXPToNext = state.xpToNext;
@@ -284,7 +297,11 @@ export const useGameStore = create<GameState>()(
 
         while (newXP >= newXPToNext) {
           newXP -= newXPToNext;
-          newLevel++;
+          newLevel++ ;
+          if (newLevel > 50) {
+            newLevel = 50;
+            break;
+          }
           newXPToNext = Math.floor(newXPToNext * 1.5);
           newMaxHealth += 20;
         }
@@ -305,6 +322,10 @@ export const useGameStore = create<GameState>()(
           emitGameEvent({ type: "levelup", level: newLevel });
           if (newLevel >= 5) get().unlockAchievement("level-5");
           if (newLevel >= 10) get().unlockAchievement("level-10");
+          if (newLevel >= 50) {
+            emitGameEvent({ type: "max-level-reached", level: 50 });
+            get().addActivity("[][][] MAX LEVEL — VOID TRANSCENDED [][][]");
+          }
         }
       },
 
@@ -395,11 +416,21 @@ export const useGameStore = create<GameState>()(
       incrementClicks: () =>
         set((s) => ({ totalClicks: s.totalClicks + 1 })),
 
-      takeDamage: (amount) =>
-        set((s) => ({ health: Math.max(0, s.health - amount) })),
+      takeDamage: (amount) => {
+        const state = get();
+        const newHealth = Math.max(0, state.health - amount);
+        if (newHealth <= 0 && !state.voidDeath) {
+          set({ health: 0 });
+          get().triggerVoidDeath();
+        } else {
+          set({ health: newHealth });
+        }
+      },
 
       heal: (amount) =>
-        set((s) => ({ health: Math.min(s.maxHealth, s.health + amount) })),
+        set((s) => ({
+          health: s.voidDeath ? s.health : Math.min(s.maxHealth, s.health + amount),
+        })),
 
       toggleSound: () => set((s) => ({ soundEnabled: !s.soundEnabled })),
       toggleMusic: () => set((s) => ({ musicEnabled: !s.musicEnabled })),
@@ -516,6 +547,27 @@ export const useGameStore = create<GameState>()(
           activities: [text, ...s.activities].slice(0, 50),
         }));
       },
+
+      triggerVoidDeath: () => {
+        const state = get();
+        if (state.voidDeath) return;
+        set({ voidDeath: true, health: 0 });
+        get().addActivity("[][][] THE VOID CONSUMED YOU [][][]");
+        emitGameEvent({ type: "void-death", healedTo: 0 });
+
+        // Recover after 3 seconds
+        setTimeout(() => {
+          get().recoverFromVoidDeath();
+        }, 3000);
+      },
+
+      recoverFromVoidDeath: () => {
+        const state = get();
+        const healAmount = Math.floor(state.maxHealth * 0.5);
+        set({ voidDeath: false, health: healAmount });
+        get().addActivity(`Recovered from void consumption: ${healAmount} HP restored`);
+        emitGameEvent({ type: "void-death", healedTo: healAmount });
+      },
     }),
     {
       name: "void-crawler-save",
@@ -568,4 +620,7 @@ export const LEVEL_TITLES: Record<number, string> = {
   13: "Staff Engineer",
   15: "Void Walker",
   20: "Legendary Crawler",
+  30: "Void Architect",
+  40: "Reality Shaper",
+  50: "VOID TRANSCENDED",
 };

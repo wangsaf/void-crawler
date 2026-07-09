@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useGameStore, LEVEL_TITLES } from "@/stores/game-store";
 import { useChaosStore } from "@/stores/chaos-store";
+import { formatGold } from "@/lib/performance";
 
 function GlitchText({ text, intensity = 0.1 }: { text: string; intensity?: number }) {
   const [display, setDisplay] = useState(text);
@@ -111,7 +112,7 @@ export function EnhancedHUD() {
             >
               <div className="grid grid-cols-2 gap-2">
                 {[
-                  { label: "GOLD", value: `${gold}`, color: "var(--color-signal-gold)" },
+                  { label: "GOLD", value: formatGold(gold), color: "var(--color-signal-gold)" },
                   { label: "KILLS", value: `${enemiesDefeated}`, color: "var(--color-text-primary)" },
                   { label: "ACHIEVE", value: `${achievements.length}/15`, color: "var(--color-text-primary)" },
                   { label: "CHAOS", value: `${chaosLevel}%`, color: chaosColor },
