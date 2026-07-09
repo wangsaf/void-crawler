@@ -2,450 +2,252 @@
 
 import { useState, useEffect, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { ParticleField } from "@/components/effects/particle-field";
-import { AnimatedText } from "@/components/effects/animated-text";
-import { VoidRings } from "@/components/effects/void-rings";
-import { HexGrid } from "@/components/effects/hex-grid";
-import { AmbientOrbs } from "@/components/effects/glow-orb";
-import { ZoneTransition } from "@/components/effects/zone-transition";
-import { ZonePortal } from "@/components/rpg/zone-portal";
-import { MiniMap } from "@/components/rpg/mini-map";
 import { useGameStore, detectCharacterClass } from "@/stores/game-store";
 import { useChaosStore } from "@/stores/chaos-store";
-import { showToast } from "@/components/rpg/achievement-toast";
 import { soundEngine } from "@/lib/sound-engine";
 
 type Screen = "landing" | "naming" | "hub";
 
-// Hub title lines for stagger reveal
-const hubTaglines = [
-  "Choose your path. Each zone holds different challenges.",
-];
+// ─── Typewriter text effect ─────────────────────────────────────────────────
+function Typewriter({ text, delay = 0, speed = 30 }: { text: string; delay?: number; speed?: number }) {
+  const [display, setDisplay] = useState("");
+  const [started, setStarted] = useState(false);
 
-const zoneData = [
-  {
-    zone: "market" as const,
-    title: "Cart Chaos",
-    subtitle: "The marketplace fights back",
-    icon: "🛒",
-    color: "#ff6b35",
-    glowClass: "box-glow-purple",
-  },
-  {
-    zone: "dashboard" as const,
-    title: "Panel Panic",
-    subtitle: "Dashboard from another dimension",
-    icon: "📊",
-    color: "#00bcd4",
-    glowClass: "box-glow-blue",
-  },
-  {
-    zone: "cyber" as const,
-    title: "exploit.me",
-    subtitle: "Interactive security playground",
-    icon: "🔓",
-    color: "#00ff41",
-    glowClass: "box-glow-green",
-  },
-  {
-    zone: "playground" as const,
-    title: "The Void",
-    subtitle: "Where anything can happen",
-    icon: "🌀",
-    color: "#b000ff",
-    glowClass: "box-glow-purple",
-  },
-];
+  useEffect(() => {
+    const startTimeout = setTimeout(() => setStarted(true), delay);
+    return () => clearTimeout(startTimeout);
+  }, [delay]);
 
-// Quick stats widget for the hub
-function QuickStats() {
-  const { level, xp, xpToNext, gold, enemiesDefeated } = useGameStore();
-  const stats = [
-    { label: "Level", value: `${level}`, color: "text-neon-blue" },
-    { label: "XP", value: `${xp}/${xpToNext}`, color: "text-neon-purple" },
-    { label: "Gold", value: `${gold}`, color: "text-neon-gold" },
-    { label: "Defeated", value: `${enemiesDefeated}`, color: "text-neon-red" },
-  ];
+  useEffect(() => {
+    if (!started) return;
+    let i = 0;
+    const interval = setInterval(() => {
+      if (i < text.length) {
+        setDisplay(text.slice(0, i + 1));
+        i++;
+      } else {
+        clearInterval(interval);
+      }
+    }, speed);
+    return () => clearInterval(interval);
+  }, [started, text, speed]);
 
+  return <>{display}<span className="inline-block w-[2px] h-[1em] bg-text-primary ml-0.5 animate-pulse" /></>;
+}
+
+// ─── Status line (SCP document style) ───────────────────────────────────────
+function StatusLine({ label, value, delay = 0 }: { label: string; value: string; delay?: number }) {
   return (
     <motion.div
-      className="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-8"
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ delay: 0.6, duration: 0.5 }}
+      className="flex items-center gap-3 font-mono"
+      initial={{ opacity: 0, x: -10 }}
+      animate={{ opacity: 1, x: 0 }}
+      transition={{ delay, duration: 0.3 }}
     >
-      {stats.map((stat, i) => (
-        <motion.div
-          key={stat.label}
-          className="retro-card px-4 sm:px-5 py-2.5 sm:py-3 text-center min-w-[80px] sm:min-w-[100px]"
-          initial={{ opacity: 0, scale: 0.8 }}
-          animate={{ opacity: 1, scale: 1 }}
-          transition={{ delay: 0.8 + i * 0.1 }}
-          whileHover={{ scale: 1.05, y: -2 }}
-        >
-          <div
-            className={`text-lg sm:text-xl font-bold ${stat.color}`}
-            style={{ fontFamily: "var(--font-display)" }}
-          >
-            {stat.value}
-          </div>
-          <div className="text-[10px] text-gray-500 mt-1 uppercase tracking-widest" style={{ fontFamily: 'var(--font-display)' }}>{stat.label}</div>
-        </motion.div>
-      ))}
+      <span className="void-label w-24 text-right">{label}</span>
+      <span className="text-text-primary text-xs">{value}</span>
     </motion.div>
   );
 }
 
-// Animated divider line between sections
-function AnimatedDivider({ delay = 0, label = "◆ ZONES ◆" }: { delay?: number; label?: string }) {
+// ─── Hub Component ──────────────────────────────────────────────────────────
+function VoidHub({ characterName, characterClass }: { characterName: string; characterClass: string }) {
+  const { level, xp, xpToNext, gold, enemiesDefeated, achievements, stats } = useGameStore();
+  const { chaosLevel, chaosMode } = useChaosStore();
+  const { setZone, unlockAchievement } = useGameStore();
+
+  useEffect(() => {
+    unlockAchievement("first-login");
+  }, [unlockAchievement]);
+
+  const zones = [
+    { id: "market" as const, name: "CART_CHAOS", desc: "sector.market // the marketplace fights back", color: "text-signal-red" },
+    { id: "dashboard" as const, name: "PANEL_PANIC", desc: "sector.dashboard // dimension.shift", color: "text-signal-blue" },
+    { id: "cyber" as const, name: "EXPLOIT.ME", desc: "sector.security // interactive playground", color: "text-signal-green" },
+    { id: "playground" as const, name: "THE_VOID", desc: "sector.void // anything can happen", color: "text-signal-purple" },
+  ];
+
+  const chaosStatus = chaosLevel >= 70 ? "CRITICAL" : chaosLevel >= 40 ? "UNSTABLE" : "STABLE";
+  const chaosColor = chaosLevel >= 70 ? "text-signal-red" : chaosLevel >= 40 ? "text-signal-gold" : "text-signal-green";
+
   return (
-    <motion.div
-      className="flex items-center justify-center gap-4 mb-8 w-full max-w-2xl mx-auto"
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      transition={{ delay }}
-    >
+    <div className="relative z-10 min-h-screen flex flex-col items-center px-6 py-16">
+      {/* Document Header */}
       <motion.div
-        className="h-px flex-1"
-        style={{
-          background:
-            "linear-gradient(90deg, transparent, rgba(176,0,255,0.4), transparent)",
-        }}
-        initial={{ scaleX: 0 }}
-        animate={{ scaleX: 1 }}
-        transition={{ delay: delay + 0.2, duration: 0.8, ease: "easeOut" }}
-      />
+        className="w-full max-w-3xl mb-12"
+        initial={{ opacity: 0, y: -20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5 }}
+      >
+        <div className="flex items-baseline gap-4 mb-1">
+          <span className="void-label">document.classification</span>
+          <span className="void-status void-status--danger">LEVEL 4 // RESTRICTED</span>
+        </div>
+        <div className="h-px bg-void-border mb-4" />
+        <h1 className="text-2xl font-bold tracking-tight text-text-primary mb-1">
+          void.crawler()
+        </h1>
+        <p className="void-label">
+          SUBJECT: {characterName.toUpperCase()} // CLASS: {characterClass.toUpperCase()} // STATUS: OPERATIONAL
+        </p>
+      </motion.div>
+
+      {/* Status Panel */}
       <motion.div
-        className="text-neon-purple/40 text-xs tracking-widest uppercase"
-        style={{ fontFamily: "var(--font-code)" }}
+        className="w-full max-w-3xl void-panel mb-8"
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
-        transition={{ delay: delay + 0.5 }}
+        transition={{ delay: 0.2 }}
       >
-        {label}
+        <div className="void-title mb-4">OPERATIONAL STATUS</div>
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+          {[
+            { label: "LEVEL", value: `${level}`, color: "text-text-primary" },
+            { label: "XP", value: `${xp}/${xpToNext}`, color: "text-text-primary" },
+            { label: "GOLD", value: `${gold}`, color: "text-signal-gold" },
+            { label: "CHAOS", value: `${chaosLevel}%`, color: chaosColor },
+          ].map((stat, i) => (
+            <motion.div
+              key={stat.label}
+              className="text-center py-3"
+              style={{ background: "var(--color-void-surface)", border: "1px solid var(--color-void-border)" }}
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.3 + i * 0.1 }}
+            >
+              <div className={`text-lg font-bold ${stat.color}`}>{stat.value}</div>
+              <div className="void-label mt-1">{stat.label}</div>
+            </motion.div>
+          ))}
+        </div>
+        <div className="mt-4 flex items-center gap-4">
+          <span className="void-label">CHAOS.STATUS:</span>
+          <span className={`void-status ${chaosColor}`}>{chaosStatus}</span>
+          <div className="flex-1 void-progress">
+            <div className="void-progress__fill" style={{ width: `${chaosLevel}%` }} />
+          </div>
+        </div>
       </motion.div>
+
+      {/* Zone Access */}
       <motion.div
-        className="h-px flex-1"
-        style={{
-          background:
-            "linear-gradient(90deg, transparent, rgba(176,0,255,0.4), transparent)",
-        }}
-        initial={{ scaleX: 0 }}
-        animate={{ scaleX: 1 }}
-        transition={{ delay: delay + 0.2, duration: 0.8, ease: "easeOut" }}
-      />
-    </motion.div>
-  );
-}
-
-// ═══════════════════════════════════════════════════════
-// PANEL A: Current Objective
-// ═══════════════════════════════════════════════════════
-function ObjectivePanel() {
-  const { currentQuest, questList } = useGameStore();
-  const active = currentQuest ? questList.find((q) => q.id === currentQuest) : null;
-
-  return (
-    <motion.div
-      className="p-4"
-      style={{
-        background: "rgba(10, 10, 15, 0.95)",
-        border: "3px solid #3a3a5a",
-        boxShadow: "4px 4px 0px #000",
-      }}
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ delay: 1.8 }}
-      whileHover={{ borderColor: "#b000ff60" }}
-    >
-      <h3
-        className="text-[10px] text-neon-purple uppercase tracking-widest mb-3"
-        style={{ fontFamily: "var(--font-display)" }}
+        className="w-full max-w-3xl void-panel mb-8"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ delay: 0.4 }}
       >
-        📋 Current Objective
-      </h3>
-      {active ? (
-        <div>
-          <p
-            className="text-sm text-neon-blue font-bold uppercase mb-1"
-            style={{ fontFamily: "var(--font-display)" }}
-          >
-            {active.name}
-          </p>
-          <p
-            className="text-xs text-gray-400 mb-2"
-            style={{ fontFamily: "var(--font-code)" }}
-          >
-            {active.description}
-          </p>
-          <div className="flex gap-3 text-[10px]" style={{ fontFamily: "var(--font-code)" }}>
-            <span className="text-neon-gold">+{active.xpReward} XP</span>
-            <span className="text-neon-gold">+{active.goldReward}g</span>
-            <span className="text-gray-500 uppercase">{active.zone}</span>
-          </div>
-        </div>
-      ) : (
-        <p
-          className="text-xs text-gray-500"
-          style={{ fontFamily: "var(--font-code)" }}
-        >
-          Visit a zone to start your adventure!
-        </p>
-      )}
-    </motion.div>
-  );
-}
-
-// ═══════════════════════════════════════════════════════
-// PANEL B: Achievements
-// ═══════════════════════════════════════════════════════
-function AchievementsPanel() {
-  const { achievementList, achievements } = useGameStore();
-  const unlocked = achievementList.filter((a) => a.unlocked);
-  const recent = unlocked.slice(-3).reverse();
-  const total = achievementList.length;
-
-  return (
-    <motion.div
-      className="p-4"
-      style={{
-        background: "rgba(10, 10, 15, 0.95)",
-        border: "3px solid #3a3a5a",
-        boxShadow: "4px 4px 0px #000",
-      }}
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ delay: 1.9 }}
-      whileHover={{ borderColor: "#ffd70060" }}
-    >
-      <h3
-        className="text-[10px] text-neon-gold uppercase tracking-widest mb-3"
-        style={{ fontFamily: "var(--font-display)" }}
-      >
-        🏆 Achievements
-      </h3>
-      <p
-        className="text-[10px] text-gray-500 mb-3"
-        style={{ fontFamily: "var(--font-code)" }}
-      >
-        {achievements.length}/{total} Unlocked
-      </p>
-      {recent.length > 0 ? (
+        <div className="void-title mb-4">ZONE ACCESS</div>
         <div className="space-y-2">
-          {recent.map((a) => (
-            <div
-              key={a.id}
-              className="flex items-center gap-2 text-xs"
-              style={{ fontFamily: "var(--font-code)" }}
+          {zones.map((zone, i) => (
+            <motion.a
+              key={zone.id}
+              href={`/${zone.id}`}
+              className="void-card block group"
+              initial={{ opacity: 0, x: -20 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ delay: 0.5 + i * 0.1 }}
+              onClick={() => {
+                setZone(zone.id);
+                soundEngine.playClick();
+              }}
             >
-              <span>{a.icon}</span>
-              <span className="text-gray-300">{a.name}</span>
-            </div>
+              <div className="flex items-center justify-between">
+                <div>
+                  <div className="font-bold text-sm text-text-primary group-hover:text-white transition-colors">
+                    {zone.name}
+                  </div>
+                  <div className="void-label mt-0.5">{zone.desc}</div>
+                </div>
+                <div className="void-label group-hover:text-text-primary transition-colors">
+                  ACCESS →
+                </div>
+              </div>
+            </motion.a>
           ))}
         </div>
-      ) : (
-        <p
-          className="text-xs text-gray-600"
-          style={{ fontFamily: "var(--font-code)" }}
+      </motion.div>
+
+      {/* Achievements / Recent Activity */}
+      <div className="w-full max-w-3xl grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
+        <motion.div
+          className="void-panel"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 0.8 }}
         >
-          No achievements yet. Start exploring!
-        </p>
-      )}
-    </motion.div>
-  );
-}
-
-// ═══════════════════════════════════════════════════════
-// PANEL C: Recent Activity
-// ═══════════════════════════════════════════════════════
-function RecentActivityPanel() {
-  const { activities } = useGameStore();
-  const recent = activities.slice(0, 5);
-
-  return (
-    <motion.div
-      className="p-4"
-      style={{
-        background: "rgba(10, 10, 15, 0.95)",
-        border: "3px solid #3a3a5a",
-        boxShadow: "4px 4px 0px #000",
-      }}
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ delay: 2.0 }}
-      whileHover={{ borderColor: "#00d4ff60" }}
-    >
-      <h3
-        className="text-[10px] text-neon-blue uppercase tracking-widest mb-3"
-        style={{ fontFamily: "var(--font-display)" }}
-      >
-        📜 Recent Activity
-      </h3>
-      {recent.length > 0 ? (
-        <div className="space-y-1.5">
-          {recent.map((text, i) => (
-            <p
-              key={i}
-              className="text-xs text-gray-400"
-              style={{ fontFamily: "var(--font-code)" }}
-            >
-              {text}
-            </p>
-          ))}
-        </div>
-      ) : (
-        <p
-          className="text-xs text-gray-600"
-          style={{ fontFamily: "var(--font-code)" }}
-        >
-          No activity yet. Go explore!
-        </p>
-      )}
-    </motion.div>
-  );
-}
-
-// ═══════════════════════════════════════════════════════
-// PANEL D: Zone Progress
-// ═══════════════════════════════════════════════════════
-function ZoneProgressPanel() {
-  const { stats } = useGameStore();
-
-  // Simple progress calculations (caps at 100%)
-  const zones = [
-    {
-      name: "Market",
-      icon: "🛒",
-      color: "#ff6b35",
-      progress: Math.min(100, Math.round((stats.totalItemsBought / 10) * 100)),
-      detail: `${stats.totalItemsBought} items bought`,
-    },
-    {
-      name: "Dashboard",
-      icon: "📊",
-      color: "#00bcd4",
-      progress: Math.min(100, Math.round((stats.totalPuzzlesSolved / 5) * 100)),
-      detail: `${stats.totalPuzzlesSolved} puzzles solved`,
-    },
-    {
-      name: "Cyber",
-      icon: "🔓",
-      color: "#00ff41",
-      progress: Math.min(100, Math.round((stats.totalPortsScanned / 50) * 100)),
-      detail: `${stats.totalPortsScanned} ports scanned`,
-    },
-    {
-      name: "Void",
-      icon: "🌀",
-      color: "#b000ff",
-      progress: Math.min(
-        100,
-        Math.round((stats.secretsFound?.length || 0) / 5) * 100
-      ),
-      detail: `${stats.secretsFound?.length || 0} secrets found`,
-    },
-  ];
-
-  return (
-    <motion.div
-      className="p-4"
-      style={{
-        background: "rgba(10, 10, 15, 0.95)",
-        border: "3px solid #3a3a5a",
-        boxShadow: "4px 4px 0px #000",
-      }}
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ delay: 2.1 }}
-      whileHover={{ borderColor: "#00ff4160" }}
-    >
-      <h3
-        className="text-[10px] text-neon-green uppercase tracking-widest mb-3"
-        style={{ fontFamily: "var(--font-display)" }}
-      >
-        📈 Zone Progress
-      </h3>
-      <div className="space-y-3">
-        {zones.map((z) => (
-          <div key={z.name}>
-            <div className="flex items-center justify-between mb-1">
-              <span
-                className="text-xs text-gray-300"
-                style={{ fontFamily: "var(--font-code)" }}
-              >
-                {z.icon} {z.name}
-              </span>
-              <span
-                className="text-[10px]"
-                style={{ color: z.color, fontFamily: "var(--font-code)" }}
-              >
-                {z.progress}%
-              </span>
-            </div>
-            <div
-              className="h-2 bg-void-deep overflow-hidden"
-              style={{ border: "1px solid #3a3a5a" }}
-            >
-              <motion.div
-                className="h-full"
-                style={{ background: z.color }}
-                initial={{ width: 0 }}
-                animate={{ width: `${z.progress}%` }}
-                transition={{ delay: 2.5, duration: 0.8, ease: "easeOut" }}
-              />
-            </div>
-            <p
-              className="text-[9px] text-gray-600 mt-0.5"
-              style={{ fontFamily: "var(--font-code)" }}
-            >
-              {z.detail}
-            </p>
+          <div className="void-title mb-3">ACHIEVEMENTS</div>
+          <div className="void-data text-sm">
+            {achievements.length}/15 unlocked
           </div>
-        ))}
+          <div className="void-label mt-2">
+            {achievements.length === 0
+              ? "No data. Begin exploration."
+              : `Recent: ${achievements.slice(-3).join(", ")}`}
+          </div>
+        </motion.div>
+
+        <motion.div
+          className="void-panel"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 0.9 }}
+        >
+          <div className="void-title mb-3">RECENT ACTIVITY</div>
+          {stats.totalItemsBought > 0 || stats.totalPortsScanned > 0 ? (
+            <div className="space-y-1">
+              <div className="void-label">Items: {stats.totalItemsBought}</div>
+              <div className="void-label">Ports: {stats.totalPortsScanned}</div>
+              <div className="void-label">Puzzles: {stats.totalPuzzlesSolved}</div>
+            </div>
+          ) : (
+            <div className="void-label">No recorded activity.</div>
+          )}
+        </motion.div>
       </div>
-    </motion.div>
+
+      {/* Footer */}
+      <motion.div
+        className="w-full max-w-3xl text-center"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ delay: 1.2 }}
+      >
+        <div className="void-label">
+          Progress is automatically persisted. Session data subject to void corruption.
+        </div>
+      </motion.div>
+    </div>
   );
 }
 
+// ─── Main Page ──────────────────────────────────────────────────────────────
 export default function Home() {
   const [screen, setScreen] = useState<Screen>("landing");
-  const [inputValue, setInputValue] = useState("");
   const [nameInput, setNameInput] = useState("");
-  const [transitioning, setTransitioning] = useState<{ zone: string; color: string; name: string } | null>(null);
   const {
     setCharacterName,
     setCharacterClass,
     addXP,
     soundEnabled,
     unlockZone,
-    unlockAchievement,
-    level,
     characterName,
     zonesUnlocked,
   } = useGameStore();
   const { addChaos } = useChaosStore();
 
-  // Init sound on first interaction
   const initSound = useCallback(async () => {
     if (soundEnabled) {
       await soundEngine.init();
     }
   }, [soundEnabled]);
 
-  // Auto-detect: if zones already unlocked, skip to hub
+  // Auto-detect returning user
   useEffect(() => {
     setCharacterClass(detectCharacterClass());
     if (zonesUnlocked.length > 1) {
       setScreen("hub");
     }
   }, [setCharacterClass, zonesUnlocked.length]);
-
-  // Track first-login achievement
-  useEffect(() => {
-    if (screen === "hub") {
-      unlockAchievement("first-login");
-    }
-  }, [screen, unlockAchievement]);
 
   const handleLandingSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -456,7 +258,7 @@ export default function Home() {
 
   const handleNameSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    const name = nameInput.trim() || "Void Walker";
+    const name = nameInput.trim() || "Subject-001";
     setCharacterName(name);
     setCharacterClass(detectCharacterClass());
     if (soundEnabled) soundEngine.playLevelUp();
@@ -466,302 +268,139 @@ export default function Home() {
     unlockZone("cyber");
     unlockZone("playground");
     addXP(50);
-    addChaos(10); // Entering the void increases chaos
+    addChaos(10);
     setScreen("hub");
   };
 
-  const handlePortalNavigate = (zone: string, color: string, name: string) => {
-    addChaos(5); // Each zone visit increases chaos
-    setTransitioning({ zone, color, name });
-  };
-
-  const handleTransitionComplete = () => {
-    if (transitioning) {
-      window.location.href = `/${transitioning.zone}`;
-    }
-  };
-
   return (
-    <main className="relative min-h-screen overflow-hidden bg-void-black" role="main">
-      {/* Particle Background */}
-      <ParticleField />
-
-      {/* Hex Grid - subtle cyber overlay */}
-      {screen === "hub" && <HexGrid />}
-
-      {/* Ambient glow orbs */}
-      {screen === "hub" && <AmbientOrbs />}
-
-      {/* Zone Transition Overlay */}
-      <ZoneTransition
-        active={!!transitioning}
-        zoneName={transitioning?.name || ""}
-        zoneColor={transitioning?.color || "#b000ff"}
-        onComplete={handleTransitionComplete}
-      />
-
-      {/* MiniMap on hub screen */}
-      {screen === "hub" && <MiniMap />}
-
-      {/* ====== LANDING SCREEN ====== */}
+    <main className="relative min-h-screen" role="main">
       <AnimatePresence mode="wait">
+        {/* ═══ LANDING ═══ */}
         {screen === "landing" && (
           <motion.div
             key="landing"
-            className="relative z-10 min-h-screen flex flex-col items-center justify-center px-4"
-            exit={{ opacity: 0, scale: 0.9, filter: "blur(10px)" }}
-            transition={{ duration: 0.5 }}
+            className="relative z-10 min-h-screen flex flex-col items-center justify-center px-6"
+            exit={{ opacity: 0, filter: "blur(4px)" }}
+            transition={{ duration: 0.4 }}
           >
-            {/* Title */}
+            {/* Classification header */}
             <motion.div
-              className="text-center mb-12"
-              initial={{ opacity: 0, y: -30 }}
-              animate={{ opacity: 1, y: 0 }}
+              className="mb-8 text-center"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
               transition={{ duration: 0.8, delay: 0.3 }}
             >
+              <div className="void-label mb-6">
+                DOCUMENT CLASSIFICATION: LEVEL 5 // TOP SECRET
+              </div>
               <h1
-                className="text-6xl md:text-8xl font-bold mb-4 glow-purple"
-                style={{ fontFamily: "var(--font-display)" }}
+                className="text-4xl md:text-6xl font-bold tracking-tight mb-4"
+                style={{ letterSpacing: "-0.02em" }}
               >
-                <AnimatedText text="void.crawler()" glow="purple" delay={0.5} />
+                <span className="text-text-primary">void</span>
+                <span className="text-text-ghost">.</span>
+                <span className="text-text-primary">crawler</span>
+                <span className="text-text-ghost">()</span>
               </h1>
               <motion.p
-                className="text-lg md:text-xl text-gray-400"
+                className="void-label text-text-secondary"
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 transition={{ delay: 1.5 }}
               >
-                The Web That Is Alive
+                A web experience at the edge of reality.
               </motion.p>
             </motion.div>
 
-            {/* Input */}
-            <motion.form
-              onSubmit={handleLandingSubmit}
-              className="w-full max-w-md"
+            {/* Document body */}
+            <motion.div
+              className="w-full max-w-md void-panel"
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 2 }}
+              transition={{ delay: 2.0, duration: 0.5 }}
             >
-              <div className="animated-border p-[1px]">
-                <div className="flex gap-2 p-1 bg-void-surface">
-                  <input
-                    type="text"
-                    value={inputValue}
-                    onChange={(e) => setInputValue(e.target.value)}
-                    placeholder="Type anything to begin..."
-                    className="flex-1 bg-transparent px-4 py-3 text-white placeholder-gray-500 outline-none"
-                    style={{ fontFamily: "var(--font-code)" }}
-                    autoFocus
-                  />
-                  <button
-                    type="submit"
-                    aria-label="Enter the void"
-                    className="px-6 py-3 bg-neon-purple/20 hover:bg-neon-purple/30 text-neon-purple transition-all duration-200 font-bold uppercase tracking-wider"
-                  >
-                    ENTER
-                  </button>
-                </div>
+              <div className="void-title mb-4">ACCESS REQUEST</div>
+              <div className="space-y-3 mb-6">
+                <StatusLine label="PROTOCOL" value="void.init()" delay={2.2} />
+                <StatusLine label="CLEARANCE" value="PENDING AUTHORIZATION" delay={2.4} />
+                <StatusLine label="WARNING" value="Subject may experience reality distortion" delay={2.6} />
               </div>
-              <motion.p
-                className="text-center text-xs text-gray-600 mt-4"
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ delay: 3 }}
-              >
-                ↑↓←→ • Konami code available • Try resizing
-              </motion.p>
-            </motion.form>
+              <form onSubmit={handleLandingSubmit}>
+                <button type="submit" className="void-btn void-btn--signal w-full">
+                  INITIALIZE SEQUENCE
+                </button>
+              </form>
+            </motion.div>
+
+            {/* Footer notice */}
+            <motion.div
+              className="mt-8 void-label text-center max-w-md"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 3.0 }}
+            >
+              By proceeding, you acknowledge that void.crawler() operates outside normal web parameters.
+              Session data may be subject to anomalous interference.
+            </motion.div>
           </motion.div>
         )}
 
-        {/* ====== NAMING SCREEN ====== */}
+        {/* ═══ NAMING ═══ */}
         {screen === "naming" && (
           <motion.div
             key="naming"
-            className="relative z-10 min-h-screen flex flex-col items-center justify-center px-4"
-            initial={{ opacity: 0, scale: 1.1, filter: "blur(10px)" }}
-            animate={{ opacity: 1, scale: 1, filter: "blur(0px)" }}
-            exit={{ opacity: 0, scale: 0.9, filter: "blur(10px)" }}
-            transition={{ duration: 0.5 }}
+            className="relative z-10 min-h-screen flex flex-col items-center justify-center px-6"
+            initial={{ opacity: 0, filter: "blur(4px)" }}
+            animate={{ opacity: 1, filter: "blur(0px)" }}
+            exit={{ opacity: 0, filter: "blur(4px)" }}
+            transition={{ duration: 0.4 }}
           >
             <motion.div
-              className="glass-strong p-5 max-w-md w-full text-center"
-              initial={{ y: 30 }}
+              className="w-full max-w-md void-panel"
+              initial={{ y: 20 }}
               animate={{ y: 0 }}
             >
-              <h2
-                className="text-xl font-bold mb-2 glow-blue uppercase"
-                style={{ fontFamily: "var(--font-display)" }}
-              >
-                Choose Your Name
-              </h2>
-              <p className="text-gray-400 mb-6">
-                Every crawler needs an identity in the void.
-              </p>
-
-              <div className="mb-4 p-3 bg-void-deep/50 text-sm text-gray-300 border border-void-border">
-                <span className="text-neon-green">Class detected:</span>{" "}
-                <span className="text-neon-blue font-bold">
-                  {detectCharacterClass()}
-                </span>
-                <span className="text-gray-500"> (based on your browser)</span>
+              <div className="void-title mb-4">SUBJECT IDENTIFICATION</div>
+              <div className="space-y-3 mb-6">
+                <StatusLine label="CLASS" value={detectCharacterClass()} delay={0.1} />
+                <StatusLine label="PROTOCOL" value="identity.assign()" delay={0.2} />
+                <StatusLine label="NOTE" value="Browser fingerprint determines class" delay={0.3} />
               </div>
-
               <form onSubmit={handleNameSubmit}>
-                <input
-                  type="text"
-                  value={nameInput}
-                  onChange={(e) => setNameInput(e.target.value)}
-                  placeholder="Enter your name..."
-                  className="w-full bg-void-deep/50 border-2 border-void-border px-4 py-3 text-white placeholder-gray-500 outline-none focus:border-neon-purple transition-colors mb-4"
-                  style={{ fontFamily: "var(--font-display)" }}
-                  autoFocus
-                />
-                <button
-                  type="submit"
-                  aria-label="Begin your quest"
-                  className="w-full py-3 bg-neon-purple/20 hover:bg-neon-purple/30 border-2 border-neon-purple text-neon-blue font-bold transition-all duration-300 uppercase tracking-wider"
-                >
-                  ⚔️ BEGIN YOUR QUEST
+                <div className="mb-4">
+                  <label className="void-label block mb-2">DESIGNATION</label>
+                  <input
+                    type="text"
+                    value={nameInput}
+                    onChange={(e) => setNameInput(e.target.value)}
+                    placeholder="Enter subject designation..."
+                    className="void-input"
+                    autoFocus
+                  />
+                </div>
+                <button type="submit" className="void-btn void-btn--signal w-full">
+                  ASSIGN IDENTITY // PROCEED
                 </button>
               </form>
             </motion.div>
           </motion.div>
         )}
 
-        {/* ====== HUB SCREEN ====== */}
+        {/* ═══ HUB ═══ */}
         {screen === "hub" && (
           <motion.div
             key="hub"
-            className="relative z-10 min-h-screen flex flex-col items-center justify-center px-6 py-12"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
-            transition={{ duration: 0.8 }}
+            transition={{ duration: 0.5 }}
           >
-            {/* Void rings pulsing from center */}
-            <VoidRings color="#b000ff" count={6} />
-
-            {/* Hub Title */}
-            <motion.div
-              className="text-center mb-6"
-              initial={{ y: -30, opacity: 0 }}
-              animate={{ y: 0, opacity: 1 }}
-              transition={{ delay: 0.2 }}
-            >
-              <motion.p
-                className="text-xs sm:text-sm text-gray-500 mb-4 tracking-widest uppercase"
-                style={{ fontFamily: "var(--font-code)" }}
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 0.6 }}
-                transition={{ delay: 0.3 }}
-              >
-                Welcome back, {characterName || "Crawler"}
-              </motion.p>
-              <h2
-                className="text-xl md:text-2xl font-black mb-4 glow-blue uppercase"
-                style={{ fontFamily: "var(--font-display)" }}
-              >
-                <motion.span
-                  className="inline-block"
-                  initial={{ opacity: 0, letterSpacing: "0.2em" }}
-                  animate={{ opacity: 1, letterSpacing: "0.05em" }}
-                  transition={{ delay: 0.3, duration: 0.8 }}
-                >
-                  The Void Hub
-                </motion.span>
-              </h2>
-              <motion.p
-                className="text-gray-400 text-sm sm:text-base"
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ delay: 0.5 }}
-              >
-                {hubTaglines[0]}
-              </motion.p>
-            </motion.div>
-
-            {/* Quick Stats */}
-            <QuickStats />
-
-            {/* Animated Divider */}
-            <AnimatedDivider delay={1.0} />
-
-            {/* Zone Portals */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 max-w-6xl w-full">
-              {zoneData.map((z, i) => (
-                <motion.div
-                  key={z.zone}
-                  className="h-full"
-                  initial={{ opacity: 0, y: 60 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{
-                    delay: 1.2 + i * 0.15,
-                    type: "spring",
-                    damping: 20,
-                    stiffness: 180,
-                  }}
-                >
-                  <ZonePortal
-                    zone={z.zone}
-                    title={z.title}
-                    subtitle={z.subtitle}
-                    icon={z.icon}
-                    color={z.color}
-                    glowClass={z.glowClass}
-                    onNavigate={() => handlePortalNavigate(z.zone, z.color, z.title)}
-                  />
-                </motion.div>
-              ))}
-            </div>
-
-            {/* Divider before panels */}
-            <AnimatedDivider delay={1.6} label="◆ STATUS ◆" />
-
-            {/* Hub Panels - 2 column grid */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-6xl w-full">
-              <ObjectivePanel />
-              <AchievementsPanel />
-              <RecentActivityPanel />
-              <ZoneProgressPanel />
-            </div>
-
-            {/* Bottom info */}
-            <motion.div
-              className="mt-8 text-center text-xs sm:text-sm text-gray-500 px-4"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ delay: 2.5 }}
-            >
-              <p>
-                💡 Each zone has hidden easter eggs • Your browser determined<br className="sm:hidden" />
-                {" "}your class • Progress saves automatically
-              </p>
-              <motion.p
-                className="text-xs text-gray-600 mt-2"
-                style={{ fontFamily: "var(--font-code)" }}
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ delay: 3.0 }}
-              >
-                Level {level} • {zoneData.length} zones unlocked
-              </motion.p>
-            </motion.div>
+            <VoidHub
+              characterName={characterName}
+              characterClass={detectCharacterClass()}
+            />
           </motion.div>
         )}
       </AnimatePresence>
-
-      {/* Global ambient glow */}
-      <div
-        className="fixed inset-0 pointer-events-none z-[1]"
-        style={{
-          background:
-            "radial-gradient(ellipse at 50% 50%, rgba(176,0,255,0.03) 0%, transparent 70%)",
-        }}
-      />
-
-      {/* Noise overlay for texture */}
-      <div className="fixed inset-0 pointer-events-none z-[2] noise" />
     </main>
   );
 }
