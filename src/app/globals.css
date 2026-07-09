@@ -420,23 +420,12 @@ body::after {
 
 /* Hub content margins for fixed sidebars */
 .game-hub-content {
-  /* On lg+ screens, add margins for the sidebars */
+  /* Sidebars are fixed/overlay, so content stays centered */
   margin-left: 0;
   margin-right: 0;
 }
 
-@media (min-width: 768px) {
-  .game-hub-content {
-    margin-left: 72px;
-  }
-}
-
-@media (min-width: 1024px) {
-  .game-hub-content {
-    margin-left: 80px;
-    margin-right: 280px;
-  }
-}
+/* Sidebars are fixed overlay, no content margins needed */
 
 /* Sidebar scrollbar styling */
 .game-sidebar-right ::-webkit-scrollbar {
