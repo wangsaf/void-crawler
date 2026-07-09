@@ -2,9 +2,9 @@
 
 import { useState, useEffect, useCallback, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { useRouter } from "next/navigation";
 import { soundEngine } from "@/lib/sound-engine";
 import { useGameStore } from "@/stores/game-store";
+import { BackButton } from "@/components/rpg/back-button";
 
 // ─── Fake data generators ───────────────────────────────────────────────────
 const METRICS = ["CPU", "RAM", "NET", "IO", "REQ", "LAT"] as const;
@@ -124,7 +124,7 @@ function SlotMachine() {
   const [spinning, setSpinning] = useState(false);
   const [reels, setReels] = useState(["$", "$", "$"]);
   const [result, setResult] = useState<string | null>(null);
-  const { addGold, soundEnabled } = useGameStore();
+  const { addGold, soundEnabled, unlockAchievement } = useGameStore();
 
   const SYMBOLS = ["💰", "💎", "🪙", "🔥", "💀", "❓", "🎰", "⚡"];
 
@@ -158,6 +158,7 @@ function SlotMachine() {
           const goldWon = randomBetween(50, 200);
           addGold(goldWon);
           setResult(`🎉 JACKPOT! +${goldWon} Gold!`);
+          unlockAchievement("slot-winner");
           if (soundEnabled) soundEngine.playLevelUp();
         } else if (final[0] === final[1] || final[1] === final[2] || final[0] === final[2]) {
           const goldWon = randomBetween(10, 40);
@@ -431,7 +432,7 @@ function DeployNuke() {
           setPhase("deployed");
           addXP(100);
           addGold(50);
-          unlockAchievement("nuclear_deploy");
+          unlockAchievement("deploy-master");
         }, 2000);
       }
     }, 1000);
@@ -532,7 +533,6 @@ function DeployNuke() {
 
 // ─── Main Page ──────────────────────────────────────────────────────────────
 export default function DashboardPage() {
-  const router = useRouter();
   const { addXP, soundEnabled, setZone } = useGameStore();
 
   // Metric state
@@ -598,18 +598,7 @@ export default function DashboardPage() {
           transition={{ duration: 0.5 }}
         >
           <div className="flex items-center gap-4">
-            <motion.button
-              onClick={() => {
-                if (soundEnabled) soundEngine.playClick();
-                window.location.href = "/";
-              }}
-              className="glass px-4 py-2 text-cyan-300 text-sm hover:bg-white/5 transition-colors border border-cyan-500/20 uppercase tracking-wider"
-              style={{ fontFamily: "var(--font-display)" }}
-              whileHover={{ x: -3 }}
-              whileTap={{ scale: 0.95 }}
-            >
-              ← Back to Hub
-            </motion.button>
+            <BackButton color="#00bcd4" />
             <div>
               <h1
                 className="text-2xl sm:text-3xl font-black glow-blue uppercase"

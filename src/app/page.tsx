@@ -7,9 +7,12 @@ import { AnimatedText } from "@/components/effects/animated-text";
 import { VoidRings } from "@/components/effects/void-rings";
 import { HexGrid } from "@/components/effects/hex-grid";
 import { AmbientOrbs } from "@/components/effects/glow-orb";
+import { ZoneTransition } from "@/components/effects/zone-transition";
 import { ZonePortal } from "@/components/rpg/zone-portal";
 import { CharacterHUD } from "@/components/rpg/character-hud";
+import { MiniMap } from "@/components/rpg/mini-map";
 import { useGameStore, detectCharacterClass } from "@/stores/game-store";
+import { showToast } from "@/components/rpg/achievement-toast";
 import { soundEngine } from "@/lib/sound-engine";
 
 type Screen = "landing" | "naming" | "hub";
@@ -139,12 +142,14 @@ export default function Home() {
   const [screen, setScreen] = useState<Screen>("landing");
   const [inputValue, setInputValue] = useState("");
   const [nameInput, setNameInput] = useState("");
+  const [transitioning, setTransitioning] = useState<{ zone: string; color: string; name: string } | null>(null);
   const {
     setCharacterName,
     setCharacterClass,
     addXP,
     soundEnabled,
     unlockZone,
+    unlockAchievement,
     level,
     characterName,
   } = useGameStore();
@@ -163,6 +168,13 @@ export default function Home() {
       setScreen("hub");
     }
   }, [setCharacterClass, characterName]);
+
+  // Track first-login achievement
+  useEffect(() => {
+    if (screen === "hub") {
+      unlockAchievement("first-login");
+    }
+  }, [screen, unlockAchievement]);
 
   const handleLandingSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -186,6 +198,16 @@ export default function Home() {
     setScreen("hub");
   };
 
+  const handlePortalNavigate = (zone: string, color: string, name: string) => {
+    setTransitioning({ zone, color, name });
+  };
+
+  const handleTransitionComplete = () => {
+    if (transitioning) {
+      window.location.href = `/${transitioning.zone}`;
+    }
+  };
+
   return (
     <main className="relative min-h-screen overflow-hidden bg-void-black">
       {/* Particle Background */}
@@ -201,6 +223,17 @@ export default function Home() {
       <AnimatePresence>
         {screen === "hub" && <CharacterHUD />}
       </AnimatePresence>
+
+      {/* Zone Transition Overlay */}
+      <ZoneTransition
+        active={!!transitioning}
+        zoneName={transitioning?.name || ""}
+        zoneColor={transitioning?.color || "#b000ff"}
+        onComplete={handleTransitionComplete}
+      />
+
+      {/* MiniMap on hub screen */}
+      {screen === "hub" && <MiniMap />}
 
       {/* ====== LANDING SCREEN ====== */}
       <AnimatePresence mode="wait">
@@ -406,6 +439,7 @@ export default function Home() {
                     icon={z.icon}
                     color={z.color}
                     glowClass={z.glowClass}
+                    onNavigate={() => handlePortalNavigate(z.zone, z.color, z.title)}
                   />
                 </motion.div>
               ))}

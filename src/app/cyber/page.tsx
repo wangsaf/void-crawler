@@ -4,7 +4,7 @@ import { useState, useEffect, useRef, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { soundEngine } from '@/lib/sound-engine';
 import { useGameStore } from '@/stores/game-store';
-import Link from 'next/link';
+import { BackButton } from '@/components/rpg/back-button';
 
 // Matrix Rain Background
 function MatrixRain() {
@@ -78,7 +78,7 @@ function XssPhantom({ onSanitize }: { onSanitize: () => void }) {
 }
 
 // Port Scanner Visualizer
-function PortScanner({ addXP }: { addXP: (n: number) => void }) {
+function PortScanner({ addXP, onScanComplete }: { addXP: (n: number) => void; onScanComplete?: () => void }) {
   const [url, setUrl] = useState('');
   const [scanning, setScanning] = useState(false);
   const [ports, setPorts] = useState<{ port: number; status: 'pending' | 'open' | 'closed' }[]>([]);
@@ -101,6 +101,7 @@ function PortScanner({ addXP }: { addXP: (n: number) => void }) {
         setDone(true);
         addXP(15);
         soundEngine.playSuccess();
+        onScanComplete?.();
         return;
       }
       setPorts(prev => prev.map((p, idx) =>
@@ -160,7 +161,7 @@ function PortScanner({ addXP }: { addXP: (n: number) => void }) {
 }
 
 // Password Strength Checker
-function PasswordChecker() {
+function PasswordChecker({ onTitanium }: { onTitanium?: () => void }) {
   const [password, setPassword] = useState('');
   const [strength, setStrength] = useState(0);
   const [level, setLevel] = useState('');
@@ -176,7 +177,8 @@ function PasswordChecker() {
     setStrength(s);
     const levels = ['', 'PAPER 📄', 'WOOD 🪵', 'STONE 🧱', 'STEEL 🔩', 'DIAMOND 💎', 'TITANIUM 🛡️'];
     setLevel(levels[s] || '');
-  }, [password]);
+    if (s >= 6) onTitanium?.();
+  }, [password, onTitanium]);
 
   const barriers = ['paper', 'wood', 'stone', 'steel', 'diamond', 'titanium'];
   const colors = ['#ff0040', '#ff6600', '#ffaa00', '#00aaff', '#aa00ff', '#00ff41'];
@@ -574,9 +576,11 @@ function TerminalLog() {
 }
 
 export default function CyberPage() {
-  const { addXP, addGold, findEasterEgg } = useGameStore();
+  const { addXP, addGold, findEasterEgg, unlockAchievement } = useGameStore();
   const [phantom, setPhantom] = useState(false);
   const [phantomTimer, setPhantomTimer] = useState<NodeJS.Timeout | null>(null);
+  const [phantomCount, setPhantomCount] = useState(0);
+  const [portScanCount, setPortScanCount] = useState(0);
 
   // Random XSS Phantom spawn
   useEffect(() => {
@@ -596,6 +600,9 @@ export default function CyberPage() {
     addGold(10);
     findEasterEgg('xss_phantom');
     if (phantomTimer) clearTimeout(phantomTimer);
+    const newCount = phantomCount + 1;
+    setPhantomCount(newCount);
+    if (newCount >= 10) unlockAchievement('xss-hunter');
   };
 
   const wrappedAddXP = useCallback((n: number) => addXP(n), [addXP]);
@@ -611,9 +618,7 @@ export default function CyberPage() {
       <div className="relative z-10 max-w-7xl mx-auto px-6 py-12">
         {/* Header */}
         <motion.div initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }} className="mb-8">
-          <a href="/" className="inline-flex items-center gap-2 text-[#00ff41]/60 hover:text-[#00ff41] transition-colors font-mono text-sm mb-4">
-            ← BACK TO HUB
-          </a>
+          <BackButton color="#00ff41" />
           <h1 className="text-2xl sm:text-3xl md:text-4xl font-black glow-green uppercase tracking-wider" style={{ fontFamily: 'var(--font-display)' }}>
             EXPLOIT<span className="text-white/30">.</span>ME
           </h1>
@@ -625,10 +630,14 @@ export default function CyberPage() {
         {/* Grid */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           <motion.div className="h-full" initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.1 }}>
-            <PortScanner addXP={wrappedAddXP} />
+            <PortScanner addXP={wrappedAddXP} onScanComplete={() => {
+              const newCount = portScanCount + 1;
+              setPortScanCount(newCount);
+              if (newCount >= 50) unlockAchievement('port-scanner');
+            }} />
           </motion.div>
           <motion.div className="h-full" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.2 }}>
-            <PasswordChecker />
+            <PasswordChecker onTitanium={() => unlockAchievement('password-pro')} />
           </motion.div>
           <motion.div className="h-full" initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.3 }}>
             <FirewallSim addXP={wrappedAddXP} />

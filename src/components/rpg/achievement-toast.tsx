@@ -3,7 +3,7 @@
 import { useState, useEffect, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { soundEngine } from "@/lib/sound-engine";
-import { useGameStore } from "@/stores/game-store";
+import { useGameStore, onGameEvent, type GameEvent } from "@/stores/game-store";
 
 export interface ToastMessage {
   id: string;
@@ -28,27 +28,91 @@ export function AchievementToast() {
   const [toasts, setToasts] = useState<ToastMessage[]>([]);
   const soundEnabled = useGameStore((s) => s.soundEnabled);
 
-  const addToast = useCallback((toast: ToastMessage) => {
-    setToasts((prev) => [...prev.slice(-2), toast]);
+  const addToast = useCallback(
+    (toast: ToastMessage) => {
+      setToasts((prev) => [...prev.slice(-2), toast]);
 
-    if (soundEnabled) {
-      if (toast.type === "levelup") {
-        soundEngine.playLevelUp();
-      } else {
-        soundEngine.playAchievement();
+      if (soundEnabled) {
+        if (toast.type === "levelup") {
+          soundEngine.playLevelUp();
+        } else {
+          soundEngine.playAchievement();
+        }
       }
-    }
 
-    setTimeout(() => {
-      setToasts((prev) => prev.filter((t) => t.id !== toast.id));
-    }, 3000);
-  }, [soundEnabled]);
+      setTimeout(() => {
+        setToasts((prev) => prev.filter((t) => t.id !== toast.id));
+      }, 3000);
+    },
+    [soundEnabled],
+  );
 
+  // Register with singleton toast system
   useEffect(() => {
     toastListeners.push(addToast);
     return () => {
       toastListeners = toastListeners.filter((l) => l !== addToast);
     };
+  }, [addToast]);
+
+  // Subscribe to game events
+  useEffect(() => {
+    const unsub = onGameEvent((event: GameEvent) => {
+      switch (event.type) {
+        case "levelup":
+          addToast({
+            id: `evt-${++toastIdCounter}`,
+            icon: "⬆️",
+            title: `Level ${event.level}!`,
+            subtitle: "You've grown stronger",
+            xp: 0,
+            color: "#ffd700",
+            type: "levelup",
+          });
+          break;
+        case "achievement":
+          addToast({
+            id: `evt-${++toastIdCounter}`,
+            icon: event.icon,
+            title: event.name,
+            subtitle: event.description,
+            color: "#b000ff",
+            type: "achievement",
+          });
+          break;
+        case "quest-complete":
+          addToast({
+            id: `evt-${++toastIdCounter}`,
+            icon: "✅",
+            title: event.name,
+            subtitle: `+${event.xpReward} XP, +${event.goldReward}g`,
+            xp: event.xpReward,
+            color: "#00ff41",
+            type: "quest",
+          });
+          break;
+        case "zone-unlock":
+          addToast({
+            id: `evt-${++toastIdCounter}`,
+            icon: "🗺️",
+            title: "Zone Unlocked!",
+            subtitle: event.zone,
+            color: "#00d4ff",
+            type: "achievement",
+          });
+          break;
+        case "gold-earned":
+          addToast({
+            id: `evt-${++toastIdCounter}`,
+            icon: "💰",
+            title: `+${event.amount} Gold`,
+            color: "#ffd700",
+            type: "xp",
+          });
+          break;
+      }
+    });
+    return unsub;
   }, [addToast]);
 
   return (
@@ -119,7 +183,7 @@ export function AchievementToast() {
                 </div>
 
                 {/* XP badge */}
-                {toast.xp && (
+                {toast.xp != null && toast.xp > 0 && (
                   <motion.div
                     className="flex-shrink-0 px-2 py-1 text-xs font-bold uppercase"
                     style={{

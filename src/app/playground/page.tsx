@@ -4,7 +4,7 @@ import { useState, useEffect, useRef, useCallback, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { soundEngine } from '@/lib/sound-engine';
 import { useGameStore } from '@/stores/game-store';
-import Link from 'next/link';
+import { BackButton } from '@/components/rpg/back-button';
 
 // Generative SVG Background
 function GenerativeBackground() {
@@ -370,12 +370,13 @@ function detectInputType(input: string): InputType {
 }
 
 export default function PlaygroundPage() {
-  const { addXP, addGold, findEasterEgg } = useGameStore();
+  const { addXP, addGold, findEasterEgg, unlockAchievement } = useGameStore();
   const [input, setInput] = useState('');
   const [inputType, setInputType] = useState<InputType>('empty');
   const [konamiActivated, setKonamiActivated] = useState(false);
   const [breathing, setBreathing] = useState(false);
   const [particles, setParticles] = useState<{ id: number; x: number; y: number }[]>([]);
+  const [interpretationCount, setInterpretationCount] = useState(0);
   const konamiBuffer = useRef<string[]>([]);
   const idleTimer = useRef<NodeJS.Timeout | null>(null);
 
@@ -385,6 +386,17 @@ export default function PlaygroundPage() {
   useEffect(() => {
     setInputType(detectInputType(input));
   }, [input]);
+
+  // Track interpretation count for void-whisperer achievement
+  useEffect(() => {
+    if (inputType !== 'empty' && input.trim()) {
+      setInterpretationCount(prev => {
+        const next = prev + 1;
+        if (next >= 5) unlockAchievement('void-whisperer');
+        return next;
+      });
+    }
+  }, [inputType, input, unlockAchievement]);
 
   // Konami code detection
   useEffect(() => {
@@ -396,6 +408,7 @@ export default function PlaygroundPage() {
         addXP(100);
         addGold(50);
         findEasterEgg('konami_code');
+        unlockAchievement('konami-master');
         soundEngine.playSuccess();
         setTimeout(() => setKonamiActivated(false), 5000);
       }
@@ -473,9 +486,7 @@ export default function PlaygroundPage() {
       <div className="relative z-10 max-w-4xl mx-auto px-6 py-12">
         {/* Header */}
         <motion.div initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }} className="mb-8 text-center">
-          <a href="/" className="inline-flex items-center gap-2 text-purple-400/60 hover:text-purple-400 transition-colors font-mono text-sm mb-4">
-            ← BACK TO HUB
-          </a>
+          <BackButton color="#b000ff" />
           <h1 className="text-5xl sm:text-6xl md:text-7xl font-black glow-purple font-mono tracking-wider">
             THE VOID
           </h1>

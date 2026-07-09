@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import "./globals.css";
 import { Providers } from "@/components/providers";
+import { AchievementToast } from "@/components/rpg/achievement-toast";
 
 export const metadata: Metadata = {
   title: "void.crawler() — The Web That Is Alive",
@@ -20,7 +21,10 @@ export default function RootLayout({
         className="antialiased"
         style={{ fontFamily: "'VT323', monospace", fontSize: "18px" }}
       >
-        <Providers>{children}</Providers>
+        <Providers>
+          {children}
+          <AchievementToast />
+        </Providers>
       </body>
     </html>
   );

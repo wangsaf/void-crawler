@@ -1,7 +1,6 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { useRouter } from "next/navigation";
 import { useGameStore } from "@/stores/game-store";
 import { soundEngine } from "@/lib/sound-engine";
 
@@ -10,12 +9,11 @@ interface BackButtonProps {
 }
 
 export function BackButton({ color = "#00d4ff" }: BackButtonProps) {
-  const router = useRouter();
   const soundEnabled = useGameStore((s) => s.soundEnabled);
 
   const handleClick = () => {
     if (soundEnabled) soundEngine.playClick();
-    router.push("/");
+    window.location.href = "/";
   };
 
   return (

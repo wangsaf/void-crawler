@@ -4,6 +4,7 @@ import { useState, useEffect, useCallback, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { soundEngine } from '@/lib/sound-engine';
 import { useGameStore } from '@/stores/game-store';
+import { BackButton } from '@/components/rpg/back-button';
 
 // ─── Types ───────────────────────────────────────────────────────────────────
 
@@ -75,7 +76,7 @@ function randomPosition() {
 // ─── Component ───────────────────────────────────────────────────────────────
 
 export default function CartChaosPage() {
-  const { addXP, addGold, addItem, completeQuest, gold, soundEnabled, setZone } = useGameStore();
+  const { addXP, addGold, addItem, completeQuest, unlockAchievement, gold, soundEnabled, setZone } = useGameStore();
 
   // ─── State ───────────────────────────────────────────────────────────────
 
@@ -267,6 +268,8 @@ export default function CartChaosPage() {
       });
       if (purchaseCount >= 3) completeQuest('cart-chaos-shopper');
       if (totalSpent + cartTotal >= 1000) completeQuest('big-spender');
+      unlockAchievement('market-shopper');
+      if (totalSpent + cartTotal >= 1000) unlockAchievement('big-spender');
       showMessage(`Purchased ${cart.length} item(s) for ${cartTotal}g! +${cart.length * 15 + 20} XP!`, 'success');
       setCart([]);
       setCheckoutPuzzle({ active: false, num1: 0, num2: 0, operator: '+', answer: 0, hint: '' });
@@ -313,11 +316,6 @@ export default function CartChaosPage() {
   }
 
   // ─── Back handler ────────────────────────────────────────────────────────
-
-  const goBack = useCallback(() => {
-    if (soundEnabled) soundEngine.playClick();
-    window.location.href = '/';
-  }, [soundEnabled]);
 
   // ─── Render ──────────────────────────────────────────────────────────────
 
@@ -377,14 +375,7 @@ export default function CartChaosPage() {
       <div className="relative z-10 mx-auto max-w-7xl px-6 py-12">
         {/* Header */}
         <div className="mb-8 flex flex-wrap items-center justify-between gap-4">
-          <motion.button
-            onClick={goBack}
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
-            className="glass border-orange-500/30 px-4 py-2 text-sm text-orange-300 transition-colors hover:border-orange-400 hover:text-orange-200 uppercase tracking-wider"
-          >
-            ← Back to Hub
-          </motion.button>
+          <BackButton color="#ff6b35" />
           <div className="glass rounded-xl border border-white/10 px-3 sm:px-4 py-1.5 sm:py-2 text-xs sm:text-sm text-yellow-300" style={{ fontFamily: 'var(--font-code)' }}>
             💰 {gold}g
           </div>
