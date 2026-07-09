@@ -8,6 +8,8 @@ import { VoidRings } from "@/components/effects/void-rings";
 import { HexGrid } from "@/components/effects/hex-grid";
 import { AmbientOrbs } from "@/components/effects/glow-orb";
 import { ZoneTransition } from "@/components/effects/zone-transition";
+import { Blackhole } from "@/components/effects/blackhole";
+import { GravitationalPull } from "@/components/effects/gravitational-pull";
 import { ZonePortal } from "@/components/rpg/zone-portal";
 import { CharacterHUD } from "@/components/rpg/character-hud";
 import { MiniMap } from "@/components/rpg/mini-map";
@@ -569,6 +571,9 @@ export default function Home() {
       {/* Particle Background */}
       <ParticleField />
 
+      {/* BLACKHOLE - Central vortex effect (hub only) */}
+      {screen === "hub" && <Blackhole />}
+
       {/* Hex Grid - subtle cyber overlay */}
       {screen === "hub" && <HexGrid />}
 
@@ -592,7 +597,11 @@ export default function Home() {
       {screen === "hub" && <MiniMap />}
 
       {/* Status Panels - Right Sidebar */}
-      {screen === "hub" && <StatusSidebar />}
+      {screen === "hub" && (
+        <GravitationalPull intensity={0.4}>
+          <StatusSidebar />
+        </GravitationalPull>
+      )}
 
       {/* ====== LANDING SCREEN ====== */}
       <AnimatePresence mode="wait">
@@ -731,12 +740,12 @@ export default function Home() {
             animate={{ opacity: 1 }}
             transition={{ duration: 0.8 }}
           >
-            {/* Void rings pulsing from center */}
+            {/* Void rings pulsing from center - blackhole distortion */}
             <VoidRings color="#b000ff" count={4} />
 
-            {/* Hub Title */}
+            {/* Hub Title - gravitationally pulled */}
             <motion.div
-              className="text-center mb-5"
+              className="text-center mb-5 inward-drift"
               initial={{ y: -30, opacity: 0 }}
               animate={{ y: 0, opacity: 1 }}
               transition={{ delay: 0.2 }}
@@ -774,19 +783,20 @@ export default function Home() {
             </motion.div>
 
             {/* Quick Stats Row */}
-            <div className="w-full max-w-4xl">
+            <GravitationalPull intensity={0.15} className="w-full max-w-4xl grav-wobble">
               <QuickStats />
-            </div>
+            </GravitationalPull>
 
             {/* Animated Divider */}
             <AnimatedDivider delay={1.0} />
 
-            {/* Zone Portals Grid - 2x2 */}
+            {/* Zone Portals Grid - 2x2 (gravitationally pulled toward center) */}
+            <GravitationalPull intensity={0.25} className="w-full flex justify-center">
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-5 max-w-3xl w-full mb-6">
               {zoneData.map((z, i) => (
                 <motion.div
                   key={z.zone}
-                  className="h-full"
+                  className={`h-full ${i % 2 === 0 ? "grav-pull-left" : "grav-pull-right"}`}
                   initial={{ opacity: 0, y: 40 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{
@@ -810,6 +820,7 @@ export default function Home() {
                 </motion.div>
               ))}
             </div>
+            </GravitationalPull>
 
             {/* Mobile-only Status Panels (visible below lg breakpoint) */}
             <div className="lg:hidden w-full max-w-3xl">
@@ -851,12 +862,13 @@ export default function Home() {
       {/* Floating ambient particles - subtle game atmosphere */}
       {screen === "hub" && <GameParticles />}
 
-      {/* Global ambient glow */}
+      {/* Global ambient glow - blackhole-centered */}
       <div
         className="fixed inset-0 pointer-events-none z-[1]"
         style={{
-          background:
-            "radial-gradient(ellipse at 50% 50%, rgba(176,0,255,0.03) 0%, transparent 70%)",
+          background: screen === "hub"
+            ? "radial-gradient(ellipse at 50% 50%, rgba(176,0,255,0.08) 0%, rgba(0,212,255,0.03) 25%, transparent 55%)"
+            : "radial-gradient(ellipse at 50% 50%, rgba(176,0,255,0.03) 0%, transparent 70%)",
         }}
       />
 
@@ -867,7 +879,7 @@ export default function Home() {
 }
 
 // ═══════════════════════════════════════════════════════
-// Subtle floating game particles (replaces chaotic emojis)
+// Subtle floating game particles - spiraling toward the blackhole
 // ═══════════════════════════════════════════════════════
 function GameParticles() {
   const symbols = ["◆", "✦", "⬡", "◈"];
@@ -879,15 +891,24 @@ function GameParticles() {
           key={i}
           className="absolute text-neon-purple/[0.07]"
           style={{
-            left: `${15 + i * 22}%`,
-            top: `${20 + i * 18}%`,
+            left: "50%",
+            top: "50%",
             fontSize: `${14 + i * 4}px`,
             fontFamily: "var(--font-code)",
           }}
           animate={{
-            y: [0, -30, 0],
-            x: [0, i % 2 === 0 ? 10 : -10, 0],
-            opacity: [0.05, 0.1, 0.05],
+            x: [
+              Math.cos(i * 1.5) * (100 + i * 60),
+              Math.cos(i * 1.5 + Math.PI) * (80 + i * 50),
+              Math.cos(i * 1.5 + Math.PI * 2) * (100 + i * 60),
+            ],
+            y: [
+              Math.sin(i * 1.5) * (100 + i * 60),
+              Math.sin(i * 1.5 + Math.PI) * (80 + i * 50),
+              Math.sin(i * 1.5 + Math.PI * 2) * (100 + i * 60),
+            ],
+            rotate: [0, 180, 360],
+            opacity: [0.05, 0.12, 0.05],
           }}
           transition={{
             duration: 8 + i * 2,
