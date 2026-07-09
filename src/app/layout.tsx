@@ -7,6 +7,7 @@ import { VolumeControl } from "@/components/rpg/volume-control";
 import { VoidFlowField } from "@/components/effects/void-flow-field";
 import { CorruptionOverlay } from "@/components/effects/corruption";
 import { VoidCursor } from "@/components/effects/void-cursor";
+import { ChaosEffects } from "@/components/effects/chaos-effects";
 import { ChaosMeter } from "@/components/rpg/chaos-meter";
 import { RandomEventPopup, ChaosEventSpawner } from "@/components/rpg/random-event";
 import { EnhancedHUD } from "@/components/rpg/enhanced-hud";
@@ -39,6 +40,7 @@ export default function RootLayout({
           <VoidFlowField />
           <CorruptionOverlay />
           <VoidCursor />
+          <ChaosEffects />
           <div id="main-content" role="main" aria-label="Void Crawler main content">
             {children}
           </div>
