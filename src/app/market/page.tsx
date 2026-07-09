@@ -6,6 +6,7 @@ import { soundEngine } from '@/lib/sound-engine';
 import { useGameStore } from '@/stores/game-store';
 import { BackButton } from '@/components/rpg/back-button';
 import { GravCard } from '@/components/effects/grav-card';
+import { FloatCard } from '@/components/effects/float-card';
 
 // ─── Types ───────────────────────────────────────────────────────────────────
 
@@ -602,6 +603,7 @@ export default function CartChaosPage() {
               {items.map((item, idx) => {
                 const isSoldOut = item.stock <= 0;
                 return (
+                  <FloatCard key={`float-${item.id}`} drift={((idx % 6) + 1) as 1|2|3|4|5|6}>
                   <GravCard key={item.id} intensity={0.2}>
                   <motion.div
                     initial={{ opacity: 0, y: 30 }}
@@ -684,6 +686,7 @@ export default function CartChaosPage() {
                     </div>
                   </motion.div>
                   </GravCard>
+                  </FloatCard>
                 );
               })}
             </div>
@@ -691,6 +694,7 @@ export default function CartChaosPage() {
 
           {/* ─── Cart Panel ─────────────────────────────────────────────────── */}
           <div className="lg:col-span-1">
+            <FloatCard drift={2}>
             <GravCard intensity={0.2}>
             <motion.div
               className="glass-strong lg:sticky top-0 lg:top-8 border-2 border-void-border p-6"
@@ -790,6 +794,7 @@ export default function CartChaosPage() {
                 </div>
                 </motion.div>
                 </GravCard>
+                </FloatCard>
                 </div>
                 </div>
 

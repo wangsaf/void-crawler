@@ -6,6 +6,7 @@ import { soundEngine } from "@/lib/sound-engine";
 import { useGameStore } from "@/stores/game-store";
 import { BackButton } from "@/components/rpg/back-button";
 import { GravCard } from "@/components/effects/grav-card";
+import { FloatCard } from "@/components/effects/float-card";
 
 // ─── Fake data generators ───────────────────────────────────────────────────
 const METRICS = ["CPU", "RAM", "NET", "IO", "REQ", "LAT"] as const;
@@ -685,6 +686,7 @@ export default function DashboardPage() {
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           <div className="lg:col-span-2 space-y-8">
             {/* Metrics Panel */}
+            <FloatCard drift={1}>
             <GravCard intensity={0.2}>
             <motion.div
               className="glass-strong p-6 sm:p-8 box-glow-blue"
@@ -710,8 +712,10 @@ export default function DashboardPage() {
               </div>
             </motion.div>
             </GravCard>
+            </FloatCard>
 
             {/* Live Chart */}
+            <FloatCard drift={2}>
             <GravCard intensity={0.2}>
             <motion.div
               className="retro-card p-6"
@@ -733,8 +737,10 @@ export default function DashboardPage() {
               <LiveChart data={chartData} color="#00bcd4" />
             </motion.div>
             </GravCard>
+            </FloatCard>
 
             {/* Error Chat */}
+            <FloatCard drift={3}>
             <GravCard intensity={0.2}>
             <motion.div
               initial={{ opacity: 0, y: 20 }}
@@ -744,9 +750,11 @@ export default function DashboardPage() {
               <ErrorChat />
             </motion.div>
             </GravCard>
+            </FloatCard>
           </div>
 
           <div className="space-y-8">
+            <FloatCard drift={4}>
             <GravCard intensity={0.2}>
             <motion.div
               initial={{ opacity: 0, x: 20 }}
@@ -756,7 +764,9 @@ export default function DashboardPage() {
               <DeployNuke />
             </motion.div>
             </GravCard>
+            </FloatCard>
 
+            <FloatCard drift={5}>
             <GravCard intensity={0.2}>
             <motion.div
               initial={{ opacity: 0, x: 20 }}
@@ -766,7 +776,9 @@ export default function DashboardPage() {
               <StatusWeather />
             </motion.div>
             </GravCard>
+            </FloatCard>
 
+            <FloatCard drift={6}>
             <GravCard intensity={0.2}>
             <motion.div
               initial={{ opacity: 0, x: 20 }}
@@ -776,7 +788,9 @@ export default function DashboardPage() {
               <SlotMachine totalPulls={useGameStore.getState().stats.totalPuzzlesSolved} />
             </motion.div>
             </GravCard>
+            </FloatCard>
 
+            <FloatCard drift={1}>
             <GravCard intensity={0.2}>
             <motion.div
               initial={{ opacity: 0, x: 20 }}
@@ -786,6 +800,7 @@ export default function DashboardPage() {
               <APIKeyHoroscope />
             </motion.div>
             </GravCard>
+            </FloatCard>
           </div>
         </div>
 

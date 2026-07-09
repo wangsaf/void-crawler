@@ -6,6 +6,7 @@ import { soundEngine } from '@/lib/sound-engine';
 import { useGameStore } from '@/stores/game-store';
 import { BackButton } from '@/components/rpg/back-button';
 import { GravCard } from '@/components/effects/grav-card';
+import { FloatCard } from '@/components/effects/float-card';
 
 // Generative SVG Background
 function GenerativeBackground() {
@@ -803,6 +804,7 @@ export default function PlaygroundPage() {
         </motion.div>
 
         {/* Input */}
+        <FloatCard drift={1}>
         <GravCard intensity={0.2}>
         <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }}
           className="glass-strong p-6 mb-8">
@@ -830,6 +832,7 @@ export default function PlaygroundPage() {
           </div>
         </motion.div>
         </GravCard>
+        </FloatCard>
 
         {/* Interpretation Output */}
         <AnimatePresence mode="wait">

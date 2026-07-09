@@ -11,6 +11,7 @@ import { ZoneTransition } from "@/components/effects/zone-transition";
 import { Blackhole } from "@/components/effects/blackhole";
 import { GravitationalPull } from "@/components/effects/gravitational-pull";
 import { GravCard } from "@/components/effects/grav-card";
+import { FloatCard } from "@/components/effects/float-card";
 import { ZonePortal } from "@/components/rpg/zone-portal";
 import { CharacterHUD } from "@/components/rpg/character-hud";
 import { MiniMap } from "@/components/rpg/mini-map";
@@ -80,6 +81,7 @@ function QuickStats() {
       transition={{ delay: 0.6, duration: 0.5 }}
     >
       {stats.map((stat, i) => (
+        <FloatCard key={`float-${stat.label}`} drift={((i % 4) + 1) as 1|2|3|4}>
         <GravCard key={stat.label} intensity={0.15}>
         <motion.div
           className="retro-card px-4 py-2.5 text-center"
@@ -102,6 +104,7 @@ function QuickStats() {
           </div>
         </motion.div>
         </GravCard>
+        </FloatCard>
       ))}
     </motion.div>
   );
@@ -481,10 +484,10 @@ function StatusSidebar() {
         </div>
 
         <div className="p-2.5 space-y-2.5">
-          <GravCard intensity={0.2}><ObjectivePanel /></GravCard>
-          <GravCard intensity={0.2}><AchievementsPanel /></GravCard>
-          <GravCard intensity={0.2}><RecentActivityPanel /></GravCard>
-          <GravCard intensity={0.2}><ZoneProgressPanel /></GravCard>
+          <FloatCard drift={5}><GravCard intensity={0.2}><ObjectivePanel /></GravCard></FloatCard>
+          <FloatCard drift={6}><GravCard intensity={0.2}><AchievementsPanel /></GravCard></FloatCard>
+          <FloatCard drift={1}><GravCard intensity={0.2}><RecentActivityPanel /></GravCard></FloatCard>
+          <FloatCard drift={2}><GravCard intensity={0.2}><ZoneProgressPanel /></GravCard></FloatCard>
         </div>
       </div>
     </motion.div>
@@ -796,6 +799,7 @@ export default function Home() {
             <GravitationalPull intensity={0.25} className="w-full flex justify-center">
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-5 max-w-3xl w-full mb-6">
               {zoneData.map((z, i) => (
+                <FloatCard key={`float-${z.zone}`} drift={((i % 4) + 1) as 1|2|3|4}>
                 <GravCard key={z.zone} intensity={0.25}>
                 <motion.div
                   className={`h-full ${i % 2 === 0 ? "grav-pull-left" : "grav-pull-right"}`}
@@ -821,6 +825,7 @@ export default function Home() {
                     />
                     </motion.div>
                     </GravCard>
+                    </FloatCard>
                     ))}
             </div>
             </GravitationalPull>
@@ -829,10 +834,10 @@ export default function Home() {
             <div className="lg:hidden w-full max-w-3xl">
               <AnimatedDivider delay={1.6} label="◆ STATUS ◆" />
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <GravCard intensity={0.2}><ObjectivePanel /></GravCard>
-                <GravCard intensity={0.2}><AchievementsPanel /></GravCard>
-                <GravCard intensity={0.2}><RecentActivityPanel /></GravCard>
-                <GravCard intensity={0.2}><ZoneProgressPanel /></GravCard>
+                <FloatCard drift={3}><GravCard intensity={0.2}><ObjectivePanel /></GravCard></FloatCard>
+                <FloatCard drift={4}><GravCard intensity={0.2}><AchievementsPanel /></GravCard></FloatCard>
+                <FloatCard drift={5}><GravCard intensity={0.2}><RecentActivityPanel /></GravCard></FloatCard>
+                <FloatCard drift={6}><GravCard intensity={0.2}><ZoneProgressPanel /></GravCard></FloatCard>
               </div>
             </div>
 

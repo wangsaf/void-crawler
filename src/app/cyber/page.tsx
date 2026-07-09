@@ -6,6 +6,7 @@ import { soundEngine } from '@/lib/sound-engine';
 import { useGameStore } from '@/stores/game-store';
 import { BackButton } from '@/components/rpg/back-button';
 import { GravCard } from '@/components/effects/grav-card';
+import { FloatCard } from '@/components/effects/float-card';
 
 // Matrix Rain Background
 function MatrixRain() {
@@ -802,6 +803,7 @@ export default function CyberPage() {
 
         {/* Grid */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          <FloatCard drift={1}>
           <GravCard intensity={0.2}>
           <motion.div className="h-full" initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.1 }}>
             <PortScanner addXP={wrappedAddXP} onScanComplete={() => {
@@ -811,39 +813,52 @@ export default function CyberPage() {
             }} />
           </motion.div>
           </GravCard>
+          </FloatCard>
+          <FloatCard drift={2}>
           <GravCard intensity={0.2}>
           <motion.div className="h-full" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.2 }}>
             <PasswordChecker onTitanium={() => unlockAchievement('password-pro')} />
           </motion.div>
           </GravCard>
+          </FloatCard>
+          <FloatCard drift={3}>
           <GravCard intensity={0.2}>
           <motion.div className="h-full" initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.3 }}>
             <FirewallSim addXP={wrappedAddXP} />
           </motion.div>
           </GravCard>
+          </FloatCard>
+          <FloatCard drift={4}>
           <GravCard intensity={0.2}>
           <motion.div className="h-full" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.4 }}>
             <XssPlayground addXP={wrappedAddXP} />
           </motion.div>
           </GravCard>
+          </FloatCard>
+          <FloatCard drift={5}>
           <GravCard intensity={0.2}>
           <motion.div className="h-full" initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.5 }}>
             <SqlInjection addXP={wrappedAddXP} />
           </motion.div>
           </GravCard>
+          </FloatCard>
+          <FloatCard drift={6}>
           <GravCard intensity={0.2}>
           <motion.div className="h-full" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.6 }}>
             <PhishingDetector addXP={wrappedAddXP} />
           </motion.div>
           </GravCard>
+          </FloatCard>
         </div>
 
         {/* Terminal */}
+        <FloatCard drift={1}>
         <GravCard intensity={0.2}>
         <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.7 }} className="mt-6">
           <TerminalLog />
         </motion.div>
         </GravCard>
+        </FloatCard>
 
         {/* Footer */}
         <div className="mt-8 text-center text-[#00ff41]/30 font-mono text-xs">
