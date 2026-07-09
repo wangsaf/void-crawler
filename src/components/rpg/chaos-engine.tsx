@@ -4,6 +4,7 @@ import { useEffect, useRef } from "react";
 import { useChaosStore } from "@/stores/chaos-store";
 import { useGameStore, onGameEvent, type GameEvent } from "@/stores/game-store";
 import { useChaosSounds } from "@/components/rpg/chaos-sounds";
+import { useAmbientVoid } from "@/components/rpg/ambient-void";
 
 // Auto-increments chaos based on game events and time
 export function ChaosEngine() {
@@ -12,6 +13,8 @@ export function ChaosEngine() {
 
   // Play chaos sounds at thresholds
   useChaosSounds();
+  // Ambient void hum
+  useAmbientVoid();
 
   // Listen to game events → increase chaos
   useEffect(() => {

@@ -55,15 +55,15 @@ export function EnhancedHUD() {
 
   return (
     <motion.div
-      className="fixed top-3 right-3 z-[95] select-none"
+      className="fixed top-2 right-2 sm:top-3 sm:right-3 z-[95] select-none"
       initial={{ opacity: 0, x: 20 }}
       animate={{ opacity: 1, x: 0 }}
     >
       <div
         className="void-panel"
         style={{
-          width: expanded ? 220 : 180,
-          padding: "10px 12px",
+          width: expanded ? 200 : 160,
+          padding: "8px 10px",
           background: "rgba(5,5,8,0.95)",
           borderColor: chaosMode ? "var(--color-signal-red)" : "var(--color-void-border)",
           transition: "all 0.3s ease",

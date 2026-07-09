@@ -10,10 +10,10 @@ export function ChaosMeter() {
 
   return (
     <div
-      className="fixed bottom-3 left-3 z-[90]"
+      className="fixed bottom-10 sm:bottom-3 left-2 sm:left-3 z-[90]"
       style={{
-        width: 180,
-        padding: "8px 12px",
+        width: 160,
+        padding: "6px 10px",
         background: "rgba(5,5,8,0.95)",
         border: `1px solid ${chaosMode ? "var(--color-signal-red)" : "var(--color-void-border)"}`,
         transition: "border-color 0.3s ease",

@@ -5,7 +5,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { useGameStore, detectCharacterClass } from "@/stores/game-store";
 import { useChaosStore } from "@/stores/chaos-store";
 import { soundEngine } from "@/lib/sound-engine";
-import { ChaosDrift, CorruptedText, Redacted } from "@/components/effects/corruption";
+import { ChaosDrift, CorruptedText, Redacted, BreathingText } from "@/components/effects/corruption";
 
 type Screen = "landing" | "naming" | "hub";
 
@@ -72,7 +72,7 @@ function VoidHub({ characterName, characterClass }: { characterName: string; cha
   const chaosColor = chaosLevel >= 70 ? "text-signal-red" : chaosLevel >= 40 ? "text-signal-gold" : "text-signal-green";
 
   return (
-    <div className="relative z-10 min-h-screen flex flex-col items-center px-6 py-16">
+    <div className="relative z-10 min-h-screen flex flex-col items-center px-4 sm:px-6 py-8 sm:py-16">
       {/* Document Header */}
       <motion.div
         className="w-full max-w-3xl mb-12"
@@ -85,7 +85,7 @@ function VoidHub({ characterName, characterClass }: { characterName: string; cha
           <span className="void-status void-status--danger">LEVEL 4 // RESTRICTED</span>
         </div>
         <div className="h-px bg-void-border mb-4" />
-        <h1 className="text-2xl font-bold tracking-tight text-text-primary mb-1">
+        <h1 className="text-xl sm:text-2xl font-bold tracking-tight text-text-primary mb-1">
           <CorruptedText text="void.crawler()" intensity={0.05} />
         </h1>
         <p className="void-label">
@@ -140,30 +140,41 @@ function VoidHub({ characterName, characterClass }: { characterName: string; cha
           <div className="void-title mb-4">ZONE ACCESS</div>
         <div className="space-y-2">
           {zones.map((zone, i) => (
-            <motion.a
-              key={zone.id}
-              href={`/${zone.id}`}
-              className="void-card block group"
-              initial={{ opacity: 0, x: -20 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ delay: 0.5 + i * 0.1 }}
-              onClick={() => {
-                setZone(zone.id);
-                soundEngine.playClick();
-              }}
-            >
-              <div className="flex items-center justify-between">
-                <div>
-                  <div className="font-bold text-sm text-text-primary group-hover:text-white transition-colors">
-                    {zone.name}
+              <motion.a
+                key={zone.id}
+                href={`/${zone.id}`}
+                className="block group"
+                style={{
+                  background: "var(--color-void-surface)",
+                  border: "1px solid var(--color-void-border)",
+                  padding: "12px 16px",
+                  cursor: "pointer",
+                  transition: "all 0.2s ease",
+                  display: "block",
+                }}
+                initial={{ opacity: 0, x: -20 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ delay: 0.5 + i * 0.1 }}
+                onClick={() => { setZone(zone.id); soundEngine.playClick(); }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.borderColor = "var(--color-text-ghost)";
+                  e.currentTarget.style.background = "var(--color-void-card)";
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.borderColor = "var(--color-void-border)";
+                  e.currentTarget.style.background = "var(--color-void-surface)";
+                }}
+              >
+                <div className="flex items-center justify-between">
+                  <div>
+                    <div className="font-bold text-sm text-text-primary">{zone.name}</div>
+                    <div className="void-label mt-0.5">{zone.desc}</div>
                   </div>
-                  <div className="void-label mt-0.5">{zone.desc}</div>
+                  <div className="void-label group-hover:text-text-primary transition-colors">
+                    ACCESS →
+                  </div>
                 </div>
-                <div className="void-label group-hover:text-text-primary transition-colors">
-                  ACCESS →
-                </div>
-              </div>
-            </motion.a>
+              </motion.a>
           ))}
         </div>
         </motion.div>
@@ -281,7 +292,7 @@ export default function Home() {
         {screen === "landing" && (
           <motion.div
             key="landing"
-            className="relative z-10 min-h-screen flex flex-col items-center justify-center px-6"
+            className="relative z-10 min-h-screen flex flex-col items-center justify-center px-4 sm:px-6"
             exit={{ opacity: 0, filter: "blur(4px)" }}
             transition={{ duration: 0.4 }}
           >
@@ -296,13 +307,15 @@ export default function Home() {
                 DOCUMENT CLASSIFICATION: LEVEL 5 // TOP SECRET
               </div>
               <h1
-                className="text-4xl md:text-6xl font-bold tracking-tight mb-4"
+                className="text-3xl sm:text-4xl md:text-6xl font-bold tracking-tight mb-4"
                 style={{ letterSpacing: "-0.02em" }}
               >
-                <span className="text-text-primary">void</span>
-                <span className="text-text-ghost">.</span>
-                <span className="text-text-primary">crawler</span>
-                <span className="text-text-ghost">()</span>
+                <BreathingText>
+                  <span className="text-text-primary">void</span>
+                  <span className="text-text-ghost">.</span>
+                  <span className="text-text-primary">crawler</span>
+                  <span className="text-text-ghost">()</span>
+                </BreathingText>
               </h1>
               <motion.p
                 className="void-label text-text-secondary"
@@ -311,6 +324,15 @@ export default function Home() {
                 transition={{ delay: 1.5 }}
               >
                 A web experience at the edge of reality.
+              </motion.p>
+              <motion.p
+                className="void-label mt-2"
+                style={{ color: "var(--color-signal-red)", fontSize: 9 }}
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 0.6 }}
+                transition={{ delay: 2.5 }}
+              >
+                // WARNING: Extended exposure may cause perceptual anomalies
               </motion.p>
             </motion.div>
 
@@ -352,7 +374,7 @@ export default function Home() {
         {screen === "naming" && (
           <motion.div
             key="naming"
-            className="relative z-10 min-h-screen flex flex-col items-center justify-center px-6"
+            className="relative z-10 min-h-screen flex flex-col items-center justify-center px-4 sm:px-6"
             initial={{ opacity: 0, filter: "blur(4px)" }}
             animate={{ opacity: 1, filter: "blur(0px)" }}
             exit={{ opacity: 0, filter: "blur(4px)" }}

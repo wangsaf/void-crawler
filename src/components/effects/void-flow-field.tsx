@@ -157,13 +157,13 @@ export function VoidFlowField() {
           const r = 80 + Math.floor(chaos * 1.2);
           const g = 20 + Math.floor((100 - chaos) * 0.3);
           const b = 30 + Math.floor((100 - chaos) * 0.2);
-          ctx.fillStyle = `rgba(${r}, ${g}, ${b}, ${alpha})`;
+          ctx.fillStyle = `rgba(${r}, ${g}, ${b}, ${alpha * 1.5})`;
         } else if (chaos > 40) {
           // Medium chaos: purple-tinted
-          ctx.fillStyle = `rgba(60, 30, 80, ${alpha})`;
+          ctx.fillStyle = `rgba(60, 30, 80, ${alpha * 1.5})`;
         } else {
-          // Low chaos: subtle grey-blue
-          ctx.fillStyle = `rgba(40, 40, 55, ${alpha})`;
+          // Low chaos: subtle grey-blue — but VISIBLE
+          ctx.fillStyle = `rgba(50, 50, 70, ${alpha * 2})`;
         }
 
         ctx.fillRect(p.x, p.y, p.size, p.size);

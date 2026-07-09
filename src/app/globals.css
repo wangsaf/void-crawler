@@ -235,6 +235,12 @@ body {
   75% { transform: translate(0.5px, 0.5px); }
 }
 
+/* Breathing text — subtly alive */
+@keyframes text-breathe {
+  0%, 100% { opacity: 1; filter: blur(0px); }
+  50% { opacity: 0.85; filter: blur(0.3px); }
+}
+
 /* Corrode effect for high chaos */
 @keyframes corrode {
   0%, 100% { clip-path: inset(0 0 0 0); }
