@@ -23,6 +23,7 @@ function formatPlayTime(ms: number): string {
 }
 
 export function CharacterHUD() {
+  const [expanded, setExpanded] = useState(false);
   const [playTime, setPlayTime] = useState(0);
   const {
     characterName,
@@ -34,8 +35,10 @@ export function CharacterHUD() {
     maxHealth,
     gold,
     enemiesDefeated,
+    currentQuest,
     sessionStartTime,
     achievements,
+    questList,
     totalPlayTime,
   } = useGameStore();
 
@@ -62,145 +65,184 @@ export function CharacterHUD() {
 
   const classIcon = CLASS_ICONS[characterClass] || "⭐";
 
+  const activeQuest = currentQuest
+    ? questList.find((q) => q.id === currentQuest)
+    : null;
+
   return (
     <motion.div
-      className="fixed top-0 left-0 right-0 z-50 game-hud-bar"
+      className="fixed top-3 right-3 sm:top-4 sm:right-4 z-50 w-48 sm:w-72"
       style={{
-        background: "rgba(10, 10, 15, 0.97)",
-        borderBottom: "3px solid #3a3a5a",
-        boxShadow: "0 4px 0px #000",
+        background: "rgba(10, 10, 15, 0.95)",
+        border: "3px solid #3a3a5a",
+        boxShadow: "4px 4px 0px #000",
       }}
-      initial={{ y: -60 }}
-      animate={{ y: 0 }}
-      transition={{ type: "spring", damping: 20, delay: 0.3 }}
+      initial={{ x: 300, opacity: 0 }}
+      animate={{ x: 0, opacity: 1 }}
+      transition={{ type: "spring", damping: 20, delay: 0.5 }}
     >
-      <div className="flex items-center gap-2 sm:gap-3 px-3 sm:px-4 h-11 sm:h-12">
-        {/* ── Class Icon + Name + Level ── */}
-        <div className="flex items-center gap-2 shrink-0">
+      {/* ── Header ── */}
+      <div className="flex items-center gap-3 p-3 sm:p-4">
+        <div
+          className="w-9 h-9 sm:w-11 sm:h-11 flex items-center justify-center text-xl sm:text-2xl shrink-0"
+          style={{
+            background: "linear-gradient(135deg, #b000ff25, #00d4ff25)",
+            border: "2px solid #3a3a5a",
+          }}
+        >
+          {classIcon}
+        </div>
+        <div className="min-w-0 flex-1">
           <div
-            className="w-7 h-7 sm:w-8 sm:h-8 flex items-center justify-center text-base sm:text-lg shrink-0"
-            style={{
-              background: "linear-gradient(135deg, #b000ff25, #00d4ff25)",
-              border: "2px solid #3a3a5a",
-            }}
-          >
-            {classIcon}
-          </div>
-          <div className="hidden sm:block min-w-0">
-            <div
-              className="text-[9px] font-bold text-neon-blue truncate uppercase leading-tight"
-              style={{ fontFamily: "var(--font-display)" }}
-            >
-              {characterName}
-            </div>
-            <div
-              className="text-[8px] text-gray-400 uppercase tracking-wider leading-tight"
-              style={{ fontFamily: "var(--font-display)" }}
-            >
-              LV.{level} {title}
-            </div>
-          </div>
-          {/* Mobile: compact name */}
-          <div
-            className="sm:hidden text-[9px] font-bold text-neon-blue uppercase truncate"
+            className="text-[10px] sm:text-xs font-bold text-neon-blue truncate uppercase"
             style={{ fontFamily: "var(--font-display)" }}
           >
-            {characterName} <span className="text-gray-500">LV.{level}</span>
+            {characterName}
+          </div>
+          <div
+            className="text-[9px] sm:text-[10px] text-gray-400 truncate uppercase tracking-wider"
+            style={{ fontFamily: "var(--font-display)" }}
+          >
+            Lv.{level} {title}
+          </div>
+          <div className="text-[9px] text-gray-500 truncate uppercase">
+            {characterClass}
           </div>
         </div>
+        {/* Toggle for mobile */}
+        <button
+          onClick={() => setExpanded(!expanded)}
+          className="sm:hidden text-gray-400 hover:text-white transition-colors p-1 shrink-0"
+          aria-label={expanded ? "Collapse" : "Expand"}
+        >
+          <motion.span
+            animate={{ rotate: expanded ? 180 : 0 }}
+            transition={{ duration: 0.2 }}
+            className="block text-xs"
+          >
+            ▼
+          </motion.span>
+        </button>
+      </div>
 
-        {/* ── Separator ── */}
-        <div className="w-px h-6 bg-void-border shrink-0" />
-
-        {/* ── HP Bar ── */}
-        <div className="flex items-center gap-1.5 shrink-0">
+      {/* ── HP Bar ── */}
+      <div className="px-3 sm:px-4 pb-2">
+        <div className="flex justify-between mb-1">
           <span
-            className="text-[7px] sm:text-[8px] text-neon-red uppercase"
-            style={{ fontFamily: "var(--font-display)" }}
+            className="text-neon-red uppercase"
+            style={{ fontFamily: "var(--font-display)", fontSize: "8px" }}
           >
             HP
           </span>
-          <div
-            className="w-14 sm:w-20 lg:w-24 h-2 bg-void-deep overflow-hidden"
-            style={{ border: "1px solid #3a3a5a" }}
-          >
-            <motion.div
-              className="h-full"
-              style={{
-                background:
-                  healthPercent > 30
-                    ? "linear-gradient(90deg, #00ff88, #00d4ff)"
-                    : "linear-gradient(90deg, #ff3333, #ff006e)",
-              }}
-              animate={{ width: `${healthPercent}%` }}
-              transition={{ type: "spring", damping: 20 }}
-            />
-          </div>
           <span
-            className="text-[9px] text-gray-400 hidden md:inline"
-            style={{ fontFamily: "var(--font-code)" }}
+            className="text-gray-400"
+            style={{ fontFamily: "var(--font-code)", fontSize: "11px" }}
           >
             {health}/{maxHealth}
           </span>
         </div>
+        <div
+          className="h-2 sm:h-2.5 bg-void-deep overflow-hidden"
+          style={{ border: "2px solid #3a3a5a" }}
+        >
+          <motion.div
+            className="h-full"
+            style={{
+              background:
+                healthPercent > 30
+                  ? "linear-gradient(90deg, #00ff88, #00d4ff)"
+                  : "linear-gradient(90deg, #ff3333, #ff006e)",
+            }}
+            animate={{ width: `${healthPercent}%` }}
+            transition={{ type: "spring", damping: 20 }}
+          />
+        </div>
+      </div>
 
-        {/* ── XP Bar ── */}
-        <div className="flex items-center gap-1.5 shrink-0">
+      {/* ── XP Bar ── */}
+      <div className={`px-3 sm:px-4 pb-2 ${expanded ? "block" : "hidden sm:block"}`}>
+        <div className="flex justify-between mb-1">
           <span
-            className="text-[7px] sm:text-[8px] text-neon-purple uppercase"
-            style={{ fontFamily: "var(--font-display)" }}
+            className="text-neon-purple uppercase"
+            style={{ fontFamily: "var(--font-display)", fontSize: "8px" }}
           >
             XP
           </span>
-          <div
-            className="w-10 sm:w-16 lg:w-20 h-2 bg-void-deep overflow-hidden"
-            style={{ border: "1px solid #3a3a5a" }}
-          >
-            <motion.div
-              className="h-full"
-              style={{ background: "linear-gradient(90deg, #b000ff, #ff006e)" }}
-              animate={{ width: `${xpPercent}%` }}
-              transition={{ type: "spring", damping: 20 }}
-            />
-          </div>
           <span
-            className="text-[9px] text-gray-400 hidden lg:inline"
-            style={{ fontFamily: "var(--font-code)" }}
+            className="text-gray-400"
+            style={{ fontFamily: "var(--font-code)", fontSize: "11px" }}
           >
             {formatNumber(xp)}/{formatNumber(xpToNext)}
           </span>
         </div>
-
-        {/* ── Spacer ── */}
-        <div className="flex-1" />
-
-        {/* ── Stat Counters ── */}
         <div
-          className="flex items-center gap-2 sm:gap-3 lg:gap-4 text-[9px] sm:text-[10px]"
-          style={{ fontFamily: "var(--font-code)" }}
+          className="h-2 sm:h-2.5 bg-void-deep overflow-hidden"
+          style={{ border: "2px solid #3a3a5a" }}
         >
-          <div className="flex items-center gap-1">
+          <motion.div
+            className="h-full"
+            style={{ background: "linear-gradient(90deg, #b000ff, #ff006e)" }}
+            animate={{ width: `${xpPercent}%` }}
+            transition={{ type: "spring", damping: 20 }}
+          />
+        </div>
+      </div>
+
+      {/* ── Stats grid ── */}
+      <div className={`px-3 sm:px-4 pb-2 ${expanded ? "block" : "hidden sm:block"}`}>
+        <div className="grid grid-cols-2 gap-x-4 gap-y-1 text-[10px] sm:text-[11px]">
+          <div className="flex items-center gap-1.5">
             <span>💰</span>
-            <span className="text-neon-gold">{formatNumber(gold)}</span>
+            <span className="text-neon-gold" style={{ fontFamily: "var(--font-code)" }}>
+              {formatNumber(gold)}
+            </span>
           </div>
-          <div className="hidden sm:flex items-center gap-1">
+          <div className="flex items-center gap-1.5">
             <span>⚔️</span>
-            <span className="text-neon-red">{enemiesDefeated}</span>
+            <span className="text-neon-red" style={{ fontFamily: "var(--font-code)" }}>
+              {enemiesDefeated}
+            </span>
           </div>
-          <div className="hidden md:flex items-center gap-1">
+          <div className="flex items-center gap-1.5">
             <span>⏱️</span>
-            <span className="text-gray-300">{formatPlayTime(playTime)}</span>
+            <span className="text-gray-300" style={{ fontFamily: "var(--font-code)" }}>
+              {formatPlayTime(playTime)}
+            </span>
           </div>
-          <div className="flex items-center gap-1">
+          <div className="flex items-center gap-1.5">
             <span>🏆</span>
-            <span className="text-neon-purple">
+            <span className="text-neon-purple" style={{ fontFamily: "var(--font-code)" }}>
               {achievements.length}/{ACHIEVEMENTS_TOTAL}
             </span>
           </div>
         </div>
       </div>
 
-      {/* ── Bottom accent gradient ── */}
+      {/* ── Current quest ── */}
+      {activeQuest && (
+        <div className={`px-3 sm:px-4 pb-3 ${expanded ? "block" : "hidden sm:block"}`}>
+          <div
+            className="text-[8px] uppercase tracking-widest text-gray-500 mb-1"
+            style={{ fontFamily: "var(--font-display)" }}
+          >
+            Quest
+          </div>
+          <div
+            className="text-[10px] sm:text-[11px] text-neon-blue truncate"
+            style={{ fontFamily: "var(--font-code)" }}
+          >
+            {activeQuest.name}
+          </div>
+          <div
+            className="text-[9px] text-gray-500 truncate"
+            style={{ fontFamily: "var(--font-code)" }}
+          >
+            {activeQuest.description}
+          </div>
+        </div>
+      )}
+
+      {/* Bottom accent line */}
       <div className="h-[2px] bg-gradient-to-r from-neon-purple via-neon-blue to-transparent" />
     </motion.div>
   );

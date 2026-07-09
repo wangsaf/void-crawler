@@ -8,10 +8,6 @@ import { VoidRings } from "@/components/effects/void-rings";
 import { HexGrid } from "@/components/effects/hex-grid";
 import { AmbientOrbs } from "@/components/effects/glow-orb";
 import { ZoneTransition } from "@/components/effects/zone-transition";
-import { Blackhole } from "@/components/effects/blackhole";
-import { GravitationalPull } from "@/components/effects/gravitational-pull";
-import { GravCard } from "@/components/effects/grav-card";
-import { FloatCard } from "@/components/effects/float-card";
 import { ZonePortal } from "@/components/rpg/zone-portal";
 import { CharacterHUD } from "@/components/rpg/character-hud";
 import { MiniMap } from "@/components/rpg/mini-map";
@@ -61,9 +57,7 @@ const zoneData = [
   },
 ];
 
-// ═══════════════════════════════════════════════════════
-// Quick Stats widget - horizontal row
-// ═══════════════════════════════════════════════════════
+// Quick stats widget for the hub
 function QuickStats() {
   const { level, xp, xpToNext, gold, enemiesDefeated } = useGameStore();
   const stats = [
@@ -75,16 +69,15 @@ function QuickStats() {
 
   return (
     <motion.div
-      className="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4 mb-6"
+      className="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-8"
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay: 0.6, duration: 0.5 }}
     >
       {stats.map((stat, i) => (
-        <FloatCard key={`float-${stat.label}`} drift={((i % 4) + 1) as 1|2|3|4}>
-        <GravCard key={stat.label} intensity={0.15}>
         <motion.div
-          className="retro-card px-4 py-2.5 text-center"
+          key={stat.label}
+          className="retro-card px-4 sm:px-5 py-2.5 sm:py-3 text-center min-w-[80px] sm:min-w-[100px]"
           initial={{ opacity: 0, scale: 0.8 }}
           animate={{ opacity: 1, scale: 1 }}
           transition={{ delay: 0.8 + i * 0.1 }}
@@ -96,31 +89,18 @@ function QuickStats() {
           >
             {stat.value}
           </div>
-          <div
-            className="text-[10px] text-gray-500 mt-1 uppercase tracking-widest"
-            style={{ fontFamily: "var(--font-display)" }}
-          >
-            {stat.label}
-          </div>
+          <div className="text-[10px] text-gray-500 mt-1 uppercase tracking-widest" style={{ fontFamily: 'var(--font-display)' }}>{stat.label}</div>
         </motion.div>
-        </GravCard>
-        </FloatCard>
       ))}
     </motion.div>
   );
 }
 
 // Animated divider line between sections
-function AnimatedDivider({
-  delay = 0,
-  label = "◆ ZONES ◆",
-}: {
-  delay?: number;
-  label?: string;
-}) {
+function AnimatedDivider({ delay = 0, label = "◆ ZONES ◆" }: { delay?: number; label?: string }) {
   return (
     <motion.div
-      className="flex items-center justify-center gap-4 mb-6 w-full max-w-2xl mx-auto"
+      className="flex items-center justify-center gap-4 mb-8 w-full max-w-2xl mx-auto"
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       transition={{ delay }}
@@ -133,11 +113,7 @@ function AnimatedDivider({
         }}
         initial={{ scaleX: 0 }}
         animate={{ scaleX: 1 }}
-        transition={{
-          delay: delay + 0.2,
-          duration: 0.8,
-          ease: "easeOut",
-        }}
+        transition={{ delay: delay + 0.2, duration: 0.8, ease: "easeOut" }}
       />
       <motion.div
         className="text-neon-purple/40 text-xs tracking-widest uppercase"
@@ -156,11 +132,7 @@ function AnimatedDivider({
         }}
         initial={{ scaleX: 0 }}
         animate={{ scaleX: 1 }}
-        transition={{
-          delay: delay + 0.2,
-          duration: 0.8,
-          ease: "easeOut",
-        }}
+        transition={{ delay: delay + 0.2, duration: 0.8, ease: "easeOut" }}
       />
     </motion.div>
   );
@@ -171,13 +143,11 @@ function AnimatedDivider({
 // ═══════════════════════════════════════════════════════
 function ObjectivePanel() {
   const { currentQuest, questList } = useGameStore();
-  const active = currentQuest
-    ? questList.find((q) => q.id === currentQuest)
-    : null;
+  const active = currentQuest ? questList.find((q) => q.id === currentQuest) : null;
 
   return (
     <motion.div
-      className="p-3"
+      className="p-4"
       style={{
         background: "rgba(10, 10, 15, 0.95)",
         border: "3px solid #3a3a5a",
@@ -189,29 +159,26 @@ function ObjectivePanel() {
       whileHover={{ borderColor: "#b000ff60" }}
     >
       <h3
-        className="text-[9px] text-neon-purple uppercase tracking-widest mb-2"
+        className="text-[10px] text-neon-purple uppercase tracking-widest mb-3"
         style={{ fontFamily: "var(--font-display)" }}
       >
-        📋 OBJECTIVE
+        📋 Current Objective
       </h3>
       {active ? (
         <div>
           <p
-            className="text-xs text-neon-blue font-bold uppercase mb-1"
+            className="text-sm text-neon-blue font-bold uppercase mb-1"
             style={{ fontFamily: "var(--font-display)" }}
           >
             {active.name}
           </p>
           <p
-            className="text-[13px] text-gray-400 mb-2"
+            className="text-xs text-gray-400 mb-2"
             style={{ fontFamily: "var(--font-code)" }}
           >
             {active.description}
           </p>
-          <div
-            className="flex gap-3 text-[11px]"
-            style={{ fontFamily: "var(--font-code)" }}
-          >
+          <div className="flex gap-3 text-[10px]" style={{ fontFamily: "var(--font-code)" }}>
             <span className="text-neon-gold">+{active.xpReward} XP</span>
             <span className="text-neon-gold">+{active.goldReward}g</span>
             <span className="text-gray-500 uppercase">{active.zone}</span>
@@ -219,7 +186,7 @@ function ObjectivePanel() {
         </div>
       ) : (
         <p
-          className="text-[13px] text-gray-500"
+          className="text-xs text-gray-500"
           style={{ fontFamily: "var(--font-code)" }}
         >
           Visit a zone to start your adventure!
@@ -240,7 +207,7 @@ function AchievementsPanel() {
 
   return (
     <motion.div
-      className="p-3"
+      className="p-4"
       style={{
         background: "rgba(10, 10, 15, 0.95)",
         border: "3px solid #3a3a5a",
@@ -252,23 +219,23 @@ function AchievementsPanel() {
       whileHover={{ borderColor: "#ffd70060" }}
     >
       <h3
-        className="text-[9px] text-neon-gold uppercase tracking-widest mb-2"
+        className="text-[10px] text-neon-gold uppercase tracking-widest mb-3"
         style={{ fontFamily: "var(--font-display)" }}
       >
-        🏆 ACHIEVEMENTS
+        🏆 Achievements
       </h3>
       <p
-        className="text-[11px] text-gray-500 mb-2"
+        className="text-[10px] text-gray-500 mb-3"
         style={{ fontFamily: "var(--font-code)" }}
       >
         {achievements.length}/{total} Unlocked
       </p>
       {recent.length > 0 ? (
-        <div className="space-y-1.5">
+        <div className="space-y-2">
           {recent.map((a) => (
             <div
               key={a.id}
-              className="flex items-center gap-2 text-[13px]"
+              className="flex items-center gap-2 text-xs"
               style={{ fontFamily: "var(--font-code)" }}
             >
               <span>{a.icon}</span>
@@ -278,7 +245,7 @@ function AchievementsPanel() {
         </div>
       ) : (
         <p
-          className="text-[13px] text-gray-600"
+          className="text-xs text-gray-600"
           style={{ fontFamily: "var(--font-code)" }}
         >
           No achievements yet. Start exploring!
@@ -297,7 +264,7 @@ function RecentActivityPanel() {
 
   return (
     <motion.div
-      className="p-3"
+      className="p-4"
       style={{
         background: "rgba(10, 10, 15, 0.95)",
         border: "3px solid #3a3a5a",
@@ -309,17 +276,17 @@ function RecentActivityPanel() {
       whileHover={{ borderColor: "#00d4ff60" }}
     >
       <h3
-        className="text-[9px] text-neon-blue uppercase tracking-widest mb-2"
+        className="text-[10px] text-neon-blue uppercase tracking-widest mb-3"
         style={{ fontFamily: "var(--font-display)" }}
       >
-        📜 ACTIVITY
+        📜 Recent Activity
       </h3>
       {recent.length > 0 ? (
-        <div className="space-y-1">
+        <div className="space-y-1.5">
           {recent.map((text, i) => (
             <p
               key={i}
-              className="text-[13px] text-gray-400"
+              className="text-xs text-gray-400"
               style={{ fontFamily: "var(--font-code)" }}
             >
               {text}
@@ -328,7 +295,7 @@ function RecentActivityPanel() {
         </div>
       ) : (
         <p
-          className="text-[13px] text-gray-600"
+          className="text-xs text-gray-600"
           style={{ fontFamily: "var(--font-code)" }}
         >
           No activity yet. Go explore!
@@ -344,35 +311,27 @@ function RecentActivityPanel() {
 function ZoneProgressPanel() {
   const { stats } = useGameStore();
 
+  // Simple progress calculations (caps at 100%)
   const zones = [
     {
       name: "Market",
       icon: "🛒",
       color: "#ff6b35",
-      progress: Math.min(
-        100,
-        Math.round((stats.totalItemsBought / 10) * 100)
-      ),
+      progress: Math.min(100, Math.round((stats.totalItemsBought / 10) * 100)),
       detail: `${stats.totalItemsBought} items bought`,
     },
     {
       name: "Dashboard",
       icon: "📊",
       color: "#00bcd4",
-      progress: Math.min(
-        100,
-        Math.round((stats.totalPuzzlesSolved / 5) * 100)
-      ),
+      progress: Math.min(100, Math.round((stats.totalPuzzlesSolved / 5) * 100)),
       detail: `${stats.totalPuzzlesSolved} puzzles solved`,
     },
     {
       name: "Cyber",
       icon: "🔓",
       color: "#00ff41",
-      progress: Math.min(
-        100,
-        Math.round((stats.totalPortsScanned / 50) * 100)
-      ),
+      progress: Math.min(100, Math.round((stats.totalPortsScanned / 50) * 100)),
       detail: `${stats.totalPortsScanned} ports scanned`,
     },
     {
@@ -381,7 +340,7 @@ function ZoneProgressPanel() {
       color: "#b000ff",
       progress: Math.min(
         100,
-        Math.round(((stats.secretsFound?.length || 0) / 5) * 100)
+        Math.round((stats.secretsFound?.length || 0) / 5) * 100
       ),
       detail: `${stats.secretsFound?.length || 0} secrets found`,
     },
@@ -389,7 +348,7 @@ function ZoneProgressPanel() {
 
   return (
     <motion.div
-      className="p-3"
+      className="p-4"
       style={{
         background: "rgba(10, 10, 15, 0.95)",
         border: "3px solid #3a3a5a",
@@ -401,17 +360,17 @@ function ZoneProgressPanel() {
       whileHover={{ borderColor: "#00ff4160" }}
     >
       <h3
-        className="text-[9px] text-neon-green uppercase tracking-widest mb-2"
+        className="text-[10px] text-neon-green uppercase tracking-widest mb-3"
         style={{ fontFamily: "var(--font-display)" }}
       >
-        📈 PROGRESS
+        📈 Zone Progress
       </h3>
-      <div className="space-y-2.5">
+      <div className="space-y-3">
         {zones.map((z) => (
           <div key={z.name}>
-            <div className="flex items-center justify-between mb-0.5">
+            <div className="flex items-center justify-between mb-1">
               <span
-                className="text-[12px] text-gray-300"
+                className="text-xs text-gray-300"
                 style={{ fontFamily: "var(--font-code)" }}
               >
                 {z.icon} {z.name}
@@ -432,11 +391,7 @@ function ZoneProgressPanel() {
                 style={{ background: z.color }}
                 initial={{ width: 0 }}
                 animate={{ width: `${z.progress}%` }}
-                transition={{
-                  delay: 2.5,
-                  duration: 0.8,
-                  ease: "easeOut",
-                }}
+                transition={{ delay: 2.5, duration: 0.8, ease: "easeOut" }}
               />
             </div>
             <p
@@ -452,57 +407,11 @@ function ZoneProgressPanel() {
   );
 }
 
-// ═══════════════════════════════════════════════════════
-// Status Sidebar - Fixed right panel
-// ═══════════════════════════════════════════════════════
-function StatusSidebar() {
-  return (
-    <motion.div
-      className="fixed right-0 z-40 hidden lg:block game-sidebar-right"
-      style={{ top: "51px", bottom: 0, width: "280px" }}
-      initial={{ x: 300, opacity: 0 }}
-      animate={{ x: 0, opacity: 1 }}
-      transition={{ type: "spring", damping: 20, delay: 0.8 }}
-    >
-      <div
-        className="h-full overflow-y-auto"
-        style={{
-          background: "rgba(10, 10, 15, 0.85)",
-          borderLeft: "3px solid #3a3a5a",
-        }}
-      >
-        {/* Sidebar header */}
-        <div
-          className="sticky top-0 z-10 px-3 py-2 text-[7px] uppercase tracking-[0.15em] font-bold text-gray-400"
-          style={{
-            fontFamily: "var(--font-display)",
-            background: "rgba(10, 10, 15, 0.98)",
-            borderBottom: "2px solid #3a3a5a",
-          }}
-        >
-          📊 STATUS
-        </div>
-
-        <div className="p-2.5 space-y-2.5">
-          <FloatCard drift={5}><GravCard intensity={0.2}><ObjectivePanel /></GravCard></FloatCard>
-          <FloatCard drift={6}><GravCard intensity={0.2}><AchievementsPanel /></GravCard></FloatCard>
-          <FloatCard drift={1}><GravCard intensity={0.2}><RecentActivityPanel /></GravCard></FloatCard>
-          <FloatCard drift={2}><GravCard intensity={0.2}><ZoneProgressPanel /></GravCard></FloatCard>
-        </div>
-      </div>
-    </motion.div>
-  );
-}
-
 export default function Home() {
   const [screen, setScreen] = useState<Screen>("landing");
   const [inputValue, setInputValue] = useState("");
   const [nameInput, setNameInput] = useState("");
-  const [transitioning, setTransitioning] = useState<{
-    zone: string;
-    color: string;
-    name: string;
-  } | null>(null);
+  const [transitioning, setTransitioning] = useState<{ zone: string; color: string; name: string } | null>(null);
   const {
     setCharacterName,
     setCharacterClass,
@@ -569,23 +478,17 @@ export default function Home() {
   };
 
   return (
-    <main
-      className="relative min-h-screen overflow-hidden bg-void-black"
-      role="main"
-    >
+    <main className="relative min-h-screen overflow-hidden bg-void-black" role="main">
       {/* Particle Background */}
       <ParticleField />
-
-      {/* BLACKHOLE - Central vortex effect (hub only) */}
-      {screen === "hub" && <Blackhole />}
 
       {/* Hex Grid - subtle cyber overlay */}
       {screen === "hub" && <HexGrid />}
 
-      {/* Ambient glow orbs (reduced) */}
+      {/* Ambient glow orbs */}
       {screen === "hub" && <AmbientOrbs />}
 
-      {/* Animated HUD - Top Bar */}
+      {/* Animated HUD */}
       <AnimatePresence>
         {screen === "hub" && <CharacterHUD />}
       </AnimatePresence>
@@ -598,15 +501,8 @@ export default function Home() {
         onComplete={handleTransitionComplete}
       />
 
-      {/* MiniMap - Left Sidebar */}
+      {/* MiniMap on hub screen */}
       {screen === "hub" && <MiniMap />}
-
-      {/* Status Panels - Right Sidebar */}
-      {screen === "hub" && (
-        <GravitationalPull intensity={0.4}>
-          <StatusSidebar />
-        </GravitationalPull>
-      )}
 
       {/* ====== LANDING SCREEN ====== */}
       <AnimatePresence mode="wait">
@@ -739,24 +635,23 @@ export default function Home() {
         {screen === "hub" && (
           <motion.div
             key="hub"
-            className="relative z-10 min-h-screen flex flex-col items-center px-4 sm:px-6 pb-12 game-hub-content"
-            style={{ paddingTop: "68px" }}
+            className="relative z-10 min-h-screen flex flex-col items-center justify-center px-6 py-12"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ duration: 0.8 }}
           >
-            {/* Void rings pulsing from center - blackhole distortion */}
-            <VoidRings color="#b000ff" count={4} />
+            {/* Void rings pulsing from center */}
+            <VoidRings color="#b000ff" count={6} />
 
-            {/* Hub Title - gravitationally pulled */}
+            {/* Hub Title */}
             <motion.div
-              className="text-center mb-5 inward-drift"
+              className="text-center mb-6"
               initial={{ y: -30, opacity: 0 }}
               animate={{ y: 0, opacity: 1 }}
               transition={{ delay: 0.2 }}
             >
               <motion.p
-                className="text-xs sm:text-sm text-gray-500 mb-3 tracking-widest uppercase"
+                className="text-xs sm:text-sm text-gray-500 mb-4 tracking-widest uppercase"
                 style={{ fontFamily: "var(--font-code)" }}
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 0.6 }}
@@ -765,7 +660,7 @@ export default function Home() {
                 Welcome back, {characterName || "Crawler"}
               </motion.p>
               <h2
-                className="text-lg md:text-xl font-black mb-3 glow-blue uppercase"
+                className="text-xl md:text-2xl font-black mb-4 glow-blue uppercase"
                 style={{ fontFamily: "var(--font-display)" }}
               >
                 <motion.span
@@ -778,7 +673,7 @@ export default function Home() {
                 </motion.span>
               </h2>
               <motion.p
-                className="text-gray-400 text-sm"
+                className="text-gray-400 text-sm sm:text-base"
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 transition={{ delay: 0.5 }}
@@ -787,26 +682,22 @@ export default function Home() {
               </motion.p>
             </motion.div>
 
-            {/* Quick Stats Row */}
-            <GravitationalPull intensity={0.15} className="w-full max-w-4xl grav-wobble">
-              <QuickStats />
-            </GravitationalPull>
+            {/* Quick Stats */}
+            <QuickStats />
 
             {/* Animated Divider */}
             <AnimatedDivider delay={1.0} />
 
-            {/* Zone Portals Grid - 2x2 (gravitationally pulled toward center) */}
-            <GravitationalPull intensity={0.25} className="w-full flex justify-center">
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-5 max-w-3xl w-full mb-6">
+            {/* Zone Portals */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 max-w-6xl w-full">
               {zoneData.map((z, i) => (
-                <FloatCard key={`float-${z.zone}`} drift={((i % 4) + 1) as 1|2|3|4}>
-                <GravCard key={z.zone} intensity={0.25}>
                 <motion.div
-                  className={`h-full ${i % 2 === 0 ? "grav-pull-left" : "grav-pull-right"}`}
-                  initial={{ opacity: 0, y: 40 }}
+                  key={z.zone}
+                  className="h-full"
+                  initial={{ opacity: 0, y: 60 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{
-                    delay: 1.2 + i * 0.12,
+                    delay: 1.2 + i * 0.15,
                     type: "spring",
                     damping: 20,
                     stiffness: 180,
@@ -819,38 +710,32 @@ export default function Home() {
                     icon={z.icon}
                     color={z.color}
                     glowClass={z.glowClass}
-                    onNavigate={() =>
-                      handlePortalNavigate(z.zone, z.color, z.title)
-                    }
-                    />
-                    </motion.div>
-                    </GravCard>
-                    </FloatCard>
-                    ))}
+                    onNavigate={() => handlePortalNavigate(z.zone, z.color, z.title)}
+                  />
+                </motion.div>
+              ))}
             </div>
-            </GravitationalPull>
 
-            {/* Mobile-only Status Panels (visible below lg breakpoint) */}
-            <div className="lg:hidden w-full max-w-3xl">
-              <AnimatedDivider delay={1.6} label="◆ STATUS ◆" />
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <FloatCard drift={3}><GravCard intensity={0.2}><ObjectivePanel /></GravCard></FloatCard>
-                <FloatCard drift={4}><GravCard intensity={0.2}><AchievementsPanel /></GravCard></FloatCard>
-                <FloatCard drift={5}><GravCard intensity={0.2}><RecentActivityPanel /></GravCard></FloatCard>
-                <FloatCard drift={6}><GravCard intensity={0.2}><ZoneProgressPanel /></GravCard></FloatCard>
-              </div>
+            {/* Divider before panels */}
+            <AnimatedDivider delay={1.6} label="◆ STATUS ◆" />
+
+            {/* Hub Panels - 2 column grid */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-6xl w-full">
+              <ObjectivePanel />
+              <AchievementsPanel />
+              <RecentActivityPanel />
+              <ZoneProgressPanel />
             </div>
 
             {/* Bottom info */}
             <motion.div
-              className="mt-6 text-center text-xs sm:text-sm text-gray-500 px-4"
+              className="mt-8 text-center text-xs sm:text-sm text-gray-500 px-4"
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ delay: 2.5 }}
             >
               <p>
-                💡 Each zone has hidden easter eggs • Your browser determined
-                <br className="sm:hidden" />
+                💡 Each zone has hidden easter eggs • Your browser determined<br className="sm:hidden" />
                 {" "}your class • Progress saves automatically
               </p>
               <motion.p
@@ -867,67 +752,17 @@ export default function Home() {
         )}
       </AnimatePresence>
 
-      {/* Floating ambient particles - subtle game atmosphere */}
-      {screen === "hub" && <GameParticles />}
-
-      {/* Global ambient glow - blackhole-centered */}
+      {/* Global ambient glow */}
       <div
         className="fixed inset-0 pointer-events-none z-[1]"
         style={{
-          background: screen === "hub"
-            ? "radial-gradient(ellipse at 50% 50%, rgba(176,0,255,0.08) 0%, rgba(0,212,255,0.03) 25%, transparent 55%)"
-            : "radial-gradient(ellipse at 50% 50%, rgba(176,0,255,0.03) 0%, transparent 70%)",
+          background:
+            "radial-gradient(ellipse at 50% 50%, rgba(176,0,255,0.03) 0%, transparent 70%)",
         }}
       />
 
       {/* Noise overlay for texture */}
       <div className="fixed inset-0 pointer-events-none z-[2] noise" />
     </main>
-  );
-}
-
-// ═══════════════════════════════════════════════════════
-// Subtle floating game particles - spiraling toward the blackhole
-// ═══════════════════════════════════════════════════════
-function GameParticles() {
-  const symbols = ["◆", "✦", "⬡", "◈"];
-
-  return (
-    <div className="fixed inset-0 pointer-events-none z-[3]">
-      {symbols.map((sym, i) => (
-        <motion.div
-          key={i}
-          className="absolute text-neon-purple/[0.07]"
-          style={{
-            left: "50%",
-            top: "50%",
-            fontSize: `${14 + i * 4}px`,
-            fontFamily: "var(--font-code)",
-          }}
-          animate={{
-            x: [
-              Math.cos(i * 1.5) * (100 + i * 60),
-              Math.cos(i * 1.5 + Math.PI) * (80 + i * 50),
-              Math.cos(i * 1.5 + Math.PI * 2) * (100 + i * 60),
-            ],
-            y: [
-              Math.sin(i * 1.5) * (100 + i * 60),
-              Math.sin(i * 1.5 + Math.PI) * (80 + i * 50),
-              Math.sin(i * 1.5 + Math.PI * 2) * (100 + i * 60),
-            ],
-            rotate: [0, 180, 360],
-            opacity: [0.05, 0.12, 0.05],
-          }}
-          transition={{
-            duration: 8 + i * 2,
-            repeat: Infinity,
-            ease: "easeInOut",
-            delay: i * 1.5,
-          }}
-        >
-          {sym}
-        </motion.div>
-      ))}
-    </div>
   );
 }
