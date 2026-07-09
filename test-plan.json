@@ -1,0 +1,147 @@
+{
+  "projectId": "882abaea-2cea-4e00-92a7-12aa6b45e6be",
+  "type": "frontend",
+  "name": "void-crawler-e2e",
+  "planSteps": [
+    {
+      "step": 1,
+      "type": "action",
+      "description": "Navigate to the landing page and verify the boot sequence appears with terminal-style initialization text"
+    },
+    {
+      "step": 2,
+      "type": "action",
+      "description": "Wait for boot sequence to finish and click 'INITIALIZE // ENTER THE VOID' button to proceed"
+    },
+    {
+      "step": 3,
+      "type": "action",
+      "description": "On the landing page, verify the void.crawler() title is visible and click 'INITIALIZE SEQUENCE' button"
+    },
+    {
+      "step": 4,
+      "type": "action",
+      "description": "On the naming screen, type a character name and click 'ASSIGN IDENTITY // PROCEED' button"
+    },
+    {
+      "step": 5,
+      "type": "action",
+      "description": "On the hub, verify the tutorial overlay appears with step-by-step guidance for new users"
+    },
+    {
+      "step": 6,
+      "type": "action",
+      "description": "Click through all 4 tutorial steps and dismiss the tutorial"
+    },
+    {
+      "step": 7,
+      "type": "action",
+      "description": "Verify the hub shows zone cards (CART_CHAOS, PANEL_PANIC, ANOMALY.ZONE, THE_VOID) with descriptions"
+    },
+    {
+      "step": 8,
+      "type": "action",
+      "description": "Verify the progression guide panel is visible with objectives"
+    },
+    {
+      "step": 9,
+      "type": "action",
+      "description": "Hover over the LEVEL stat to see tooltip explaining what level does"
+    },
+    {
+      "step": 10,
+      "type": "action",
+      "description": "Click on CART_CHAOS zone card to navigate to the market"
+    },
+    {
+      "step": 11,
+      "type": "action",
+      "description": "On the market page, verify items are displayed with geometric symbols and prices"
+    },
+    {
+      "step": 12,
+      "type": "action",
+      "description": "Click on an item to add it to the cart"
+    },
+    {
+      "step": 13,
+      "type": "action",
+      "description": "Click the back button to return to the hub"
+    },
+    {
+      "step": 14,
+      "type": "action",
+      "description": "Click on PANEL_PANIC zone card to navigate to the dashboard"
+    },
+    {
+      "step": 15,
+      "type": "action",
+      "description": "On the dashboard, verify metrics are displayed and the slot machine is visible"
+    },
+    {
+      "step": 16,
+      "type": "action",
+      "description": "Click the back button to return to the hub"
+    },
+    {
+      "step": 17,
+      "type": "action",
+      "description": "Click on ANOMALY.ZONE zone card to navigate to the cyber zone"
+    },
+    {
+      "step": 18,
+      "type": "action",
+      "description": "On the cyber zone, verify the Pattern Scanner and Signal Strength sections are visible"
+    },
+    {
+      "step": 19,
+      "type": "action",
+      "description": "Click the back button to return to the hub"
+    },
+    {
+      "step": 20,
+      "type": "action",
+      "description": "Click on THE_VOID zone card to navigate to the playground"
+    },
+    {
+      "step": 21,
+      "type": "action",
+      "description": "On the playground, verify the input field and void interpretation sections are visible"
+    },
+    {
+      "step": 22,
+      "type": "action",
+      "description": "Click the back button to return to the hub"
+    },
+    {
+      "step": 23,
+      "type": "action",
+      "description": "Verify the save indicator shows 'PROGRESS AUTO-SAVED' in the corner"
+    },
+    {
+      "step": 24,
+      "type": "action",
+      "description": "Click the settings button (bottom-right) and verify the settings panel opens"
+    },
+    {
+      "step": 25,
+      "type": "action",
+      "description": "In settings, verify the 'Re-enable Tutorial' and 'Reset Progress' options are visible"
+    },
+    {
+      "step": 26,
+      "type": "action",
+      "description": "Close the settings panel"
+    },
+    {
+      "step": 27,
+      "type": "action",
+      "description": "Verify the chaos meter is visible and shows current chaos level"
+    },
+    {
+      "step": 28,
+      "type": "action",
+      "description": "Verify the enhanced HUD shows character name, level, XP, HP, and gold"
+    }
+  ]
+}
