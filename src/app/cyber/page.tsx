@@ -4,7 +4,7 @@ import { useState, useEffect, useRef, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { soundEngine } from '@/lib/sound-engine';
 import { useGameStore } from '@/stores/game-store';
-import { ZoneHeader } from '@/components/rpg/back-button';
+import { BackButton } from '@/components/rpg/back-button';
 
 // Matrix Rain Background
 function MatrixRain() {
@@ -786,8 +786,16 @@ export default function CyberPage() {
       </AnimatePresence>
 
       <div className="relative z-10 max-w-7xl mx-auto px-6 py-12">
-        {/* Zone Header */}
-        <ZoneHeader color="#00ff41" title="exploit.me" gold={useGameStore.getState().gold} />
+        {/* Header */}
+        <motion.div initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }} className="mb-8">
+          <BackButton color="#00ff41" />
+          <h1 className="text-2xl sm:text-3xl md:text-4xl font-black glow-green uppercase tracking-wider" style={{ fontFamily: 'var(--font-display)' }}>
+            EXPLOIT<span className="text-white/30">.</span>ME
+          </h1>
+          <p className="text-[#00ff41]/50 font-mono mt-2 text-sm">
+            [CYBERSECURITY PLAYGROUND] — Practice. Learn. Defend.
+          </p>
+        </motion.div>
 
         {/* Grid */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">

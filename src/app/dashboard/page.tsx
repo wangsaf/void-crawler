@@ -4,7 +4,7 @@ import { useState, useEffect, useCallback, useRef, useMemo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { soundEngine } from "@/lib/sound-engine";
 import { useGameStore } from "@/stores/game-store";
-import { ZoneHeader } from "@/components/rpg/back-button";
+import { BackButton } from "@/components/rpg/back-button";
 
 // ─── Fake data generators ───────────────────────────────────────────────────
 const METRICS = ["CPU", "RAM", "NET", "IO", "REQ", "LAT"] as const;
@@ -647,8 +647,36 @@ export default function DashboardPage() {
       />
 
       <div className="relative z-10 max-w-7xl mx-auto px-6 py-12">
-        {/* Zone Header */}
-        <ZoneHeader color="#00bcd4" title="Panel Panic" gold={useGameStore.getState().gold} />
+        {/* Header */}
+        <motion.div
+          className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-8 gap-4"
+          initial={{ opacity: 0, y: -20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5 }}
+        >
+          <div className="flex items-center gap-4">
+            <BackButton color="#00bcd4" />
+            <div>
+              <h1
+                className="text-2xl sm:text-3xl font-black glow-blue uppercase"
+                style={{ fontFamily: "var(--font-display)", color: "#e0f7fa" }}
+              >
+                Panel Panic
+              </h1>
+              <p className="text-xs text-gray-500" style={{ fontFamily: "var(--font-code)" }}>
+                dashboard.zone // interdimensional monitoring
+              </p>
+            </div>
+          </div>
+          <motion.div
+            className="glass px-3 py-1.5 rounded-lg text-xs border border-white/10 shrink-0"
+            style={{ fontFamily: "var(--font-code)" }}
+            animate={{ opacity: [1, 0.6, 1] }}
+            transition={{ duration: 2, repeat: Infinity }}
+          >
+            <span className="text-green-400">●</span> LIVE FEED ACTIVE
+          </motion.div>
+        </motion.div>
 
         {/* Main Grid */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">

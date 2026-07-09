@@ -4,7 +4,7 @@ import { useState, useEffect, useRef, useCallback, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { soundEngine } from '@/lib/sound-engine';
 import { useGameStore } from '@/stores/game-store';
-import { ZoneHeader } from '@/components/rpg/back-button';
+import { BackButton } from '@/components/rpg/back-button';
 
 // Generative SVG Background
 function GenerativeBackground() {
@@ -774,8 +774,30 @@ export default function PlaygroundPage() {
       ))}
 
       <div className="relative z-10 max-w-4xl mx-auto px-6 py-12">
-        {/* Zone Header */}
-        <ZoneHeader color="#b000ff" title="The Void" gold={useGameStore.getState().gold} />
+        {/* Header */}
+        <motion.div initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }} className="mb-8 text-center">
+          <BackButton color="#b000ff" />
+          <h1 className="text-5xl sm:text-6xl md:text-7xl font-black glow-purple font-mono tracking-wider">
+            THE VOID
+          </h1>
+          <p className="text-purple-400/50 font-mono mt-2 text-sm tracking-widest">
+            [GENERATIVE PLAYGROUND] — Input anything. See everything.
+          </p>
+          <div className="flex flex-wrap justify-center gap-4 mt-4 text-[10px] font-mono text-purple-600">
+            <span>🌀 KONAMI</span>
+            <span>⏱ IDLE 30s</span>
+            <span>🖱 TRIPLE-CLICK</span>
+          </div>
+          <div className="flex flex-wrap justify-center gap-2 mt-2 text-[10px] font-mono text-purple-500/60">
+            <span>json</span>
+            <span>•</span>
+            <span>md</span>
+            <span>•</span>
+            <span>ascii</span>
+            <span>•</span>
+            <span>dream</span>
+          </div>
+        </motion.div>
 
         {/* Input */}
         <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }}
