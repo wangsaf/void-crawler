@@ -156,9 +156,13 @@ export default function Home() {
     }
   }, [soundEnabled]);
 
+  // Auto-detect: if character already created, skip to hub
   useEffect(() => {
     setCharacterClass(detectCharacterClass());
-  }, [setCharacterClass]);
+    if (characterName && characterName !== "Void Walker") {
+      setScreen("hub");
+    }
+  }, [setCharacterClass, characterName]);
 
   const handleLandingSubmit = async (e: React.FormEvent) => {
     e.preventDefault();

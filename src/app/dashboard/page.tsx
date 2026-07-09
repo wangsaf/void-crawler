@@ -601,7 +601,7 @@ export default function DashboardPage() {
             <motion.button
               onClick={() => {
                 if (soundEnabled) soundEngine.playClick();
-                router.push("/");
+                window.location.href = "/";
               }}
               className="glass px-4 py-2 text-cyan-300 text-sm hover:bg-white/5 transition-colors border border-cyan-500/20 uppercase tracking-wider"
               style={{ fontFamily: "var(--font-display)" }}

@@ -611,9 +611,9 @@ export default function CyberPage() {
       <div className="relative z-10 max-w-7xl mx-auto px-6 py-12">
         {/* Header */}
         <motion.div initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }} className="mb-8">
-          <Link href="/" className="inline-flex items-center gap-2 text-[#00ff41]/60 hover:text-[#00ff41] transition-colors font-mono text-sm mb-4">
+          <a href="/" className="inline-flex items-center gap-2 text-[#00ff41]/60 hover:text-[#00ff41] transition-colors font-mono text-sm mb-4">
             ← BACK TO HUB
-          </Link>
+          </a>
           <h1 className="text-2xl sm:text-3xl md:text-4xl font-black glow-green uppercase tracking-wider" style={{ fontFamily: 'var(--font-display)' }}>
             EXPLOIT<span className="text-white/30">.</span>ME
           </h1>

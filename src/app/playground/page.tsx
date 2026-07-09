@@ -473,9 +473,9 @@ export default function PlaygroundPage() {
       <div className="relative z-10 max-w-4xl mx-auto px-6 py-12">
         {/* Header */}
         <motion.div initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }} className="mb-8 text-center">
-          <Link href="/" className="inline-flex items-center gap-2 text-purple-400/60 hover:text-purple-400 transition-colors font-mono text-sm mb-4">
+          <a href="/" className="inline-flex items-center gap-2 text-purple-400/60 hover:text-purple-400 transition-colors font-mono text-sm mb-4">
             ← BACK TO HUB
-          </Link>
+          </a>
           <h1 className="text-5xl sm:text-6xl md:text-7xl font-black glow-purple font-mono tracking-wider">
             THE VOID
           </h1>

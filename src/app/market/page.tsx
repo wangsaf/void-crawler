@@ -316,12 +316,8 @@ export default function CartChaosPage() {
 
   const goBack = useCallback(() => {
     if (soundEnabled) soundEngine.playClick();
-    try {
-      setZone('hub');
-    } catch {
-      window.history.back();
-    }
-  }, [soundEnabled, setZone]);
+    window.location.href = '/';
+  }, [soundEnabled]);
 
   // ─── Render ──────────────────────────────────────────────────────────────
 
