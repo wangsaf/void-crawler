@@ -46,7 +46,7 @@ export function EnhancedHUD() {
     characterName, characterClass, level, xp, xpToNext,
     health, maxHealth, gold, enemiesDefeated, achievements,
   } = useGameStore();
-  const { chaosLevel, chaosMode } = useChaosStore();
+  const { chaosLevel, chaosMode, totalChaosEvents } = useChaosStore();
 
   const title = Object.entries(LEVEL_TITLES).reverse()
     .find(([l]) => level >= Number(l))?.[1] || "Script Kiddie";
@@ -98,6 +98,14 @@ export function EnhancedHUD() {
               <span className="void-label" style={{ fontSize: 9 }}>{xp}/{xpToNext}</span>
             </div>
             <Bar value={xp} max={xpToNext} color="var(--color-text-ghost)" />
+          </div>
+          <div className="flex justify-between items-center">
+            <span className="void-label" style={{ fontSize: 9 }}>CHAOS</span>
+            <span className="void-label" style={{ fontSize: 9, color: chaosColor }}>{chaosLevel}% {chaosStatus}</span>
+          </div>
+          <div className="flex justify-between items-center">
+            <span className="void-label" style={{ fontSize: 9 }}>EVENTS</span>
+            <span className="void-label" style={{ fontSize: 9 }}>{totalChaosEvents}</span>
           </div>
         </div>
 

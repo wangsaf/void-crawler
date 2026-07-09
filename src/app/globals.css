@@ -386,8 +386,8 @@ body.chaos-mode::after {
 /* ==================== SKIP LINK ==================== */
 
 .skip-link {
-  position: absolute;
-  top: -40px;
+  position: fixed;
+  top: 0;
   left: 0;
   background: var(--color-signal-red);
   color: var(--color-void-black);
@@ -395,10 +395,11 @@ body.chaos-mode::after {
   font-family: var(--font-mono);
   font-size: 11px;
   text-decoration: none;
-  z-index: 100;
+  z-index: 1000;
+  opacity: 0.8;
 }
 .skip-link:focus {
-  top: 0;
+  opacity: 1;
 }
 
 /* ==================== MOBILE UX ==================== */
