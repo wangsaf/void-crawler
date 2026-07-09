@@ -9,33 +9,33 @@ import { BackButton } from "@/components/rpg/back-button";
 // ─── Fake data generators ───────────────────────────────────────────────────
 const METRICS = ["CPU", "RAM", "NET", "IO", "REQ", "LAT"] as const;
 const WEATHER_STATES = [
-  { icon: "☀️", label: "All Systems Operational", color: "#ffd600" },
-  { icon: "⛅", label: "Minor Degradation", color: "#90caf9" },
-  { icon: "🌧️", label: "Partial Outage", color: "#607d8b" },
-  { icon: "⛈️", label: "Major Outage", color: "#d32f2f" },
-  { icon: "🌪️", label: "CATASTROPHIC FAILURE", color: "#ff1744" },
+  { icon: "☀️", label: "All Systems Operational", color: "var(--color-signal-gold)" },
+  { icon: "⛅", label: "Minor Degradation", color: "var(--color-signal-blue)" },
+  { icon: "🌧️", label: "Partial Outage", color: "var(--color-text-secondary)" },
+  { icon: "⛈️", label: "Major Outage", color: "var(--color-signal-red)" },
+  { icon: "🌪️", label: "CATASTROPHIC FAILURE", color: "var(--color-signal-red)" },
 ];
 
 const ERROR_TYPES = [
-  { type: "TypeError", color: "#ff1744", mood: "🔴 ENRAGED", messages: [
+  { type: "TypeError", color: "var(--color-signal-red)", mood: "🔴 ENRAGED", messages: [
     "Cannot read properties of undefined! WHO DID THIS?!",
     "null is NOT an object you absolute CLOWN!",
     "I will DESTROY your entire call stack!",
     "WHY WOULD YOU CALL .map() ON UNDEFINED?!",
   ]},
-  { type: "Warning", color: "#ffd600", mood: "🟡 ANXIOUS", messages: [
+  { type: "Warning", color: "var(--color-signal-gold)", mood: "🟡 ANXIOUS", messages: [
     "hey um... something looks wrong? maybe? please check?",
     "i-i think the prop might be missing... s-sorry...",
     "this doesn't feel right... proceed with caution...",
     "⚠️ gentle warning: your code makes me nervous...",
   ]},
-  { type: "Deprecation", color: "#78909c", mood: "👴 TIRED", messages: [
+  { type: "Deprecation", color: "var(--color-text-secondary)", mood: "👴 TIRED", messages: [
     "back in my day we didn't need fancy hooks...",
     "this API was deprecated 3 versions ago... *sigh*",
     "i remember when this feature was still relevant...",
     "please... let me rest... use the new API...",
   ]},
-  { type: "SyntaxError", color: "#e040fb", mood: "💜 CONFUSED", messages: [
+  { type: "SyntaxError", color: "var(--color-signal-purple)", mood: "💜 CONFUSED", messages: [
     "unexpected token?! I didn't expect ANYTHING!",
     "missing semicolon... or was it a comma... I forgot...",
     "JSON.parse failed and so did my will to live",
@@ -65,7 +65,7 @@ function ConfettiParticles({ active }: { active: boolean }) {
       id: i,
       x: Math.random() * 100,
       delay: Math.random() * 0.5,
-      color: ['#ffd600', '#ff1744', '#00e5ff', '#b000ff', '#00ff41', '#ff6b35'][Math.floor(Math.random() * 6)],
+      color: ['#ccaa22', '#cc2244', '#2266cc', '#6622cc', '#22cc66', '#cc2244'][Math.floor(Math.random() * 6)],
       size: 3 + Math.random() * 5,
       duration: 1 + Math.random() * 1,
     })), [active]);
@@ -81,7 +81,7 @@ function ConfettiParticles({ active }: { active: boolean }) {
           animate={{ y: '110vh', opacity: 0, rotate: 360 }}
           transition={{ duration: p.duration, delay: p.delay, ease: 'linear' }}
           className="absolute"
-          style={{ width: p.size, height: p.size, backgroundColor: p.color, boxShadow: `0 0 6px ${p.color}` }}
+          style={{ width: p.size, height: p.size, backgroundColor: p.color }}
         />
       ))}
     </div>
@@ -93,19 +93,27 @@ function MetricBar({ label, value, color }: { label: string; value: number; colo
   const isWarning = value > 90;
   const isHigh = value > 80;
   return (
-    <div className={`flex items-center gap-4 p-2 rounded-lg transition-all ${isWarning ? 'border border-red-500/50 bg-red-500/5' : ''}`}>
+    <div
+      className="flex items-center gap-4 p-2 rounded transition-all"
+      style={{
+        border: isWarning ? '1px solid var(--color-signal-red)' : '1px solid transparent',
+        background: isWarning ? 'rgba(204,34,68,0.05)' : 'transparent',
+      }}
+    >
       <span
         className="w-10 text-xs text-right font-bold"
-        style={{ fontFamily: "var(--font-code)", color }}
+        style={{ fontFamily: "var(--font-mono)", color }}
       >
         {label}
       </span>
-      <div className="flex-1 h-3 rounded-full bg-black/50 overflow-hidden border border-white/10">
+      <div
+        className="flex-1 h-3 rounded overflow-hidden"
+        style={{ background: 'var(--color-void-black)', border: '1px solid var(--color-void-border)' }}
+      >
         <motion.div
-          className="h-full rounded-full"
+          className="h-full rounded"
           style={{
-            background: `linear-gradient(90deg, ${color}88, ${color})`,
-            boxShadow: isHigh ? `0 0 12px ${color}` : 'none',
+            backgroundColor: color,
           }}
           initial={{ width: 0 }}
           animate={{
@@ -119,8 +127,8 @@ function MetricBar({ label, value, color }: { label: string; value: number; colo
         />
       </div>
       <span
-        className="w-10 text-xs font-mono text-right"
-        style={{ fontFamily: "var(--font-code)", color }}
+        className="w-10 text-xs text-right"
+        style={{ fontFamily: "var(--font-mono)", color }}
       >
         {value}%
       </span>
@@ -143,12 +151,12 @@ function LiveChart({ data, color }: { data: number[]; color: string }) {
   return (
     <svg width={width} height={height} className="w-full" viewBox={`0 0 ${width} ${height}`}>
       <defs>
-        <linearGradient id={`grad-${color.replace("#", "")}`} x1="0" y1="0" x2="0" y2="1">
+        <linearGradient id={`grad-${color.replace("#", "").replace(/[^a-z0-9]/g, "")}`} x1="0" y1="0" x2="0" y2="1">
           <stop offset="0%" stopColor={color} stopOpacity={0.3} />
           <stop offset="100%" stopColor={color} stopOpacity={0} />
         </linearGradient>
       </defs>
-      <polygon points={areaPoints} fill={`url(#grad-${color.replace("#", "")})`} />
+      <polygon points={areaPoints} fill={`url(#grad-${color.replace("#", "").replace(/[^a-z0-9]/g, "")})`} />
       <polyline
         points={points.join(" ")}
         fill="none"
@@ -221,21 +229,28 @@ function SlotMachine({ totalPulls }: { totalPulls: number }) {
   };
 
   return (
-    <div className={`retro-card p-6 ${nearMiss ? 'border-yellow-400 shadow-[0_0_20px_rgba(255,193,7,0.4)]' : ''}`}>
+    <div
+      className="void-panel p-6"
+      style={nearMiss ? { borderColor: 'var(--color-signal-gold)' } : undefined}
+    >
       <ConfettiParticles active={showConfetti} />
-      <h3
-        className="text-base font-bold mb-4 text-cyan-300 uppercase tracking-widest"
-        style={{ fontFamily: "var(--font-display)" }}
-      >
+      <h3 className="void-label mb-4" style={{ color: 'var(--color-signal-blue)' }}>
         💰 Billing Slot Machine
-        <span className="text-[10px] text-gray-500 ml-2 normal-case">{totalPulls} pulls</span>
+        <span
+          className="text-[10px] ml-2 normal-case"
+          style={{ color: 'var(--color-text-ghost)' }}
+        >{totalPulls} pulls</span>
       </h3>
       <div className="flex items-center justify-center gap-2 mb-3">
         {reels.map((r, i) => (
           <motion.div
             key={i}
-            className="w-14 h-14 rounded-lg bg-black/60 border border-white/10 flex items-center justify-center text-3xl"
-            animate={spinning ? { y: [0, -5, 0, 5, 0] } : nearMiss ? { borderColor: ['#ffd600', '#ffffff', '#ffd600'] } : {}}
+            className="w-14 h-14 rounded flex items-center justify-center text-3xl"
+            style={{
+              background: 'var(--color-void-black)',
+              border: '1px solid var(--color-void-border)',
+            }}
+            animate={spinning ? { y: [0, -5, 0, 5, 0] } : nearMiss ? { borderColor: ['var(--color-signal-gold)', 'var(--color-void-border)', 'var(--color-signal-gold)'] } : {}}
             transition={spinning ? { duration: 0.15, repeat: Infinity } : nearMiss ? { duration: 0.3, repeat: 4 } : {}}
           >
             {r}
@@ -246,16 +261,14 @@ function SlotMachine({ totalPulls }: { totalPulls: number }) {
         onClick={pull}
         disabled={spinning}
         aria-label={spinning ? "Slot machine spinning" : "Pull slot machine lever"}
-        className="w-full py-2 rounded-lg bg-gradient-to-r from-cyan-600/40 to-blue-600/40 border border-cyan-500/30 text-cyan-200 font-bold text-sm hover:from-cyan-600/60 hover:to-blue-600/60 transition-all disabled:opacity-50"
-        style={{ fontFamily: "var(--font-display)" }}
+        className="void-btn w-full"
       >
         {spinning ? "SPINNING..." : "🎰 PULL LEVER"}
       </button>
       <AnimatePresence>
         {result && (
           <motion.p
-            className="text-center text-sm mt-2 font-bold"
-            style={{ fontFamily: "var(--font-code)" }}
+            className="void-data text-center text-sm mt-2 font-bold"
             initial={{ opacity: 0, y: 5 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0 }}
@@ -309,13 +322,20 @@ function ErrorChat() {
   }, [messages]);
 
   return (
-    <div className="retro-card p-6 flex flex-col h-64 sm:h-80">
+    <div className="void-panel p-6 flex flex-col h-64 sm:h-80">
       <h3
-        className="text-base font-bold mb-4 text-red-400 uppercase tracking-widest flex items-center gap-2"
-        style={{ fontFamily: "var(--font-display)" }}
+        className="void-label mb-4 flex items-center gap-2"
+        style={{ color: 'var(--color-signal-red)' }}
       >
         🐛 Error Log Chat Room
-        <span className="ml-auto text-[10px] bg-red-500/20 border border-red-500/30 px-2 py-0.5 text-red-300 rounded-full">
+        <span
+          className="ml-auto text-[10px] px-2 py-0.5 rounded"
+          style={{
+            background: 'rgba(204,34,68,0.15)',
+            border: '1px solid rgba(204,34,68,0.3)',
+            color: 'var(--color-signal-red)',
+          }}
+        >
           {messages.length}
         </span>
       </h3>
@@ -323,11 +343,12 @@ function ErrorChat() {
         {messages.map((m) => (
           <motion.div
             key={m.id}
-            className="text-xs rounded-lg p-2 border"
+            className="text-xs rounded p-2"
             style={{
-              borderColor: `${m.type.color}33`,
-              background: `${m.type.color}0a`,
-              fontFamily: "var(--font-code)",
+              borderColor: 'var(--color-void-border)',
+              border: '1px solid var(--color-void-border)',
+              background: 'var(--color-void-card)',
+              fontFamily: "var(--font-mono)",
             }}
             initial={{ opacity: 0, x: -20 }}
             animate={{ opacity: 1, x: 0 }}
@@ -337,7 +358,10 @@ function ErrorChat() {
               <span style={{ color: m.type.color }} className="font-bold">
                 {m.type.mood}
               </span>
-              <span className="text-gray-600 ml-auto font-mono text-[10px]">{m.timestamp}</span>
+              <span
+                className="ml-auto text-[10px]"
+                style={{ color: 'var(--color-text-ghost)', fontFamily: "var(--font-mono)" }}
+              >{m.timestamp}</span>
             </div>
             <p style={{ color: m.type.color }}>
               [{m.type.type}] {m.message}
@@ -364,10 +388,10 @@ function StatusWeather() {
   const ws = WEATHER_STATES[status];
 
   return (
-    <div className="retro-card p-6">
+    <div className="void-panel p-6">
       <h3
-        className="text-base font-bold mb-4 text-yellow-300 uppercase tracking-widest"
-        style={{ fontFamily: "var(--font-display)" }}
+        className="void-label mb-4"
+        style={{ color: 'var(--color-signal-gold)' }}
       >
         🌤️ System Status
       </h3>
@@ -383,13 +407,16 @@ function StatusWeather() {
           <motion.p
             key={ws.label}
             className="font-bold text-lg"
-            style={{ color: ws.color, fontFamily: "var(--font-display)" }}
+            style={{ color: ws.color, fontFamily: "var(--font-mono)" }}
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
           >
             {ws.label}
           </motion.p>
-          <p className="text-xs text-gray-500" style={{ fontFamily: "var(--font-code)" }}>
+          <p
+            className="text-xs"
+            style={{ color: 'var(--color-text-ghost)', fontFamily: "var(--font-mono)" }}
+          >
             Last checked: {new Date().toLocaleTimeString()}
           </p>
         </div>
@@ -400,10 +427,16 @@ function StatusWeather() {
           return (
             <div key={svc} className="text-center">
               <div
-                className={`h-2 rounded-full mb-1 ${up ? "bg-green-500" : "bg-red-500"}`}
-                style={{ opacity: up ? 0.8 : 0.6 }}
+                className="h-2 rounded mb-1"
+                style={{
+                  backgroundColor: up ? 'var(--color-signal-green)' : 'var(--color-signal-red)',
+                  opacity: up ? 0.8 : 0.6,
+                }}
               />
-              <span className="text-[9px] sm:text-[10px] text-gray-500" style={{ fontFamily: "var(--font-code)" }}>
+              <span
+                className="text-[9px] sm:text-[10px]"
+                style={{ color: 'var(--color-text-ghost)', fontFamily: "var(--font-mono)" }}
+              >
                 {svc}
               </span>
             </div>
@@ -425,10 +458,10 @@ function APIKeyHoroscope() {
   };
 
   return (
-    <div className="retro-card p-6">
+    <div className="void-panel p-6">
       <h3
-        className="text-base font-bold mb-4 text-purple-300 uppercase tracking-widest"
-        style={{ fontFamily: "var(--font-display)" }}
+        className="void-label mb-4"
+        style={{ color: 'var(--color-signal-purple)' }}
       >
         🔮 API Key Horoscope
       </h3>
@@ -437,23 +470,27 @@ function APIKeyHoroscope() {
         value={keyInput}
         onChange={(e) => setKeyInput(e.target.value)}
         placeholder="Enter your API key..."
-        className="w-full bg-black/40 border border-white/10 rounded-lg px-3 py-2 text-xs text-purple-300 placeholder-gray-600 outline-none focus:border-white/20 mb-3"
-        style={{ fontFamily: "var(--font-code)" }}
+        className="void-input w-full mb-3"
       />
       <motion.div
         key={horoscope}
-        className="text-sm text-purple-200 italic mb-3 p-3 rounded-lg bg-purple-500/5 border border-white/10"
+        className="text-sm italic mb-3 p-3 rounded"
+        style={{
+          color: 'var(--color-text-primary)',
+          background: 'var(--color-void-black)',
+          border: '1px solid var(--color-void-border)',
+          fontFamily: "var(--font-mono)",
+        }}
         initial={{ opacity: 0, rotateX: -10 }}
         animate={{ opacity: 1, rotateX: 0 }}
         transition={{ duration: 0.4 }}
       >
-        "{horoscope}"
+        &ldquo;{horoscope}&rdquo;
       </motion.div>
       <button
         onClick={generate}
         aria-label="Generate API key horoscope"
-        className="w-full py-2 rounded-lg bg-gradient-to-r from-purple-600/30 to-pink-600/30 border border-purple-500/30 text-purple-200 font-bold text-sm hover:from-purple-600/50 hover:to-pink-600/50 transition-all"
-        style={{ fontFamily: "var(--font-display)" }}
+        className="void-btn void-btn--signal w-full"
       >
         🔮 Read My Key
       </button>
@@ -498,14 +535,17 @@ function DeployNuke() {
   };
 
   return (
-    <div className="retro-card p-6">
+    <div className="void-panel p-6">
       <h3
-        className="text-base font-bold mb-4 text-red-400 uppercase tracking-widest"
-        style={{ fontFamily: "var(--font-display)" }}
+        className="void-label mb-4"
+        style={{ color: 'var(--color-signal-red)' }}
       >
         ☢️ Deploy Control
         {deployCountRef.current > 0 && (
-          <span className="text-[10px] text-gray-500 ml-2 normal-case">#{deployCountRef.current}</span>
+          <span
+            className="text-[10px] ml-2 normal-case"
+            style={{ color: 'var(--color-text-ghost)' }}
+          >#{deployCountRef.current}</span>
         )}
       </h3>
 
@@ -513,8 +553,7 @@ function DeployNuke() {
         <motion.button
           onClick={startDeploy}
           aria-label="Deploy using NUKE"
-          className="w-full py-3 sm:py-4 rounded-xl bg-gradient-to-b from-red-600/40 to-red-900/40 border-2 border-red-500/50 text-red-300 font-black text-lg sm:text-xl hover:from-red-600/60 hover:to-red-900/60 transition-all relative overflow-hidden"
-          style={{ fontFamily: "var(--font-display)" }}
+          className="void-btn void-btn--signal w-full py-3 sm:py-4 text-lg sm:text-xl"
           whileHover={{ scale: 1.02 }}
           whileTap={{ scale: 0.98 }}
         >
@@ -531,8 +570,8 @@ function DeployNuke() {
         <div className="text-center py-4">
           <motion.div
             key={count}
-            className="text-7xl font-black text-red-500"
-            style={{ fontFamily: "var(--font-display)" }}
+            className="text-7xl font-black"
+            style={{ fontFamily: "var(--font-mono)", color: 'var(--color-signal-red)' }}
             initial={{ scale: 2, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
             exit={{ scale: 0, opacity: 0 }}
@@ -540,7 +579,10 @@ function DeployNuke() {
           >
             {count}
           </motion.div>
-          <p className="text-red-400 text-sm mt-2" style={{ fontFamily: "var(--font-code)" }}>
+          <p
+            className="text-sm mt-2"
+            style={{ color: 'var(--color-signal-red)', fontFamily: "var(--font-mono)" }}
+          >
             DEPLOYING INCOMING...
           </p>
         </div>
@@ -574,20 +616,26 @@ function DeployNuke() {
           transition={{ type: "spring", damping: 10 }}
         >
           <p
-            className="text-3xl font-black glow-cyan"
-            style={{ fontFamily: "var(--font-display)", color: "#00e5ff" }}
+            className="void-data text-3xl font-black"
+            style={{ color: 'var(--color-signal-green)' }}
           >
             ✅ DEPLOYED
           </p>
-          <p className="text-sm text-gray-400 mt-2" style={{ fontFamily: "var(--font-code)" }}>
+          <p
+            className="text-sm mt-2"
+            style={{ color: 'var(--color-text-secondary)', fontFamily: "var(--font-mono)" }}
+          >
             +100 XP • +50 Gold • Achievement Unlocked!
           </p>
-          <p className="text-xs text-yellow-400/70 mt-1" style={{ fontFamily: "var(--font-code)" }}>
+          <p
+            className="text-xs mt-1"
+            style={{ color: 'var(--color-signal-gold)', fontFamily: "var(--font-mono)", opacity: 0.7 }}
+          >
             Next deploy bonus: +{(deployCountRef.current + 1) * 10} XP
           </p>
           <button
             onClick={() => setPhase("idle")}
-            className="mt-3 text-xs text-cyan-400 underline hover:text-cyan-300"
+            className="void-btn mt-3 text-xs"
           >
             Deploy again
           </button>
@@ -626,25 +674,16 @@ export default function DashboardPage() {
   }, []);
 
   const metricColors: Record<string, string> = {
-    CPU: "#0288d1",
-    RAM: "#00bcd4",
-    NET: "#4dd0e1",
-    IO: "#80deea",
-    REQ: "#e0f7fa",
-    LAT: "#b2ebf2",
+    CPU: "var(--color-signal-blue)",
+    RAM: "var(--color-signal-green)",
+    NET: "var(--color-signal-purple)",
+    IO: "var(--color-signal-gold)",
+    REQ: "var(--color-signal-red)",
+    LAT: "var(--color-text-secondary)",
   };
 
   return (
-    <main className="relative min-h-screen overflow-hidden" style={{ background: "#0a0e1a" }} role="main" aria-label="Panel Panic dashboard zone">
-      <div className="fixed inset-0 pointer-events-none z-50 scanlines opacity-20" />
-
-      <div
-        className="fixed inset-0 pointer-events-none z-0"
-        style={{
-          background:
-            "radial-gradient(ellipse at 30% 20%, rgba(2,136,209,0.08) 0%, transparent 50%), radial-gradient(ellipse at 70% 80%, rgba(0,188,212,0.06) 0%, transparent 50%)",
-        }}
-      />
+    <main className="relative min-h-screen overflow-hidden" style={{ background: "var(--color-void-black)" }} role="main" aria-label="Panel Panic dashboard zone">
 
       <div className="relative z-10 max-w-7xl mx-auto px-6 py-12">
         {/* Header */}
@@ -655,26 +694,27 @@ export default function DashboardPage() {
           transition={{ duration: 0.5 }}
         >
           <div className="flex items-center gap-4">
-            <BackButton color="#00bcd4" />
+            <BackButton />
             <div>
-              <h1
-                className="text-2xl sm:text-3xl font-black glow-blue uppercase"
-                style={{ fontFamily: "var(--font-display)", color: "#e0f7fa" }}
-              >
+              <h1 className="void-title text-2xl sm:text-3xl">
                 Panel Panic
               </h1>
-              <p className="text-xs text-gray-500" style={{ fontFamily: "var(--font-code)" }}>
+              <p
+                className="text-xs"
+                style={{ color: 'var(--color-text-ghost)', fontFamily: "var(--font-mono)" }}
+              >
                 dashboard.zone // interdimensional monitoring
               </p>
             </div>
           </div>
           <motion.div
-            className="glass px-3 py-1.5 rounded-lg text-xs border border-white/10 shrink-0"
-            style={{ fontFamily: "var(--font-code)" }}
+            className="void-card px-3 py-1.5 text-xs shrink-0"
+            style={{ fontFamily: "var(--font-mono)" }}
             animate={{ opacity: [1, 0.6, 1] }}
             transition={{ duration: 2, repeat: Infinity }}
           >
-            <span className="text-green-400">●</span> LIVE FEED ACTIVE
+            <span style={{ color: 'var(--color-signal-green)' }}>●</span>{" "}
+            <span style={{ color: 'var(--color-text-secondary)' }}>LIVE FEED ACTIVE</span>
           </motion.div>
         </motion.div>
 
@@ -683,19 +723,22 @@ export default function DashboardPage() {
           <div className="lg:col-span-2 space-y-8">
             {/* Metrics Panel */}
             <motion.div
-              className="glass-strong p-6 sm:p-8 box-glow-blue"
+              className="void-panel p-6 sm:p-8"
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.1 }}
             >
               <div className="flex items-center justify-between mb-4">
                 <h2
-                  className="text-base font-bold text-cyan-300 uppercase tracking-widest"
-                  style={{ fontFamily: "var(--font-display)" }}
+                  className="void-label"
+                  style={{ color: 'var(--color-signal-blue)' }}
                 >
                   📊 Real-Time Metrics
                 </h2>
-                <span className="text-xs text-gray-500" style={{ fontFamily: "var(--font-code)" }}>
+                <span
+                  className="text-xs"
+                  style={{ color: 'var(--color-text-ghost)', fontFamily: "var(--font-mono)" }}
+                >
                   refresh: 1.2s
                 </span>
               </div>
@@ -708,23 +751,26 @@ export default function DashboardPage() {
 
             {/* Live Chart */}
             <motion.div
-              className="retro-card p-6"
+              className="void-panel p-6"
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.2 }}
             >
               <div className="flex items-center justify-between mb-2">
                 <h2
-                  className="text-base font-bold text-cyan-300 uppercase tracking-widest"
-                  style={{ fontFamily: "var(--font-display)" }}
+                  className="void-label"
+                  style={{ color: 'var(--color-signal-blue)' }}
                 >
                   📈 Request Throughput
                 </h2>
-                <span className="text-xs text-gray-500" style={{ fontFamily: "var(--font-code)" }}>
+                <span
+                  className="text-xs"
+                  style={{ color: 'var(--color-text-ghost)', fontFamily: "var(--font-mono)" }}
+                >
                   last 20 samples
                 </span>
               </div>
-              <LiveChart data={chartData} color="#00bcd4" />
+              <LiveChart data={chartData} color="var(--color-signal-blue)" />
             </motion.div>
 
             {/* Error Chat */}
@@ -774,13 +820,13 @@ export default function DashboardPage() {
 
         {/* Footer */}
         <motion.div
-          className="mt-12 text-center text-xs text-gray-600"
-          style={{ fontFamily: "var(--font-code)" }}
+          className="mt-12 text-center text-xs"
+          style={{ color: 'var(--color-text-ghost)', fontFamily: "var(--font-mono)" }}
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 0.6 }}
         >
-          Panel Panic v0.void // "Your infrastructure is an SCP anomaly"
+          Panel Panic v0.void // &ldquo;Your infrastructure is an SCP anomaly&rdquo;
         </motion.div>
       </div>
     </main>

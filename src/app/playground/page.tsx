@@ -30,10 +30,10 @@ function GenerativeBackground() {
   return (
     <svg className="fixed inset-0 w-full h-full z-0 pointer-events-none opacity-40" viewBox="0 0 100 100" preserveAspectRatio="none">
       {paths.map((p, i) => (
-        <line key={i} x1={p.x1} y1={p.y1} x2={p.x2} y2={p.y2} stroke="#b000ff" strokeWidth="0.15" opacity={p.opacity} />
+        <line key={i} x1={p.x1} y1={p.y1} x2={p.x2} y2={p.y2} stroke="var(--color-signal-purple)" strokeWidth="0.15" opacity={p.opacity} />
       ))}
       {paths.slice(0, 15).map((p, i) => (
-        <circle key={`c-${i}`} cx={p.x1} cy={p.y1} r={0.5 + p.opacity} fill="#b000ff" opacity={p.opacity * 0.5} />
+        <circle key={`c-${i}`} cx={p.x1} cy={p.y1} r={0.5 + p.opacity} fill="var(--color-signal-purple)" opacity={p.opacity * 0.5} />
       ))}
     </svg>
   );
@@ -47,7 +47,7 @@ function ParticleBurst({ x, y, onDone }: { x: number; y: number; onDone: () => v
       angle: (i / 30) * Math.PI * 2,
       distance: 50 + Math.random() * 100,
       size: 3 + Math.random() * 6,
-      color: ['#b000ff', '#7b00b3', '#ff00ff', '#4a0066', '#e066ff'][Math.floor(Math.random() * 5)],
+      color: ['var(--color-signal-purple)', 'var(--color-signal-blue)', 'var(--color-signal-red)', 'var(--color-signal-cyan)', 'var(--color-signal-gold)'][Math.floor(Math.random() * 5)],
     })),
     []
   );
@@ -71,7 +71,7 @@ function ParticleBurst({ x, y, onDone }: { x: number; y: number; onDone: () => v
           }}
           transition={{ duration: 1 + Math.random() * 0.5, ease: 'easeOut' }}
           className="absolute rounded-full"
-          style={{ width: p.size, height: p.size, backgroundColor: p.color, boxShadow: `0 0 10px ${p.color}` }}
+          style={{ width: p.size, height: p.size, backgroundColor: p.color }}
         />
       ))}
     </div>
@@ -125,17 +125,13 @@ function GoldenSpiral({ number }: { number: number }) {
 
   return (
     <div className="flex flex-col items-center gap-4">
-      <div className="text-sm font-mono text-purple-300/70">Fibonacci spiral from {fibSequence.length} terms</div>
+      <div className="void-label">Fibonacci spiral from {fibSequence.length} terms</div>
       <svg width="400" height="400" viewBox="0 0 400 400" className="max-w-full w-full sm:w-auto" style={{ maxWidth: '400px' }}>
         <defs>
-          <filter id="glow">
-            <feGaussianBlur stdDeviation="3" result="coloredBlur" />
-            <feMerge><feMergeNode in="coloredBlur" /><feMergeNode in="SourceGraphic" /></feMerge>
-          </filter>
           <linearGradient id="spiral-grad" x1="0%" y1="0%" x2="100%" y2="100%">
-            <stop offset="0%" stopColor="#b000ff" />
-            <stop offset="50%" stopColor="#ff00ff" />
-            <stop offset="100%" stopColor="#e066ff" />
+            <stop offset="0%" stopColor="var(--color-signal-purple)" />
+            <stop offset="50%" stopColor="var(--color-signal-blue)" />
+            <stop offset="100%" stopColor="var(--color-signal-cyan)" />
           </linearGradient>
         </defs>
         {/* Animated golden spiral path */}
@@ -145,7 +141,6 @@ function GoldenSpiral({ number }: { number: number }) {
           stroke="url(#spiral-grad)"
           strokeWidth="2.5"
           strokeLinecap="round"
-          filter="url(#glow)"
           initial={{ pathLength: 0, opacity: 0 }}
           animate={{ pathLength: 1, opacity: 0.9 }}
           transition={{ duration: 2, ease: 'easeInOut' }}
@@ -158,7 +153,7 @@ function GoldenSpiral({ number }: { number: number }) {
             animate={{ r: p.r, opacity: 0.6 }}
             transition={{ delay: i * 0.15, duration: 0.5 }}
             cx={p.x} cy={p.y}
-            fill="none" stroke="#b000ff" strokeWidth="1"
+            fill="none" stroke="var(--color-signal-purple)" strokeWidth="1"
           />
         ))}
         {/* Dots at intersections */}
@@ -168,14 +163,13 @@ function GoldenSpiral({ number }: { number: number }) {
             initial={{ r: 0 }}
             animate={{ r: 3 }}
             transition={{ delay: i * 0.15 + 0.3 }}
-            cx={p.x} cy={p.y} fill="#e066ff"
-            filter="url(#glow)"
+            cx={p.x} cy={p.y} fill="var(--color-signal-cyan)"
           />
         ))}
         {/* Golden ratio label */}
         <motion.text
           x="200" y="30" textAnchor="middle"
-          fill="#e066ff" fontSize="12" fontFamily="monospace"
+          fill="var(--color-text-secondary)" fontSize="12" fontFamily="var(--font-mono)"
           initial={{ opacity: 0 }}
           animate={{ opacity: 0.6 }}
           transition={{ delay: 1 }}
@@ -186,7 +180,7 @@ function GoldenSpiral({ number }: { number: number }) {
       <div className="flex flex-wrap gap-4 justify-center">
         {fibSequence.slice(0, 12).map((f, i) => (
           <motion.span key={i} initial={{ opacity: 0, scale: 0 }} animate={{ opacity: 1, scale: 1 }} transition={{ delay: i * 0.1 }}
-            className="px-2 py-1 bg-purple-500/10 border border-white/10 rounded text-purple-300 font-mono text-xs">
+            className="void-data px-2 py-1" style={{ border: '1px solid var(--color-void-border)', fontSize: '11px' }}>
             {f}
           </motion.span>
         ))}
@@ -251,9 +245,9 @@ function PoetryGenerator({ input }: { input: string }) {
 
   return (
     <div className="space-y-4">
-      <div className="text-sm font-mono text-purple-300/70 mb-2">
+      <div className="void-label mb-2">
         Generated from: &quot;{input}&quot;
-        <span className="ml-2 px-2 py-0.5 bg-purple-500/20 border border-white/10 text-purple-300 text-[10px] uppercase">
+        <span className="ml-2 void-status void-status--info" style={{ border: '1px solid var(--color-void-border)', padding: '2px 8px', fontSize: '10px' }}>
           {poems[0]?.mood}
         </span>
       </div>
@@ -263,14 +257,10 @@ function PoetryGenerator({ input }: { input: string }) {
           initial={{ opacity: 0, x: -20 }}
           animate={{ opacity: 1, x: 0 }}
           transition={{ delay: i * 0.3, duration: 0.6 }}
-          className="p-4 bg-purple-500/5 border border-white/10 rounded-lg relative overflow-hidden"
+          className="p-4 relative overflow-hidden"
+          style={{ background: 'var(--color-void-card)', border: '1px solid var(--color-void-border)' }}
         >
-          <motion.div
-            className="absolute inset-0 bg-gradient-to-r from-purple-500/10 to-transparent"
-            animate={{ x: ['-100%', '100%'] }}
-            transition={{ duration: 3, repeat: Infinity, repeatType: 'loop' }}
-          />
-          <p className="text-purple-200 font-mono text-sm italic relative z-10">&quot;{poem.text}&quot;</p>
+          <p className="font-mono text-sm italic relative z-10" style={{ color: 'var(--color-text-primary)', fontFamily: 'var(--font-mono)' }}>&quot;{poem.text}&quot;</p>
         </motion.div>
       ))}
     </div>
@@ -301,9 +291,9 @@ function JsonFormatter() {
 
   return (
     <div className="space-y-2">
-      <div className="text-sm font-mono text-purple-300/70 mb-2">JSON Formatter — Sample void data:</div>
-      <div className="bg-black/60 rounded-lg p-4 border border-white/10 overflow-x-auto">
-        <pre className="font-mono text-sm text-green-300/80 leading-relaxed" style={{ fontFamily: 'var(--font-code)' }}>
+      <div className="void-label mb-2">JSON Formatter — Sample void data:</div>
+      <div className="p-4 overflow-x-auto" style={{ background: 'var(--color-void-surface)', border: '1px solid var(--color-void-border)' }}>
+        <pre className="text-sm leading-relaxed" style={{ fontFamily: 'var(--font-mono)', color: 'var(--color-signal-green)' }}>
           {sampleJson}
         </pre>
       </div>
@@ -344,24 +334,24 @@ if (void.depth > 100) { consciousness.expand() }
 
   return (
     <div className="space-y-2">
-      <div className="text-sm font-mono text-purple-300/70 mb-2">Markdown Preview:</div>
-      <div className="bg-black/60 rounded-lg p-4 border border-white/10">
-        <div className="font-mono text-sm text-purple-200/80 leading-relaxed prose-invert" style={{ fontFamily: 'var(--font-code)' }}>
+      <div className="void-label mb-2">Markdown Preview:</div>
+      <div className="p-4" style={{ background: 'var(--color-void-surface)', border: '1px solid var(--color-void-border)' }}>
+        <div className="text-sm leading-relaxed prose-invert" style={{ fontFamily: 'var(--font-mono)', color: 'var(--color-text-primary)' }}>
           {sampleMd.split('\n').map((line, i) => {
-            if (line.startsWith('# ')) return <h1 key={i} className="text-2xl font-bold text-purple-300 mt-4 mb-2">{line.slice(2)}</h1>;
-            if (line.startsWith('## ')) return <h2 key={i} className="text-xl font-bold text-purple-400 mt-3 mb-1">{line.slice(3)}</h2>;
-            if (line.startsWith('### ')) return <h3 key={i} className="text-lg font-bold text-purple-500 mt-2 mb-1">{line.slice(4)}</h3>;
-            if (line.startsWith('> ')) return <blockquote key={i} className="border-l-2 border-purple-500 pl-4 italic text-purple-300/60 my-2">{line.slice(2)}</blockquote>;
-            if (line.startsWith('- ')) return <div key={i} className="pl-4 text-purple-200/70">• {line.slice(2)}</div>;
-            if (line.startsWith('---')) return <hr key={i} className="border-white/10 my-3" />;
-            if (line.startsWith('```')) return <div key={i} className="text-purple-500/50 text-xs">```</div>;
-            if (line.startsWith('|')) return <div key={i} className="text-purple-200/60 font-mono text-xs">{line}</div>;
+            if (line.startsWith('# ')) return <h1 key={i} className="text-2xl font-bold mt-4 mb-2" style={{ color: 'var(--color-text-secondary)' }}>{line.slice(2)}</h1>;
+            if (line.startsWith('## ')) return <h2 key={i} className="text-xl font-bold mt-3 mb-1" style={{ color: 'var(--color-text-primary)' }}>{line.slice(3)}</h2>;
+            if (line.startsWith('### ')) return <h3 key={i} className="text-lg font-bold mt-2 mb-1" style={{ color: 'var(--color-signal-purple)' }}>{line.slice(4)}</h3>;
+            if (line.startsWith('> ')) return <blockquote key={i} className="pl-4 italic my-2" style={{ borderLeft: '2px solid var(--color-signal-purple)', color: 'var(--color-text-secondary)' }}>{line.slice(2)}</blockquote>;
+            if (line.startsWith('- ')) return <div key={i} className="pl-4" style={{ color: 'var(--color-text-primary)' }}>• {line.slice(2)}</div>;
+            if (line.startsWith('---')) return <hr key={i} className="my-3" style={{ borderColor: 'var(--color-void-border)' }} />;
+            if (line.startsWith('```')) return <div key={i} className="text-xs" style={{ color: 'var(--color-text-ghost)' }}>```</div>;
+            if (line.startsWith('|')) return <div key={i} className="text-xs" style={{ color: 'var(--color-text-secondary)', fontFamily: 'var(--font-mono)' }}>{line}</div>;
             if (line.includes('`')) {
               const parts = line.split('`');
-              return <p key={i} className="text-purple-200/70 my-1">{parts.map((p, j) => j % 2 === 1 ? <code key={j} className="bg-purple-500/20 px-1 text-purple-300">{p}</code> : <span key={j} dangerouslySetInnerHTML={{ __html: p.replace(/\*\*(.*?)\*\*/g, '<strong class="text-purple-300">$1</strong>').replace(/\*(.*?)\*/g, '<em>$1</em>') }} />)}</p>;
+              return <p key={i} className="my-1" style={{ color: 'var(--color-text-primary)' }}>{parts.map((p, j) => j % 2 === 1 ? <code key={j} className="px-1" style={{ background: 'var(--color-void-card)', color: 'var(--color-signal-cyan)' }}>{p}</code> : <span key={j} dangerouslySetInnerHTML={{ __html: p.replace(/\*\*(.*?)\*\*/g, '<strong style="color:var(--color-text-primary)">$1</strong>').replace(/\*(.*?)\*/g, '<em>$1</em>') }} />)}</p>;
             }
             if (line.trim() === '') return <div key={i} className="h-2" />;
-            return <p key={i} className="text-purple-200/70 my-1">{line}</p>;
+            return <p key={i} className="my-1" style={{ color: 'var(--color-text-primary)' }}>{line}</p>;
           })}
         </div>
       </div>
@@ -424,9 +414,9 @@ function AsciiArtGenerator() {
 
   return (
     <div className="space-y-2">
-      <div className="text-sm font-mono text-purple-300/70 mb-2">ASCII Art:</div>
-      <div className="bg-black/60 rounded-lg p-4 border border-white/10">
-        <pre className="font-mono text-xs sm:text-sm text-purple-300/80 leading-relaxed" style={{ fontFamily: 'var(--font-code)' }}>
+      <div className="void-label mb-2">ASCII Art:</div>
+      <div className="p-4" style={{ background: 'var(--color-void-surface)', border: '1px solid var(--color-void-border)' }}>
+        <pre className="text-xs sm:text-sm leading-relaxed" style={{ fontFamily: 'var(--font-mono)', color: 'var(--color-text-primary)' }}>
           {patterns.join('\n')}
         </pre>
       </div>
@@ -459,23 +449,26 @@ function DreamGenerator() {
 
   return (
     <div className="space-y-2">
-      <div className="text-sm font-mono text-purple-300/70 mb-2">Dream Sequence:</div>
+      <div className="void-label mb-2">Dream Sequence:</div>
       <motion.div
-        className="bg-black/60 rounded-lg p-6 border border-white/10"
+        className="p-6"
+        style={{ background: 'var(--color-void-surface)', border: '1px solid var(--color-void-border)' }}
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ duration: 1 }}
       >
         <motion.p
-          className="text-purple-200 font-mono text-sm italic leading-relaxed"
+          className="font-mono text-sm italic leading-relaxed"
+          style={{ color: 'var(--color-text-primary)', fontFamily: 'var(--font-mono)' }}
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.3 }}
         >
-          "{dream.s} {dream.v} {dream.o}."
+          &quot;{dream.s} {dream.v} {dream.o}.&quot;
         </motion.p>
         <motion.p
-          className="text-purple-400 font-mono text-sm mt-4"
+          className="font-mono text-sm mt-4"
+          style={{ color: 'var(--color-signal-purple)', fontFamily: 'var(--font-mono)' }}
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 1.5 }}
@@ -511,17 +504,17 @@ function ColorPalette({ color }: { color: string }) {
   return (
     <div className="space-y-3">
       <div className="flex gap-2 items-center">
-        <div className="w-12 h-12 rounded-lg border border-white/10" style={{ backgroundColor: color, boxShadow: `0 0 20px ${color}40` }} />
-        <div className="font-mono text-purple-200">{color}</div>
+        <div className="w-12 h-12" style={{ backgroundColor: color, border: '1px solid var(--color-void-border)' }} />
+        <div className="void-data">{color}</div>
       </div>
-      <div className="text-sm font-mono text-purple-300/70">Harmony palette:</div>
+      <div className="void-label">Harmony palette:</div>
       <div className="grid grid-cols-3 sm:grid-cols-5 gap-4">
         {palette.map((p, i) => (
           <motion.div key={i} initial={{ opacity: 0, scale: 0.8 }} animate={{ opacity: 1, scale: 1 }} transition={{ delay: i * 0.1 }}
             className="text-center">
-            <div className="aspect-square rounded-lg border border-white/10 mb-1" style={{ backgroundColor: p.hex, boxShadow: `0 0 15px ${p.hex}30` }} />
-            <div className="text-[10px] font-mono text-purple-400">{p.name}</div>
-            <div className="text-[10px] font-mono text-purple-500">{p.hex}</div>
+            <div className="aspect-square mb-1" style={{ backgroundColor: p.hex, border: '1px solid var(--color-void-border)' }} />
+            <div className="void-label" style={{ fontSize: '10px' }}>{p.name}</div>
+            <div className="void-data" style={{ fontSize: '10px', color: 'var(--color-text-ghost)' }}>{p.hex}</div>
           </motion.div>
         ))}
       </div>
@@ -541,16 +534,16 @@ function CodeDisplay({ code }: { code: string }) {
       .replace(/&/g, '&amp;')
       .replace(/</g, '&lt;')
       .replace(/>/g, '&gt;')
-      .replace(comments, '<span class="text-gray-500">$1</span>')
-      .replace(strings, '<span class="text-green-400">$&</span>')
-      .replace(keywords, '<span class="text-purple-400">$1</span>')
-      .replace(numbers, '<span class="text-orange-400">$&</span>');
+      .replace(comments, '<span style="color:var(--color-text-ghost)">$1</span>')
+      .replace(strings, '<span style="color:var(--color-signal-green)">$&</span>')
+      .replace(keywords, '<span style="color:var(--color-signal-purple)">$1</span>')
+      .replace(numbers, '<span style="color:var(--color-signal-gold)">$&</span>');
     return result;
   }, [code]);
 
   return (
-    <div className="bg-black/60 rounded-lg p-4 border border-white/10 overflow-x-auto">
-      <pre className="font-mono text-sm text-purple-200/80 leading-relaxed" style={{ fontFamily: 'var(--font-code)' }}>
+    <div className="p-4 overflow-x-auto" style={{ background: 'var(--color-void-surface)', border: '1px solid var(--color-void-border)' }}>
+      <pre className="text-sm leading-relaxed" style={{ fontFamily: 'var(--font-mono)', color: 'var(--color-text-primary)' }}>
         <code dangerouslySetInnerHTML={{ __html: highlighted }} />
       </pre>
     </div>
@@ -565,17 +558,12 @@ function InterpretationCard({ type, icon, children }: { type: string; icon: stri
       animate={{ opacity: 1, y: 0, scale: 1 }}
       exit={{ opacity: 0, y: -20, scale: 0.95 }}
       transition={{ duration: 0.5 }}
-      className="retro-card p-6 box-glow-purple relative overflow-hidden"
+      className="void-panel p-6 relative overflow-hidden"
     >
-      <motion.div
-        className="absolute inset-0 bg-gradient-to-br from-purple-500/5 to-transparent"
-        animate={{ opacity: [0.3, 0.6, 0.3] }}
-        transition={{ duration: 3, repeat: Infinity }}
-      />
       <div className="relative z-10">
         <div className="flex items-center gap-2 mb-4">
           <span className="text-2xl">{icon}</span>
-          <h3 className="text-purple-300 font-mono text-lg uppercase tracking-wider">{type}</h3>
+          <h3 className="void-title text-lg" style={{ color: 'var(--color-text-secondary)' }}>{type}</h3>
         </div>
         {children}
       </div>
@@ -590,22 +578,24 @@ function BreathingScreen() {
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
-      className="fixed inset-0 z-40 bg-black/90 flex items-center justify-center"
+      className="fixed inset-0 z-40 flex items-center justify-center"
+      style={{ background: 'rgba(0,0,0,0.92)' }}
     >
       <motion.div
         animate={{ scale: [1, 1.2, 1], opacity: [0.3, 0.8, 0.3] }}
         transition={{ duration: 4, repeat: Infinity, ease: 'easeInOut' }}
         className="text-center"
       >
-        <div className="text-6xl mb-4">🌀</div>
+        <div className="text-6xl mb-4">◎</div>
         <motion.div
           animate={{ opacity: [0.2, 0.7, 0.2] }}
           transition={{ duration: 4, repeat: Infinity, ease: 'easeInOut' }}
-          className="text-purple-400 font-mono text-lg tracking-[0.3em]"
+          className="font-mono text-lg tracking-[0.3em]"
+          style={{ color: 'var(--color-signal-purple)' }}
         >
           THE VOID BREATHES
         </motion.div>
-        <div className="text-purple-600 font-mono text-xs mt-4 tracking-wider">move your cursor to awaken</div>
+        <div className="font-mono text-xs mt-4 tracking-wider" style={{ color: 'var(--color-text-ghost)' }}>move your cursor to awaken</div>
       </motion.div>
     </motion.div>
   );
@@ -617,7 +607,8 @@ function KonamiDisplay() {
     <motion.div
       initial={{ opacity: 0, scale: 0.5, rotate: -10 }}
       animate={{ opacity: 1, scale: 1, rotate: 0 }}
-      className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm"
+      className="fixed inset-0 z-50 flex items-center justify-center"
+      style={{ background: 'rgba(0,0,0,0.85)', backdropFilter: 'blur(4px)' }}
     >
       <div className="text-center">
         <motion.div
@@ -625,17 +616,17 @@ function KonamiDisplay() {
           transition={{ duration: 2, repeat: Infinity, ease: 'linear' }}
           className="text-8xl mb-6 inline-block"
         >
-          🌀
+          ◎
         </motion.div>
-        <motion.h2 initial={{ y: 20 }} animate={{ y: 0 }} className="text-4xl font-bold text-purple-400 font-mono glow-purple mb-4">
+        <motion.h2 initial={{ y: 20 }} animate={{ y: 0 }} className="text-4xl font-bold font-mono mb-4" style={{ color: 'var(--color-signal-red)' }}>
           KONAMI CODE ACTIVATED
         </motion.h2>
         <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.5 }}
-          className="text-purple-300/60 font-mono">
+          className="font-mono" style={{ color: 'var(--color-text-secondary)' }}>
           ↑↑↓↓←→←→BA — You know the ancient ways.
         </motion.p>
         <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 1 }}
-          className="mt-6 text-2xl text-purple-500 font-mono">
+          className="mt-6 text-2xl font-mono" style={{ color: 'var(--color-signal-gold)' }}>
           +100 XP — +50 GOLD — SECRET UNLOCKED
         </motion.div>
       </div>
@@ -758,7 +749,7 @@ export default function PlaygroundPage() {
   const normalizedColor = input.startsWith('#') ? input : `#${input}`;
 
   return (
-    <div className="min-h-screen bg-[#0a0010] text-white relative overflow-hidden" onClick={handleBackgroundClick} role="main" aria-label="The Void generative playground">
+    <div className="min-h-screen relative overflow-hidden" style={{ background: 'var(--color-void-black)', color: 'var(--color-text-primary)' }} onClick={handleBackgroundClick} role="main" aria-label="The Void generative playground">
       <GenerativeBackground />
 
       <AnimatePresence>
@@ -776,19 +767,19 @@ export default function PlaygroundPage() {
       <div className="relative z-10 max-w-4xl mx-auto px-6 py-12">
         {/* Header */}
         <motion.div initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }} className="mb-8 text-center">
-          <BackButton color="#b000ff" />
-          <h1 className="text-5xl sm:text-6xl md:text-7xl font-black glow-purple font-mono tracking-wider">
+          <BackButton />
+          <h1 className="text-5xl sm:text-6xl md:text-7xl font-black font-mono tracking-wider" style={{ color: 'var(--color-signal-red)' }}>
             THE VOID
           </h1>
-          <p className="text-purple-400/50 font-mono mt-2 text-sm tracking-widest">
+          <p className="font-mono mt-2 text-sm tracking-widest" style={{ color: 'var(--color-text-ghost)' }}>
             [GENERATIVE PLAYGROUND] — Input anything. See everything.
           </p>
-          <div className="flex flex-wrap justify-center gap-4 mt-4 text-[10px] font-mono text-purple-600">
-            <span>🌀 KONAMI</span>
+          <div className="flex flex-wrap justify-center gap-4 mt-4 text-[10px] font-mono" style={{ color: 'var(--color-text-ghost)' }}>
+            <span>◎ KONAMI</span>
             <span>⏱ IDLE 30s</span>
             <span>🖱 TRIPLE-CLICK</span>
           </div>
-          <div className="flex flex-wrap justify-center gap-2 mt-2 text-[10px] font-mono text-purple-500/60">
+          <div className="flex flex-wrap justify-center gap-2 mt-2 text-[10px] font-mono" style={{ color: 'var(--color-text-ghost)' }}>
             <span>json</span>
             <span>•</span>
             <span>md</span>
@@ -801,13 +792,13 @@ export default function PlaygroundPage() {
 
         {/* Input */}
         <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }}
-          className="glass-strong rounded-xl p-6 mb-8">
+          className="void-panel p-6 mb-8">
           <div className="flex items-center gap-2 mb-3">
-            <span className="text-2xl">🔮</span>
-            <span className="text-purple-300 font-mono text-lg font-bold tracking-wider">INPUT PORTAL</span>
+            <span className="text-2xl">◎</span>
+            <span className="void-title text-lg" style={{ color: 'var(--color-text-primary)' }}>INPUT PORTAL</span>
             {inputType !== 'empty' && (
               <motion.span initial={{ opacity: 0, scale: 0 }} animate={{ opacity: 1, scale: 1 }}
-                className="ml-auto px-3 py-1 bg-purple-500/20 border border-white/10 rounded-full text-purple-300 font-mono text-xs uppercase">
+                className="ml-auto void-status void-status--info" style={{ border: '1px solid var(--color-void-border)', padding: '4px 12px' }}>
                 {inputType}
               </motion.span>
             )}
@@ -818,10 +809,16 @@ export default function PlaygroundPage() {
             aria-label="Void input portal - enter text, numbers, colors, or code"
             placeholder="Enter a number, word, color hex, code, or try: json, md, ascii, dream..."
             rows={3}
-            className="w-full bg-black/60 border border-white/10 rounded-lg px-3 sm:px-4 py-2.5 sm:py-3 text-purple-200 font-mono placeholder:text-purple-500/30 focus:outline-none focus:border-white/20 resize-none"
-            style={{ fontFamily: 'var(--font-code)' }}
+            className="w-full px-3 sm:px-4 py-2.5 sm:py-3 resize-none"
+            style={{
+              fontFamily: 'var(--font-mono)',
+              background: 'var(--color-void-surface)',
+              border: '1px solid var(--color-void-border)',
+              color: 'var(--color-text-primary)',
+              outline: 'none',
+            }}
           />
-          <div className="mt-2 text-[10px] font-mono text-purple-600">
+          <div className="mt-2 font-mono" style={{ fontSize: '10px', color: 'var(--color-text-ghost)' }}>
             Numbers → Fibonacci spiral • Words → Poetry (by mood) • Colors (#hex) → Palette • Code → Syntax • json/md/ascii/dream → Generators
           </div>
         </motion.div>
@@ -829,49 +826,49 @@ export default function PlaygroundPage() {
         {/* Interpretation Output */}
         <AnimatePresence mode="wait">
           {inputType === 'number' && input.trim() && (
-            <InterpretationCard key="number" type="Golden Spiral" icon="🔢">
+            <InterpretationCard key="number" type="Golden Spiral" icon="⊞">
               <GoldenSpiral number={parseFloat(input)} />
             </InterpretationCard>
           )}
 
           {inputType === 'word' && input.trim() && (
-            <InterpretationCard key="word" type="Void Poetry" icon="📜">
+            <InterpretationCard key="word" type="Void Poetry" icon="⊡">
               <PoetryGenerator input={input} />
             </InterpretationCard>
           )}
 
           {inputType === 'color' && input.trim() && (
-            <InterpretationCard key="color" type="Color Harmony" icon="🎨">
+            <InterpretationCard key="color" type="Color Harmony" icon="◈">
               <ColorPalette color={normalizedColor} />
             </InterpretationCard>
           )}
 
           {inputType === 'code' && input.trim() && (
-            <InterpretationCard key="code" type="Code Analysis" icon="💻">
+            <InterpretationCard key="code" type="Code Analysis" icon="⌘">
               <CodeDisplay code={input} />
             </InterpretationCard>
           )}
 
           {inputType === 'json' && (
-            <InterpretationCard key="json" type="JSON Formatter" icon="📋">
+            <InterpretationCard key="json" type="JSON Formatter" icon="▤">
               <JsonFormatter />
             </InterpretationCard>
           )}
 
           {inputType === 'markdown' && (
-            <InterpretationCard key="markdown" type="Markdown Preview" icon="📝">
+            <InterpretationCard key="markdown" type="Markdown Preview" icon="▥">
               <MarkdownPreview />
             </InterpretationCard>
           )}
 
           {inputType === 'ascii' && (
-            <InterpretationCard key="ascii" type="ASCII Art" icon="🖼️">
+            <InterpretationCard key="ascii" type="ASCII Art" icon="▦">
               <AsciiArtGenerator />
             </InterpretationCard>
           )}
 
           {inputType === 'dream' && (
-            <InterpretationCard key="dream" type="Dream Generator" icon="💤">
+            <InterpretationCard key="dream" type="Dream Generator" icon="◌">
               <DreamGenerator />
             </InterpretationCard>
           )}
@@ -883,16 +880,16 @@ export default function PlaygroundPage() {
                 transition={{ duration: 4, repeat: Infinity }}
                 className="text-6xl mb-4"
               >
-                🌀
+                ◎
               </motion.div>
-              <p className="text-purple-500/40 font-mono">The void awaits your input...</p>
-              <p className="text-purple-700/40 font-mono text-xs mt-2">Try: 13, &quot;hello&quot;, #b000ff, code, json, md, ascii, dream</p>
+              <p className="font-mono" style={{ color: 'var(--color-text-ghost)' }}>The void awaits your input...</p>
+              <p className="font-mono text-xs mt-2" style={{ color: 'var(--color-text-ghost)' }}>Try: 13, &quot;hello&quot;, #cc2244, code, json, md, ascii, dream</p>
             </motion.div>
           )}
         </AnimatePresence>
 
         {/* Footer */}
-        <div className="mt-8 text-center text-purple-500/30 font-mono text-xs">
+        <div className="mt-8 text-center font-mono text-xs" style={{ color: 'var(--color-text-ghost)' }}>
           the void — generative playground — input transforms reality
         </div>
       </div>

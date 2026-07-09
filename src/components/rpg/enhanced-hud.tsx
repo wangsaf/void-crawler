@@ -1,23 +1,22 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useGameStore, LEVEL_TITLES } from "@/stores/game-store";
 import { useChaosStore } from "@/stores/chaos-store";
 
-const GLITCH_CHARS = "!@#$%^&*()_+-=[]{}|;:',.<>?/~`01";
-
 function GlitchText({ text, intensity = 0.1 }: { text: string; intensity?: number }) {
   const [display, setDisplay] = useState(text);
+  const GLITCH = "!@#$%^&*_+-=[]|;:<>?/~`";
 
   useEffect(() => {
     const interval = setInterval(() => {
       if (Math.random() < intensity) {
         const chars = text.split("");
         const idx = Math.floor(Math.random() * chars.length);
-        chars[idx] = GLITCH_CHARS[Math.floor(Math.random() * GLITCH_CHARS.length)];
+        chars[idx] = GLITCH[Math.floor(Math.random() * GLITCH.length)];
         setDisplay(chars.join(""));
-        setTimeout(() => setDisplay(text), 100);
+        setTimeout(() => setDisplay(text), 80);
       }
     }, 200);
     return () => clearInterval(interval);
@@ -26,316 +25,114 @@ function GlitchText({ text, intensity = 0.1 }: { text: string; intensity?: numbe
   return <>{display}</>;
 }
 
-// ─── Health Bar with chaos distortion ───────────────────────────────────────
-function HealthBar({
-  health,
-  maxHealth,
-  chaosLevel,
-}: {
-  health: number;
-  maxHealth: number;
-  chaosLevel: number;
-}) {
-  const percent = (health / maxHealth) * 100;
-  const isLow = percent < 30;
-  const isChaos = chaosLevel > 50;
-
+function Bar({ value, max, color, height = 2 }: { value: number; max: number; color: string; height?: number }) {
+  const pct = (value / max) * 100;
   return (
-    <div className="relative">
-      <div
-        className="h-2.5 overflow-hidden relative"
-        style={{
-          background: "#0d0d1a",
-          border: "1px solid #3a3a5a",
-        }}
-      >
-        <motion.div
-          className="h-full"
-          style={{
-            background: isLow
-              ? "linear-gradient(90deg, #ff3333, #ff6b35)"
-              : "linear-gradient(90deg, #00ff41, #00d4ff)",
-            boxShadow: isLow ? "0 0 10px #ff333360" : "0 0 5px #00ff4140",
-          }}
-          animate={{
-            width: `${percent}%`,
-            opacity: isLow ? [1, 0.7, 1] : 1,
-          }}
-          transition={{
-            width: { duration: 0.3 },
-            opacity: { duration: 0.5, repeat: isLow ? Infinity : 0 },
-          }}
-        />
-        {/* Chaos glitch on health bar */}
-        {isChaos && (
-          <motion.div
-            className="absolute inset-0"
-            style={{
-              background: `repeating-linear-gradient(90deg, transparent 0px, transparent 3px, #ff333320 3px, #ff333320 5px)`,
-            }}
-            animate={{ x: [-2, 2, -1, 1, 0] }}
-            transition={{ duration: 0.2, repeat: Infinity }}
-          />
-        )}
-      </div>
-      <div className="flex justify-between mt-0.5">
-        <span
-          className="text-[7px] sm:text-[8px] uppercase"
-          style={{
-            fontFamily: "var(--font-code)",
-            color: isLow ? "#ff3333" : "#00ff41",
-          }}
-        >
-          HP {health}/{maxHealth}
-        </span>
-        <span
-          className="text-[7px] sm:text-[8px] uppercase"
-          style={{
-            fontFamily: "var(--font-code)",
-            color: isLow ? "#ff3333" : "#00ff41",
-          }}
-        >
-          {Math.round(percent)}%
-        </span>
-      </div>
+    <div className="void-progress" style={{ height }}>
+      <motion.div
+        className="h-full"
+        style={{ background: color }}
+        animate={{ width: `${pct}%` }}
+        transition={{ duration: 0.3 }}
+      />
     </div>
   );
 }
 
-// ─── XP Bar with glitch ─────────────────────────────────────────────────────
-function XPBar({
-  xp,
-  xpToNext,
-  level,
-  chaosLevel,
-}: {
-  xp: number;
-  xpToNext: number;
-  level: number;
-  chaosLevel: number;
-}) {
-  const percent = (xp / xpToNext) * 100;
-
-  return (
-    <div className="relative">
-      <div className="flex items-center justify-between mb-0.5">
-        <span
-          className="text-[7px] sm:text-[8px] uppercase"
-          style={{ fontFamily: "var(--font-display)", color: "#ffd700" }}
-        >
-          LVL {level}
-        </span>
-        <span
-          className="text-[7px] sm:text-[8px]"
-          style={{ fontFamily: "var(--font-code)", color: "#ffd70080" }}
-        >
-          {xp}/{xpToNext} XP
-        </span>
-      </div>
-      <div
-        className="h-2 overflow-hidden"
-        style={{ background: "#0d0d1a", border: "1px solid #3a3a5a" }}
-      >
-        <motion.div
-          className="h-full"
-          style={{
-            background: "linear-gradient(90deg, #ffd700, #ff6b35)",
-            boxShadow: "0 0 5px #ffd70040",
-          }}
-          animate={{ width: `${percent}%` }}
-          transition={{ duration: 0.5 }}
-        />
-      </div>
-    </div>
-  );
-}
-
-// ─── Main Enhanced HUD ──────────────────────────────────────────────────────
 export function EnhancedHUD() {
   const [expanded, setExpanded] = useState(false);
-  const [glitchFrame, setGlitchFrame] = useState(false);
   const {
-    characterName,
-    characterClass,
-    level,
-    xp,
-    xpToNext,
-    health,
-    maxHealth,
-    gold,
-    enemiesDefeated,
-    achievements,
+    characterName, characterClass, level, xp, xpToNext,
+    health, maxHealth, gold, enemiesDefeated, achievements,
   } = useGameStore();
-
   const { chaosLevel, chaosMode } = useChaosStore();
 
-  // Random HUD glitch
-  useEffect(() => {
-    if (!chaosMode) return;
-    const interval = setInterval(() => {
-      if (Math.random() < 0.2) {
-        setGlitchFrame(true);
-        setTimeout(() => setGlitchFrame(false), 100);
-      }
-    }, 500);
-    return () => clearInterval(interval);
-  }, [chaosMode]);
+  const title = Object.entries(LEVEL_TITLES).reverse()
+    .find(([l]) => level >= Number(l))?.[1] || "Script Kiddie";
 
-  const title =
-    Object.entries(LEVEL_TITLES)
-      .reverse()
-      .find(([lvl]) => level >= Number(lvl))?.[1] || "Script Kiddie";
-
-  const CLASS_ICONS: Record<string, string> = {
-    Warrior: "⚔️",
-    Mage: "🔮",
-    Rogue: "🗡️",
-    Paladin: "🛡️",
-    Bard: "🎵",
-    Adventurer: "⭐",
-  };
+  const chaosStatus = chaosLevel >= 70 ? "CRITICAL" : chaosLevel >= 40 ? "UNSTABLE" : "STABLE";
+  const chaosColor = chaosLevel >= 70 ? "var(--color-signal-red)" : chaosLevel >= 40 ? "var(--color-signal-gold)" : "var(--color-signal-green)";
 
   return (
     <motion.div
       className="fixed top-3 right-3 z-[95] select-none"
-      initial={{ x: 300, opacity: 0 }}
-      animate={{
-        x: glitchFrame ? [0, -3, 3, 0] : 0,
-        opacity: 1,
-      }}
-      transition={{ type: "spring", damping: 20, stiffness: 300 }}
+      initial={{ opacity: 0, x: 20 }}
+      animate={{ opacity: 1, x: 0 }}
     >
-      <motion.div
+      <div
+        className="void-panel"
         style={{
-          background: "rgba(10, 10, 15, 0.95)",
-          border: `2px solid ${chaosMode ? "#ff333360" : "#3a3a5a"}`,
-          boxShadow: chaosMode
-            ? "4px 4px 0px #000, 0 0 20px #ff333320"
-            : "4px 4px 0px #000",
-          width: expanded ? "220px" : "180px",
+          width: expanded ? 220 : 180,
+          padding: "10px 12px",
+          background: "rgba(5,5,8,0.95)",
+          borderColor: chaosMode ? "var(--color-signal-red)" : "var(--color-void-border)",
+          transition: "all 0.3s ease",
         }}
-        layout
       >
-        {/* Header — click to expand */}
-        <div
-          className="px-3 py-2 cursor-pointer border-b"
-          style={{ borderColor: chaosMode ? "#ff333330" : "#3a3a5a" }}
-          onClick={() => setExpanded(!expanded)}
-        >
-          <div className="flex items-center gap-2">
-            <span className="text-lg">{CLASS_ICONS[characterClass] || "⭐"}</span>
-            <div className="flex-1 min-w-0">
-              <div
-                className="text-[9px] sm:text-[10px] font-bold uppercase truncate"
-                style={{
-                  fontFamily: "var(--font-display)",
-                  color: chaosMode ? "#ff3333" : "#00d4ff",
-                }}
-              >
-                <GlitchText
-                  text={characterName}
-                  intensity={chaosLevel / 200}
-                />
-              </div>
-              <div
-                className="text-[7px] sm:text-[8px] uppercase"
-                style={{ fontFamily: "var(--font-code)", color: "#b000ff80" }}
-              >
-                {characterClass} · {title}
-              </div>
-            </div>
-            <motion.div
-              animate={{ rotate: expanded ? 180 : 0 }}
-              className="text-gray-500 text-xs"
-            >
-              ▼
-            </motion.div>
+        {/* Header */}
+        <div className="cursor-pointer" onClick={() => setExpanded(!expanded)}>
+          <div className="flex items-center justify-between mb-1">
+            <span className="text-xs font-bold text-text-primary">
+              <GlitchText text={characterName.toUpperCase()} intensity={chaosLevel / 300} />
+            </span>
+            <span className="void-label" style={{ fontSize: 8 }}>{expanded ? "▲" : "▼"}</span>
+          </div>
+          <div className="void-label" style={{ fontSize: 9 }}>
+            {characterClass} // {title}
           </div>
         </div>
 
         {/* Bars */}
-        <div className="px-3 py-2 space-y-2">
-          <HealthBar
-            health={health}
-            maxHealth={maxHealth}
-            chaosLevel={chaosLevel}
-          />
-          <XPBar
-            xp={xp}
-            xpToNext={xpToNext}
-            level={level}
-            chaosLevel={chaosLevel}
-          />
+        <div className="mt-3 space-y-2">
+          <div>
+            <div className="flex justify-between mb-0.5">
+              <span className="void-label" style={{ fontSize: 9 }}>HP</span>
+              <span className="void-label" style={{ fontSize: 9 }}>{health}/{maxHealth}</span>
+            </div>
+            <Bar value={health} max={maxHealth} color={health < 30 ? "var(--color-signal-red)" : "var(--color-text-secondary)"} />
+          </div>
+          <div>
+            <div className="flex justify-between mb-0.5">
+              <span className="void-label" style={{ fontSize: 9 }}>XP</span>
+              <span className="void-label" style={{ fontSize: 9 }}>{xp}/{xpToNext}</span>
+            </div>
+            <Bar value={xp} max={xpToNext} color="var(--color-text-ghost)" />
+          </div>
         </div>
 
-        {/* Expanded Stats */}
+        {/* Expanded stats */}
         <AnimatePresence>
           {expanded && (
             <motion.div
-              className="px-3 py-2 border-t space-y-2"
-              style={{ borderColor: "#3a3a5a" }}
               initial={{ height: 0, opacity: 0 }}
               animate={{ height: "auto", opacity: 1 }}
               exit={{ height: 0, opacity: 0 }}
+              className="mt-3 space-y-2 overflow-hidden"
             >
               <div className="grid grid-cols-2 gap-2">
                 {[
-                  { label: "Gold", value: `${gold}`, icon: "💰", color: "#ffd700" },
-                  { label: "Kills", value: `${enemiesDefeated}`, icon: "💀", color: "#ff3333" },
-                  { label: "Achieve", value: `${achievements.length}/15`, icon: "🏆", color: "#b000ff" },
-                  { label: "Chaos", value: `${chaosLevel}%`, icon: "⚡", color: chaosMode ? "#ff3333" : "#00d4ff" },
-                ].map((stat) => (
-                  <div
-                    key={stat.label}
-                    className="text-center py-1.5"
-                    style={{
-                      background: "#0d0d1a",
-                      border: "1px solid #3a3a5a",
-                    }}
-                  >
-                    <div className="text-xs">{stat.icon}</div>
-                    <div
-                      className="text-[9px] font-bold"
-                      style={{
-                        fontFamily: "var(--font-display)",
-                        color: stat.color,
-                      }}
-                    >
-                      {stat.value}
-                    </div>
-                    <div
-                      className="text-[7px] uppercase text-gray-500"
-                      style={{ fontFamily: "var(--font-code)" }}
-                    >
-                      {stat.label}
-                    </div>
+                  { label: "GOLD", value: `${gold}`, color: "var(--color-signal-gold)" },
+                  { label: "KILLS", value: `${enemiesDefeated}`, color: "var(--color-text-primary)" },
+                  { label: "ACHIEVE", value: `${achievements.length}/15`, color: "var(--color-text-primary)" },
+                  { label: "CHAOS", value: `${chaosLevel}%`, color: chaosColor },
+                ].map((s) => (
+                  <div key={s.label} className="text-center py-1" style={{ background: "var(--color-void-surface)", border: "1px solid var(--color-void-border)" }}>
+                    <div className="text-xs font-bold" style={{ color: s.color }}>{s.value}</div>
+                    <div className="void-label" style={{ fontSize: 8 }}>{s.label}</div>
                   </div>
                 ))}
               </div>
-
-              {/* Chaos Warning */}
               {chaosMode && (
-                <motion.div
-                  className="text-center py-1.5"
-                  style={{
-                    background: "#ff333315",
-                    border: "1px solid #ff333340",
-                  }}
-                  animate={{ opacity: [1, 0.5, 1] }}
-                  transition={{ duration: 1, repeat: Infinity }}
-                >
-                  <span
-                    className="text-[8px] uppercase tracking-wider"
-                    style={{ fontFamily: "var(--font-display)", color: "#ff3333" }}
-                  >
-                    ⚠ CHAOS MODE ACTIVE ⚠
+                <div className="text-center py-1" style={{ background: "rgba(204,34,68,0.08)", border: "1px solid rgba(204,34,68,0.2)" }}>
+                  <span className="void-status void-status--danger" style={{ fontSize: 9 }}>
+                    // CHAOS MODE ACTIVE //
                   </span>
-                </motion.div>
+                </div>
               )}
             </motion.div>
           )}
         </AnimatePresence>
-      </motion.div>
+      </div>
     </motion.div>
   );
 }

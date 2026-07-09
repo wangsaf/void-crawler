@@ -27,7 +27,7 @@ function MatrixRain() {
     const draw = () => {
       ctx.fillStyle = 'rgba(13, 17, 23, 0.05)';
       ctx.fillRect(0, 0, canvas.width, canvas.height);
-      ctx.fillStyle = '#00ff41';
+      ctx.fillStyle = '#22cc66';
       ctx.font = `${fontSize}px monospace`;
 
       for (let i = 0; i < drops.length; i++) {
@@ -48,7 +48,7 @@ function MatrixRain() {
     return () => { clearInterval(interval); window.removeEventListener('resize', handleResize); };
   }, []);
 
-  return <canvas ref={canvasRef} className="fixed inset-0 z-0 opacity-30 pointer-events-none" />;
+  return <canvas ref={canvasRef} className="fixed inset-0 z-0 opacity-20 pointer-events-none" />;
 }
 
 // XSS Phantom Enemy
@@ -69,10 +69,10 @@ function XssPhantom({ onSanitize }: { onSanitize: () => void }) {
       style={{ left: `${pos.x}%`, top: `${pos.y}%` }}
       onClick={() => { soundEngine.playSuccess(); onSanitize(); }}
     >
-      <div className="text-4xl drop-shadow-[0_0_15px_#ff0040] hover:drop-shadow-[0_0_25px_#00ff41] transition-all">
+      <div className="text-4xl drop-shadow-[0_0_12px_#cc2244] hover:drop-shadow-[0_0_20px_#22cc66] transition-all">
         👻
       </div>
-      <div className="text-xs text-red-500 text-center font-mono mt-1">XSS<br/>PHANTOM</div>
+      <div className="text-xs text-center mt-1" style={{ color: 'var(--color-signal-red)', fontFamily: 'var(--font-mono)' }}>XSS<br/>PHANTOM</div>
     </motion.div>
   );
 }
@@ -121,8 +121,8 @@ function PortScanner({ addXP, onScanComplete }: { addXP: (n: number) => void; on
   };
 
   return (
-    <div className="retro-card p-6 h-full">
-      <h3 className="text-[#00ff41] font-mono text-lg font-bold mb-4 flex items-center gap-4">
+    <div className="void-card p-6 h-full">
+      <h3 className="void-title mb-4 flex items-center gap-4">
         <span className="text-2xl">🔍</span> PORT SCANNER
       </h3>
       <div className="flex flex-col sm:flex-row items-center gap-4 mb-4">
@@ -130,12 +130,12 @@ function PortScanner({ addXP, onScanComplete }: { addXP: (n: number) => void; on
           value={url}
           onChange={e => setUrl(e.target.value)}
           placeholder="target.domain.com"
-          className="flex-1 bg-black/60 border border-white/10 rounded-lg px-3 sm:px-4 py-2.5 sm:py-2 text-[#00ff41] font-mono placeholder:text-[#00ff41]/30 focus:outline-none focus:border-white/20"
-          style={{ fontFamily: 'var(--font-code)' }}
+          className="void-input flex-1"
+          style={{ fontFamily: 'var(--font-mono)' }}
         />
         <button onClick={startScan} disabled={scanning}
           aria-label={scanning ? "Port scan in progress" : "Start port scan"}
-          className="px-4 py-2.5 sm:py-2 bg-[#00ff41]/20 border border-[#00ff41]/50 rounded-lg text-[#00ff41] font-mono hover:bg-[#00ff41]/30 disabled:opacity-50 transition-all shrink-0">
+          className="void-btn shrink-0">
           {scanning ? 'SCANNING...' : 'SCAN'}
         </button>
       </div>
@@ -143,16 +143,16 @@ function PortScanner({ addXP, onScanComplete }: { addXP: (n: number) => void; on
       {/* Progress bar */}
       {scanning && (
         <div className="mb-4">
-          <div className="flex justify-between text-[10px] text-[#00ff41]/50 font-mono mb-1">
+          <div className="flex justify-between text-[10px] mb-1" style={{ color: 'var(--color-text-ghost)', fontFamily: 'var(--font-mono)' }}>
             <span>SCANNING...</span>
             <span>{progress}%</span>
           </div>
-          <div className="h-2 bg-black/60 rounded-full overflow-hidden border border-white/10">
+          <div className="h-2 rounded-full overflow-hidden" style={{ backgroundColor: 'var(--color-void-black)', border: '1px solid var(--color-void-border)' }}>
             <motion.div
-              className="h-full bg-[#00ff41]"
+              className="h-full"
               animate={{ width: `${progress}%` }}
               transition={{ duration: 0.3 }}
-              style={{ boxShadow: '0 0 10px #00ff41' }}
+              style={{ backgroundColor: 'var(--color-signal-green)' }}
             />
           </div>
         </div>
@@ -166,24 +166,33 @@ function PortScanner({ addXP, onScanComplete }: { addXP: (n: number) => void; on
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: i * 0.05 }}
-              className={`rounded-lg p-2 text-center font-mono text-xs border transition-all duration-300 ${
-                p.status === 'pending' ? 'border-gray-700 text-gray-500 bg-black/40' :
-                p.status === 'open' ? 'border-[#00ff41] text-[#00ff41] bg-[#00ff41]/10 box-glow-green' :
-                'border-red-900 text-red-500 bg-red-500/5'
-              }`}
-              style={{ fontFamily: 'var(--font-code)' }}
+              className="rounded-lg p-2 text-center text-xs transition-all duration-300"
+              style={{
+                fontFamily: 'var(--font-mono)',
+                border: `1px solid ${
+                  p.status === 'pending' ? 'var(--color-void-border)' :
+                  p.status === 'open' ? 'var(--color-signal-green)' :
+                  'var(--color-signal-red)'
+                }`,
+                color: p.status === 'pending' ? 'var(--color-text-ghost)' :
+                       p.status === 'open' ? 'var(--color-signal-green)' :
+                       'var(--color-signal-red)',
+                backgroundColor: p.status === 'pending' ? 'var(--color-void-card)' :
+                                 p.status === 'open' ? 'rgba(34,204,102,0.08)' :
+                                 'rgba(204,34,68,0.08)',
+              }}
             >
               <div className="text-sm font-bold">:{p.port}</div>
               <div className="text-[10px] mt-1">{p.status === 'pending' ? '...' : p.status.toUpperCase()}</div>
               {p.status !== 'pending' && (
-                <div className="text-[9px] text-gray-500 mt-0.5">{p.responseTime}ms</div>
+                <div className="text-[9px] mt-0.5" style={{ color: 'var(--color-text-ghost)' }}>{p.responseTime}ms</div>
               )}
             </motion.div>
           ))}
         </AnimatePresence>
       </div>
       {done && (
-        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="mt-3 text-[#00ff41]/60 text-sm font-mono">
+        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="void-status mt-3 text-sm" style={{ color: 'var(--color-signal-green)' }}>
           ✓ Scan complete — {ports.filter(p => p.status === 'open').length} open ports found (+15 XP)
         </motion.div>
       )}
@@ -253,11 +262,18 @@ function PasswordChecker({ onTitanium }: { onTitanium?: () => void }) {
   };
 
   const barriers = ['paper', 'wood', 'stone', 'steel', 'diamond', 'titanium'];
-  const colors = ['#ff0040', '#ff6600', '#ffaa00', '#00aaff', '#aa00ff', '#00ff41'];
+  const barrierColors = [
+    'var(--color-signal-red)',
+    'var(--color-signal-gold)',
+    'var(--color-signal-gold)',
+    'var(--color-signal-blue)',
+    'var(--color-signal-purple)',
+    'var(--color-signal-green)',
+  ];
 
   return (
-    <div className="retro-card p-6 h-full">
-      <h3 className="text-[#00ff41] font-mono text-lg font-bold mb-4 flex items-center gap-4">
+    <div className="void-card p-6 h-full">
+      <h3 className="void-title mb-4 flex items-center gap-4">
         <span className="text-2xl">🔐</span> PASSWORD STRENGTH
       </h3>
       <input
@@ -265,20 +281,20 @@ function PasswordChecker({ onTitanium }: { onTitanium?: () => void }) {
         value={password}
         onChange={e => setPassword(e.target.value)}
         placeholder="Type a password..."
-        className="w-full bg-black/60 border border-white/10 rounded-lg px-3 sm:px-4 py-2.5 sm:py-2 text-[#00ff41] font-mono placeholder:text-[#00ff41]/30 focus:outline-none focus:border-white/20"
-        style={{ fontFamily: 'var(--font-code)' }}
+        className="void-input w-full"
+        style={{ fontFamily: 'var(--font-mono)' }}
       />
       <div className="mt-4 space-y-4">
         {barriers.map((b, i) => (
           <motion.div key={b} className="flex items-center gap-4">
-            <span className="text-[10px] sm:text-xs font-mono w-14 sm:w-16 text-right text-gray-500 uppercase truncate">{b}</span>
-            <div className="flex-1 h-3 bg-black/60 rounded-full overflow-hidden border border-white/10">
+            <span className="text-[10px] sm:text-xs w-14 sm:w-16 text-right uppercase truncate" style={{ color: 'var(--color-text-ghost)', fontFamily: 'var(--font-mono)' }}>{b}</span>
+            <div className="flex-1 h-3 rounded-full overflow-hidden" style={{ backgroundColor: 'var(--color-void-black)', border: '1px solid var(--color-void-border)' }}>
               <motion.div
                 initial={{ width: 0 }}
                 animate={{ width: strength > i ? '100%' : '0%' }}
                 transition={{ duration: 0.5, delay: i * 0.1 }}
                 className="h-full rounded-full"
-                style={{ backgroundColor: colors[i] }}
+                style={{ backgroundColor: barrierColors[i] }}
               />
             </div>
             <span className="text-lg">{strength > i ? '🔒' : '🔓'}</span>
@@ -286,7 +302,7 @@ function PasswordChecker({ onTitanium }: { onTitanium?: () => void }) {
         ))}
       </div>
       {level && (
-        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="mt-3 text-center font-mono text-lg" style={{ color: colors[strength - 1] }}>
+        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="mt-3 text-center text-lg" style={{ color: barrierColors[strength - 1] || 'var(--color-text-primary)', fontFamily: 'var(--font-mono)' }}>
           BARRIER: {level}
         </motion.div>
       )}
@@ -296,34 +312,35 @@ function PasswordChecker({ onTitanium }: { onTitanium?: () => void }) {
         <motion.div
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
-          className="mt-4 p-3 bg-black/40 border border-white/10 rounded-lg space-y-2"
+          className="mt-4 p-3 rounded-lg space-y-2"
+          style={{ backgroundColor: 'var(--color-void-black)', border: '1px solid var(--color-void-border)' }}
         >
-          <div className="flex justify-between text-xs font-mono">
-            <span className="text-gray-400">Entropy:</span>
-            <span className="text-[#00ff41]">{entropy} bits</span>
+          <div className="flex justify-between text-xs" style={{ fontFamily: 'var(--font-mono)' }}>
+            <span style={{ color: 'var(--color-text-secondary)' }}>Entropy:</span>
+            <span style={{ color: 'var(--color-signal-green)' }}>{entropy} bits</span>
           </div>
-          <div className="flex justify-between text-xs font-mono">
-            <span className="text-gray-400">Crack time:</span>
-            <span className="text-yellow-400">{crackTime}</span>
+          <div className="flex justify-between text-xs" style={{ fontFamily: 'var(--font-mono)' }}>
+            <span style={{ color: 'var(--color-text-secondary)' }}>Crack time:</span>
+            <span style={{ color: 'var(--color-signal-gold)' }}>{crackTime}</span>
           </div>
-          <div className="border-t border-white/5 pt-2">
-            <div className="text-[10px] font-mono text-gray-500 mb-1">Character breakdown:</div>
-            <div className="grid grid-cols-4 gap-2 text-[10px] font-mono text-center">
-              <div className="bg-blue-500/10 border border-blue-500/20 p-1 rounded">
-                <div className="text-blue-400 font-bold">{breakdown.uppercase}</div>
-                <div className="text-gray-500">UPPER</div>
+          <div style={{ borderTop: '1px solid var(--color-void-border)', paddingTop: '0.5rem' }}>
+            <div className="text-[10px] mb-1" style={{ color: 'var(--color-text-ghost)', fontFamily: 'var(--font-mono)' }}>Character breakdown:</div>
+            <div className="grid grid-cols-4 gap-2 text-[10px] text-center" style={{ fontFamily: 'var(--font-mono)' }}>
+              <div className="p-1 rounded" style={{ backgroundColor: 'rgba(34,102,204,0.1)', border: '1px solid rgba(34,102,204,0.2)' }}>
+                <div className="font-bold" style={{ color: 'var(--color-signal-blue)' }}>{breakdown.uppercase}</div>
+                <div style={{ color: 'var(--color-text-ghost)' }}>UPPER</div>
               </div>
-              <div className="bg-green-500/10 border border-green-500/20 p-1 rounded">
-                <div className="text-green-400 font-bold">{breakdown.lowercase}</div>
-                <div className="text-gray-500">lower</div>
+              <div className="p-1 rounded" style={{ backgroundColor: 'rgba(34,204,102,0.1)', border: '1px solid rgba(34,204,102,0.2)' }}>
+                <div className="font-bold" style={{ color: 'var(--color-signal-green)' }}>{breakdown.lowercase}</div>
+                <div style={{ color: 'var(--color-text-ghost)' }}>lower</div>
               </div>
-              <div className="bg-yellow-500/10 border border-yellow-500/20 p-1 rounded">
-                <div className="text-yellow-400 font-bold">{breakdown.numbers}</div>
-                <div className="text-gray-500">digits</div>
+              <div className="p-1 rounded" style={{ backgroundColor: 'rgba(204,170,34,0.1)', border: '1px solid rgba(204,170,34,0.2)' }}>
+                <div className="font-bold" style={{ color: 'var(--color-signal-gold)' }}>{breakdown.numbers}</div>
+                <div style={{ color: 'var(--color-text-ghost)' }}>digits</div>
               </div>
-              <div className="bg-purple-500/10 border border-purple-500/20 p-1 rounded">
-                <div className="text-purple-400 font-bold">{breakdown.symbols}</div>
-                <div className="text-gray-500">symbols</div>
+              <div className="p-1 rounded" style={{ backgroundColor: 'rgba(102,34,204,0.1)', border: '1px solid rgba(102,34,204,0.2)' }}>
+                <div className="font-bold" style={{ color: 'var(--color-signal-purple)' }}>{breakdown.symbols}</div>
+                <div style={{ color: 'var(--color-text-ghost)' }}>symbols</div>
               </div>
             </div>
           </div>
@@ -353,7 +370,7 @@ function FirewallSim({ addXP }: { addXP: (n: number) => void }) {
       const id = Date.now();
       setParticles(prev => [...prev.slice(-20), {
         id, x: Math.random() * 60 + 20, y: 0, rule: rule.id,
-        color: rule.action === 'ALLOW' ? '#00ff41' : '#ff0040'
+        color: rule.action === 'ALLOW' ? '#22cc66' : '#cc2244'
       }]);
       setPacketsProcessed(p => p + 1);
       if (rule.action === 'ALLOW') setPacketsAllowed(p => p + 1);
@@ -376,19 +393,19 @@ function FirewallSim({ addXP }: { addXP: (n: number) => void }) {
   };
 
   return (
-    <div className="retro-card p-6 h-full">
-      <h3 className="text-[#00ff41] font-mono text-lg font-bold mb-4 flex items-center gap-4">
+    <div className="void-card p-6 h-full">
+      <h3 className="void-title mb-4 flex items-center gap-4">
         <span className="text-2xl">🧱</span> FIREWALL SIMULATOR
       </h3>
 
       {/* Packet counter */}
-      <div className="mb-4 p-3 bg-black/40 border border-white/10 rounded-lg">
-        <div className="text-center text-xl font-mono text-[#00ff41] font-bold">
+      <div className="mb-4 p-3 rounded-lg" style={{ backgroundColor: 'var(--color-void-black)', border: '1px solid var(--color-void-border)' }}>
+        <div className="text-center text-xl font-bold" style={{ color: 'var(--color-signal-green)', fontFamily: 'var(--font-mono)' }}>
           {packetsProcessed.toLocaleString()} packets processed
         </div>
-        <div className="flex justify-center gap-4 mt-1 text-xs font-mono">
-          <span className="text-green-400">✓ {packetsAllowed.toLocaleString()} allowed</span>
-          <span className="text-red-400">✗ {packetsDropped.toLocaleString()} dropped</span>
+        <div className="flex justify-center gap-4 mt-1 text-xs" style={{ fontFamily: 'var(--font-mono)' }}>
+          <span style={{ color: 'var(--color-signal-green)' }}>✓ {packetsAllowed.toLocaleString()} allowed</span>
+          <span style={{ color: 'var(--color-signal-red)' }}>✗ {packetsDropped.toLocaleString()} dropped</span>
         </div>
       </div>
 
@@ -399,21 +416,22 @@ function FirewallSim({ addXP }: { addXP: (n: number) => void }) {
             whileHover={{ scale: 1.02 }}
             whileTap={{ scale: 0.98 }}
             onClick={() => toggleRule(r.id)}
-            className={`flex items-center justify-between px-4 py-2 rounded-lg font-mono text-sm border transition-all ${
-              r.action === 'ALLOW'
-                ? 'border-[#00ff41]/50 bg-[#00ff41]/10 text-[#00ff41]'
-                : 'border-red-500/50 bg-red-500/10 text-red-400'
-            }`}
-            style={{ fontFamily: 'var(--font-code)' }}
+            className="flex items-center justify-between px-4 py-2 rounded-lg text-sm transition-all"
+            style={{
+              fontFamily: 'var(--font-mono)',
+              border: `1px solid ${r.action === 'ALLOW' ? 'var(--color-signal-green)' : 'var(--color-signal-red)'}`,
+              backgroundColor: r.action === 'ALLOW' ? 'rgba(34,204,102,0.08)' : 'rgba(204,34,68,0.08)',
+              color: r.action === 'ALLOW' ? 'var(--color-signal-green)' : 'var(--color-signal-red)',
+            }}
           >
             <span>:{r.port} ({r.proto})</span>
             <span className="font-bold">{r.action}</span>
           </motion.button>
         ))}
       </div>
-      <div className="relative h-48 bg-black/60 rounded-lg border border-white/10 overflow-hidden">
-        <div className="absolute inset-x-0 top-1/2 h-px bg-white/20" />
-        <div className="absolute left-2 top-1 text-[10px] text-gray-500 font-mono">INGRESS</div>
+      <div className="relative h-48 rounded-lg overflow-hidden" style={{ backgroundColor: 'var(--color-void-black)', border: '1px solid var(--color-void-border)' }}>
+        <div className="absolute inset-x-0 top-1/2 h-px" style={{ backgroundColor: 'var(--color-void-border)' }} />
+        <div className="absolute left-2 top-1 text-[10px]" style={{ color: 'var(--color-text-ghost)', fontFamily: 'var(--font-mono)' }}>INGRESS</div>
         <AnimatePresence>
           {particles.map(p => {
             return (
@@ -424,13 +442,13 @@ function FirewallSim({ addXP }: { addXP: (n: number) => void }) {
                 exit={{ opacity: 0 }}
                 transition={{ duration: 2 }}
                 className="absolute w-2 h-2 rounded-full"
-                style={{ left: `${p.x}%`, top: 0, backgroundColor: p.color, boxShadow: `0 0 8px ${p.color}` }}
+                style={{ left: `${p.x}%`, top: 0, backgroundColor: p.color }}
               />
             );
           })}
         </AnimatePresence>
         {rules.map((r, i) => (
-          <div key={r.id} className="absolute text-[10px] font-mono" style={{ right: 8, top: i * 18 + 4, color: r.action === 'ALLOW' ? '#00ff41' : '#ff0040' }}>
+          <div key={r.id} className="absolute text-[10px]" style={{ right: 8, top: i * 18 + 4, color: r.action === 'ALLOW' ? 'var(--color-signal-green)' : 'var(--color-signal-red)', fontFamily: 'var(--font-mono)' }}>
             :{r.port} → {r.action}
           </div>
         ))}
@@ -454,8 +472,8 @@ function XssPlayground({ addXP }: { addXP: (n: number) => void }) {
   };
 
   return (
-    <div className="retro-card p-6 h-full">
-      <h3 className="text-[#00ff41] font-mono text-lg font-bold mb-4 flex items-center gap-4">
+    <div className="void-card p-6 h-full">
+      <h3 className="void-title mb-4 flex items-center gap-4">
         <span className="text-2xl">💀</span> XSS PLAYGROUND
       </h3>
       <div className="flex flex-col sm:flex-row items-center gap-4 mb-4">
@@ -463,12 +481,12 @@ function XssPlayground({ addXP }: { addXP: (n: number) => void }) {
           value={payload}
           onChange={e => setPayload(e.target.value)}
           placeholder='<img src=x onerror=alert(1)>'
-          className="flex-1 bg-black/60 border border-white/10 rounded-lg px-4 py-2 text-[#00ff41] font-mono placeholder:text-[#00ff41]/30 focus:outline-none focus:border-white/20"
-          style={{ fontFamily: 'var(--font-code)' }}
+          className="void-input flex-1"
+          style={{ fontFamily: 'var(--font-mono)' }}
         />
         <button onClick={testPayload}
           aria-label="Inject XSS payload for testing"
-          className="px-4 py-2.5 sm:py-2 bg-red-500/20 border border-red-500/50 rounded-lg text-red-400 font-mono hover:bg-red-500/30 transition-all shrink-0">
+          className="void-btn void-btn--signal shrink-0">
           INJECT
         </button>
       </div>
@@ -478,18 +496,19 @@ function XssPlayground({ addXP }: { addXP: (n: number) => void }) {
             <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
-              className="absolute inset-0 z-10 bg-red-500/20 border-2 border-red-500 rounded-lg flex items-center justify-center backdrop-blur-sm"
+              className="absolute inset-0 z-10 rounded-lg flex items-center justify-center backdrop-blur-sm"
+              style={{ backgroundColor: 'rgba(204,34,68,0.2)', border: '2px solid var(--color-signal-red)' }}
             >
               <div className="text-center">
                 <div className="text-3xl mb-2">⚠️</div>
-                <div className="text-red-400 font-mono font-bold">XSS DETECTED</div>
-                <div className="text-red-400/60 text-xs font-mono mt-1">Payload would execute in unsanitized context</div>
+                <div className="font-bold" style={{ color: 'var(--color-signal-red)', fontFamily: 'var(--font-mono)' }}>XSS DETECTED</div>
+                <div className="text-xs mt-1" style={{ color: 'var(--color-text-ghost)', fontFamily: 'var(--font-mono)' }}>Payload would execute in unsanitized context</div>
               </div>
             </motion.div>
           )}
-          <div className="bg-black/80 rounded-lg p-4 border border-white/10 font-mono text-sm" style={{ fontFamily: 'var(--font-code)' }}>
-            <div className="text-gray-500 text-xs mb-2">// RAW OUTPUT (sanitized)</div>
-            <div className="text-[#00ff41] break-all">{payload.replace(/</g, '&lt;').replace(/>/g, '&gt;')}</div>
+          <div className="rounded-lg p-4" style={{ backgroundColor: 'var(--color-void-black)', border: '1px solid var(--color-void-border)', fontFamily: 'var(--font-mono)' }}>
+            <div className="text-xs mb-2" style={{ color: 'var(--color-text-ghost)' }}>// RAW OUTPUT (sanitized)</div>
+            <div className="break-all" style={{ color: 'var(--color-signal-green)' }}>{payload.replace(/</g, '&lt;').replace(/>/g, '&gt;')}</div>
           </div>
         </motion.div>
       )}
@@ -526,8 +545,8 @@ function SqlInjection({ addXP }: { addXP: (n: number) => void }) {
   };
 
   return (
-    <div className="retro-card p-6 h-full">
-      <h3 className="text-[#00ff41] font-mono text-lg font-bold mb-4 flex items-center gap-4">
+    <div className="void-card p-6 h-full">
+      <h3 className="void-title mb-4 flex items-center gap-4">
         <span className="text-2xl">💉</span> SQL INJECTION
       </h3>
       <div className="flex flex-col sm:flex-row items-center gap-4 mb-4">
@@ -535,12 +554,12 @@ function SqlInjection({ addXP }: { addXP: (n: number) => void }) {
           value={query}
           onChange={e => setQuery(e.target.value)}
           placeholder="SELECT * FROM users WHERE id = '1' OR '1'='1'"
-          className="flex-1 bg-black/60 border border-white/10 rounded-lg px-4 py-2 text-[#00ff41] font-mono placeholder:text-[#00ff41]/30 focus:outline-none focus:border-white/20"
-          style={{ fontFamily: 'var(--font-code)' }}
+          className="void-input flex-1"
+          style={{ fontFamily: 'var(--font-mono)' }}
         />
         <button onClick={runQuery}
           aria-label="Execute SQL query"
-          className="px-4 py-2.5 sm:py-2 bg-orange-500/20 border border-orange-500/50 rounded-lg text-orange-400 font-mono hover:bg-orange-500/30 transition-all shrink-0">
+          className="void-btn shrink-0">
           EXECUTE
         </button>
       </div>
@@ -551,13 +570,14 @@ function SqlInjection({ addXP }: { addXP: (n: number) => void }) {
               key={i}
               animate={!alive ? { opacity: 0, scale: 0, rotate: 45 } : { opacity: 1, scale: 1, rotate: 0 }}
               transition={{ duration: 0.3 }}
-              className={`aspect-square rounded-sm ${alive ? 'bg-[#00ff41]/20 border border-[#00ff41]/30' : ''}`}
+              className="aspect-square rounded-sm"
+              style={alive ? { backgroundColor: 'rgba(34,204,102,0.15)', border: '1px solid rgba(34,204,102,0.3)' } : {}}
             />
           ))}
         </div>
       )}
       {crumbling && cells.filter(c => !c).length > 30 && (
-        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="mt-3 text-red-400 font-mono text-sm text-center">
+        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="mt-3 text-sm text-center" style={{ color: 'var(--color-signal-red)', fontFamily: 'var(--font-mono)' }}>
           ⚠ DATABASE COMPROMISED — Table structure destroyed (+20 XP)
         </motion.div>
       )}
@@ -604,9 +624,15 @@ function PhishingDetector({ addXP }: { addXP: (n: number) => void }) {
     addXP(10);
   };
 
+  const getScoreColor = () => {
+    if (score > 60) return 'var(--color-signal-red)';
+    if (score > 30) return 'var(--color-signal-gold)';
+    return 'var(--color-signal-green)';
+  };
+
   return (
-    <div className="retro-card p-6 h-full">
-      <h3 className="text-[#00ff41] font-mono text-lg font-bold mb-4 flex items-center gap-4">
+    <div className="void-card p-6 h-full">
+      <h3 className="void-title mb-4 flex items-center gap-4">
         <span className="text-2xl">🎣</span> PHISHING DETECTOR
       </h3>
       <textarea
@@ -614,28 +640,33 @@ function PhishingDetector({ addXP }: { addXP: (n: number) => void }) {
         onChange={e => setEmail(e.target.value)}
         placeholder="Paste suspicious email text here..."
         rows={4}
-        className="w-full bg-black/60 border border-white/10 rounded-lg px-3 sm:px-4 py-2.5 sm:py-2 text-[#00ff41] font-mono placeholder:text-[#00ff41]/30 focus:outline-none focus:border-white/20 resize-none"
-        style={{ fontFamily: 'var(--font-code)' }}
+        className="void-input w-full resize-none"
+        style={{ fontFamily: 'var(--font-mono)' }}
       />
       <button onClick={analyze}
-        className="mt-2 px-4 py-2 bg-yellow-500/20 border border-yellow-500/50 rounded-lg text-yellow-400 font-mono hover:bg-yellow-500/30 transition-all">
+        className="void-btn mt-2">
         ANALYZE
       </button>
       {result.length > 0 && (
         <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="mt-4 space-y-2">
           <div className="flex items-center gap-2 mb-3">
-            <span className="text-sm font-mono text-gray-400">THREAT SCORE:</span>
-            <div className="flex-1 h-3 bg-black/60 rounded-full overflow-hidden border border-white/10">
+            <span className="text-sm" style={{ color: 'var(--color-text-secondary)', fontFamily: 'var(--font-mono)' }}>THREAT SCORE:</span>
+            <div className="flex-1 h-3 rounded-full overflow-hidden" style={{ backgroundColor: 'var(--color-void-black)', border: '1px solid var(--color-void-border)' }}>
               <motion.div initial={{ width: 0 }} animate={{ width: `${score}%` }} className="h-full rounded-full"
-                style={{ backgroundColor: score > 60 ? '#ff0040' : score > 30 ? '#ffaa00' : '#00ff41' }} />
+                style={{ backgroundColor: getScoreColor() }} />
             </div>
-            <span className="font-mono text-sm" style={{ color: score > 60 ? '#ff0040' : score > 30 ? '#ffaa00' : '#00ff41' }}>
+            <span className="text-sm" style={{ color: getScoreColor(), fontFamily: 'var(--font-mono)' }}>
               {score}%
             </span>
           </div>
           {result.map((r, i) => (
-            <div key={i} className={`text-sm font-mono p-2 rounded ${r.suspicious ? 'bg-red-500/10 border border-red-500/30 text-red-400' : 'text-gray-400'}`}
-              style={{ fontFamily: 'var(--font-code)' }}>
+            <div key={i} className="text-sm p-2 rounded"
+              style={{
+                fontFamily: 'var(--font-mono)',
+                backgroundColor: r.suspicious ? 'rgba(204,34,68,0.1)' : 'transparent',
+                border: r.suspicious ? '1px solid rgba(204,34,68,0.3)' : 'none',
+                color: r.suspicious ? 'var(--color-signal-red)' : 'var(--color-text-secondary)',
+              }}>
               {r.suspicious && <span className="mr-2">🚩</span>}
               {r.text}
             </div>
@@ -720,24 +751,31 @@ function TerminalLog() {
     }
   };
 
+  const getLogColor = (l: string) => {
+    if (l.startsWith('>')) return 'var(--color-signal-green)';
+    if (l.includes('[WARN]')) return 'var(--color-signal-gold)';
+    if (l.includes('[ERR]')) return 'var(--color-signal-red)';
+    return 'var(--color-text-secondary)';
+  };
+
   return (
-    <div className="retro-card p-6 h-52 sm:h-64 flex flex-col">
-      <div className="flex-1 overflow-y-auto font-mono text-xs space-y-2 mb-2" style={{ fontFamily: 'var(--font-code)' }}>
+    <div className="void-card p-6 h-52 sm:h-64 flex flex-col">
+      <div className="flex-1 overflow-y-auto text-xs space-y-2 mb-2" style={{ fontFamily: 'var(--font-mono)' }}>
         {logs.map((l, i) => (
-          <div key={i} className={`${l.startsWith('>') ? 'text-[#00ff41]' : l.includes('[WARN]') ? 'text-yellow-400' : l.includes('[ERR]') ? 'text-red-400' : 'text-[#00ff41]/70'}`}>
+          <div key={i} style={{ color: getLogColor(l) }}>
             {l}
           </div>
         ))}
         <div ref={endRef} />
       </div>
       <div className="flex items-center gap-4">
-        <span className="text-[#00ff41] font-mono text-sm">$</span>
+        <span className="text-sm" style={{ color: 'var(--color-signal-green)', fontFamily: 'var(--font-mono)' }}>$</span>
         <input
           value={input}
           onChange={e => setInput(e.target.value)}
           onKeyDown={handleKeyDown}
-          className="flex-1 bg-transparent text-[#00ff41] font-mono text-sm focus:outline-none"
-          style={{ fontFamily: 'var(--font-code)' }}
+          className="void-input flex-1 bg-transparent text-sm"
+          style={{ fontFamily: 'var(--font-mono)', border: 'none', backgroundColor: 'transparent' }}
           placeholder="type a command... (Tab to autocomplete)"
         />
       </div>
@@ -778,7 +816,7 @@ export default function CyberPage() {
   const wrappedAddXP = useCallback((n: number) => addXP(n), [addXP]);
 
   return (
-    <div className="min-h-screen bg-[#0d1117] text-white relative overflow-hidden" role="main" aria-label="exploit.me cybersecurity zone">
+    <div className="min-h-screen relative overflow-hidden" style={{ backgroundColor: 'var(--color-void-black)', color: 'var(--color-text-primary)' }} role="main" aria-label="exploit.me cybersecurity zone">
       <MatrixRain />
 
       <AnimatePresence>
@@ -788,11 +826,11 @@ export default function CyberPage() {
       <div className="relative z-10 max-w-7xl mx-auto px-6 py-12">
         {/* Header */}
         <motion.div initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }} className="mb-8">
-          <BackButton color="#00ff41" />
-          <h1 className="text-2xl sm:text-3xl md:text-4xl font-black glow-green uppercase tracking-wider" style={{ fontFamily: 'var(--font-display)' }}>
-            EXPLOIT<span className="text-white/30">.</span>ME
+          <BackButton />
+          <h1 className="void-title text-2xl sm:text-3xl md:text-4xl font-black uppercase tracking-wider">
+            EXPLOIT<span style={{ color: 'var(--color-text-ghost)' }}>.</span>ME
           </h1>
-          <p className="text-[#00ff41]/50 font-mono mt-2 text-sm">
+          <p className="void-label mt-2 text-sm" style={{ fontFamily: 'var(--font-mono)' }}>
             [CYBERSECURITY PLAYGROUND] — Practice. Learn. Defend.
           </p>
         </motion.div>
@@ -829,7 +867,7 @@ export default function CyberPage() {
         </motion.div>
 
         {/* Footer */}
-        <div className="mt-8 text-center text-[#00ff41]/30 font-mono text-xs">
+        <div className="mt-8 text-center text-xs" style={{ color: 'var(--color-text-ghost)', fontFamily: 'var(--font-mono)' }}>
           exploit.me — Educational cybersecurity simulation — v2.4.1
         </div>
       </div>
