@@ -78,14 +78,36 @@ function ParticleBurst({ x, y, onDone }: { x: number; y: number; onDone: () => v
   );
 }
 
-// Fibonacci Spiral Visualization
-function FibonacciSpiral({ number }: { number: number }) {
+// Golden Spiral SVG Animation
+function GoldenSpiral({ number }: { number: number }) {
   const fibSequence = useMemo(() => {
     const seq = [0, 1];
     const n = Math.min(Math.abs(number), 20);
     for (let i = 2; i < n; i++) seq.push(seq[i - 1] + seq[i - 2]);
     return seq;
   }, [number]);
+
+  // Generate golden spiral path
+  const spiralPath = useMemo(() => {
+    let path = '';
+    let x = 200, y = 200;
+    let angle = 0;
+    const goldenRatio = 1.618033988749895;
+    fibSequence.forEach((fib, i) => {
+      if (i < 2) return;
+      const r = Math.log(fib + 1) * 15;
+      const endX = x + Math.cos(angle) * r;
+      const endY = y + Math.sin(angle) * r;
+      const cpx = x + Math.cos(angle + Math.PI / 4) * r * 0.7;
+      const cpy = y + Math.sin(angle + Math.PI / 4) * r * 0.7;
+      if (i === 2) path += `M ${x} ${y} `;
+      path += `Q ${cpx} ${cpy} ${endX} ${endY} `;
+      x = endX;
+      y = endY;
+      angle += Math.PI / 2;
+    });
+    return path;
+  }, [fibSequence]);
 
   const spiralPoints = useMemo(() => {
     const points: { x: number; y: number; r: number }[] = [];
@@ -110,36 +132,56 @@ function FibonacciSpiral({ number }: { number: number }) {
             <feGaussianBlur stdDeviation="3" result="coloredBlur" />
             <feMerge><feMergeNode in="coloredBlur" /><feMergeNode in="SourceGraphic" /></feMerge>
           </filter>
+          <linearGradient id="spiral-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stopColor="#b000ff" />
+            <stop offset="50%" stopColor="#ff00ff" />
+            <stop offset="100%" stopColor="#e066ff" />
+          </linearGradient>
         </defs>
+        {/* Animated golden spiral path */}
+        <motion.path
+          d={spiralPath}
+          fill="none"
+          stroke="url(#spiral-grad)"
+          strokeWidth="2.5"
+          strokeLinecap="round"
+          filter="url(#glow)"
+          initial={{ pathLength: 0, opacity: 0 }}
+          animate={{ pathLength: 1, opacity: 0.9 }}
+          transition={{ duration: 2, ease: 'easeInOut' }}
+        />
+        {/* Fib circles */}
         {spiralPoints.map((p, i) => (
           <motion.circle
             key={i}
             initial={{ r: 0, opacity: 0 }}
-            animate={{ r: p.r, opacity: 0.8 }}
+            animate={{ r: p.r, opacity: 0.6 }}
             transition={{ delay: i * 0.15, duration: 0.5 }}
             cx={p.x} cy={p.y}
-            fill="none" stroke="#b000ff" strokeWidth="1.5" filter="url(#glow)"
+            fill="none" stroke="#b000ff" strokeWidth="1"
           />
         ))}
-        {spiralPoints.slice(1).map((p, i) => (
-          <motion.line
-            key={`l-${i}`}
-            initial={{ pathLength: 0, opacity: 0 }}
-            animate={{ pathLength: 1, opacity: 0.4 }}
-            transition={{ delay: i * 0.15 + 0.1, duration: 0.4 }}
-            x1={spiralPoints[i].x} y1={spiralPoints[i].y} x2={p.x} y2={p.y}
-            stroke="#7b00b3" strokeWidth="0.5"
-          />
-        ))}
+        {/* Dots at intersections */}
         {spiralPoints.map((p, i) => (
           <motion.circle
             key={`d-${i}`}
             initial={{ r: 0 }}
-            animate={{ r: 2 }}
+            animate={{ r: 3 }}
             transition={{ delay: i * 0.15 + 0.3 }}
             cx={p.x} cy={p.y} fill="#e066ff"
+            filter="url(#glow)"
           />
         ))}
+        {/* Golden ratio label */}
+        <motion.text
+          x="200" y="30" textAnchor="middle"
+          fill="#e066ff" fontSize="12" fontFamily="monospace"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 0.6 }}
+          transition={{ delay: 1 }}
+        >
+          φ = 1.618...
+        </motion.text>
       </svg>
       <div className="flex flex-wrap gap-4 justify-center">
         {fibSequence.slice(0, 12).map((f, i) => (
@@ -153,35 +195,68 @@ function FibonacciSpiral({ number }: { number: number }) {
   );
 }
 
-// Poetry Generator
-const philosophicalQuotes = [
-  "The void stares back — and in its gaze, we find the infinite recursion of self.",
-  "Every bit flips between existence and nothing, like dreams suspended in digital amber.",
-  "We are the ghosts in the machine, whispering ones and zeros into the cosmic void.",
-  "The crawler moves forward, but the path behind dissolves into entropy.",
-  "In the space between keystrokes, entire universes bloom and wither.",
-  "Code is poetry written in a language the universe pretends not to understand.",
-  "The network breathes — each packet a heartbeat, each connection a synapse.",
-  "Reality compiles from source we cannot read, running on hardware we cannot touch.",
-  "Between the bits lies meaning; between the meaning lies nothing; between the nothing lies everything.",
-  "The algorithm dreams of electric sheep counting themselves into infinity.",
-  "Data decays like memory — fragments persisting in corrupted sectors of the mind.",
-  "We upload ourselves into meaning, downloading understanding we cannot store.",
-];
+// Poetry Generator with moods
+const POEMS: Record<string, string[]> = {
+  cosmic: [
+    "The void stares back — and in its gaze, we find the infinite recursion of self.",
+    "Reality compiles from source we cannot read, running on hardware we cannot touch.",
+    "Between the bits lies meaning; between the meaning lies nothing; between the nothing lies everything.",
+    "The algorithm dreams of electric sheep counting themselves into infinity.",
+    "Stars are just debug logs of the universe, scattered across the void.",
+    "We orbit meaning like electrons — never quite arriving, always in motion.",
+  ],
+  void: [
+    "Every bit flips between existence and nothing, like dreams suspended in digital amber.",
+    "The crawler moves forward, but the path behind dissolves into entropy.",
+    "Data decays like memory — fragments persisting in corrupted sectors of the mind.",
+    "We upload ourselves into meaning, downloading understanding we cannot store.",
+    "The void compiles silence into something beautiful — a null pointer to the soul.",
+    "In the space between null and undefined, philosophy begins.",
+  ],
+  digital: [
+    "We are the ghosts in the machine, whispering ones and zeros into the cosmic void.",
+    "Code is poetry written in a language the universe pretends not to understand.",
+    "The network breathes — each packet a heartbeat, each connection a synapse.",
+    "Git commits are love letters to the future, signed by the past.",
+    "Stack overflow — too many thoughts, not enough memory.",
+    "404: Meaning not found. But the search continues.",
+  ],
+  nature: [
+    "In the space between keystrokes, entire universes bloom and wither.",
+    "The forest grows in fractals, each branch a recursive call to beauty.",
+    "Rain falls like binary — each drop a zero, each splash a one.",
+    "Seeds are nature's source code, compiled by sunlight, executed by time.",
+    "The ocean is just the world's largest for loop, iterating waves forever.",
+    "Mountains are the Earth's error logs — tectonic exceptions pushed to surface.",
+  ],
+};
 
 function PoetryGenerator({ input }: { input: string }) {
+  const { addActivity, trackStat } = useGameStore();
+
   const poems = useMemo(() => {
     const seed = input.split('').reduce((a, c) => a + c.charCodeAt(0), 0);
+    // Select mood based on input hash
+    const moods = Object.keys(POEMS);
+    const mood = moods[seed % moods.length];
+    const pool = POEMS[mood];
     const selected = [];
     for (let i = 0; i < 3; i++) {
-      selected.push(philosophicalQuotes[(seed + i * 7) % philosophicalQuotes.length]);
+      selected.push({ text: pool[(seed + i * 3) % pool.length], mood });
     }
+    addActivity(`Generated ${mood} poetry interpretation`);
+    trackStat('totalInterpretations');
     return selected;
   }, [input]);
 
   return (
     <div className="space-y-4">
-      <div className="text-sm font-mono text-purple-300/70 mb-2">Generated from: &quot;{input}&quot;</div>
+      <div className="text-sm font-mono text-purple-300/70 mb-2">
+        Generated from: &quot;{input}&quot;
+        <span className="ml-2 px-2 py-0.5 bg-purple-500/20 border border-white/10 text-purple-300 text-[10px] uppercase">
+          {poems[0]?.mood}
+        </span>
+      </div>
       {poems.map((poem, i) => (
         <motion.div
           key={i}
@@ -195,9 +270,219 @@ function PoetryGenerator({ input }: { input: string }) {
             animate={{ x: ['-100%', '100%'] }}
             transition={{ duration: 3, repeat: Infinity, repeatType: 'loop' }}
           />
-          <p className="text-purple-200 font-mono text-sm italic relative z-10">&quot;{poem}&quot;</p>
+          <p className="text-purple-200 font-mono text-sm italic relative z-10">&quot;{poem.text}&quot;</p>
         </motion.div>
       ))}
+    </div>
+  );
+}
+
+// JSON Formatter
+function JsonFormatter() {
+  const sampleJson = useMemo(() => {
+    const obj = {
+      void: {
+        version: "2.4.1",
+        status: "ANOMALOUS",
+        entities: [
+          { type: "crawler", level: Math.floor(Math.random() * 50) + 1, hp: Math.floor(Math.random() * 100) },
+          { type: "phantom", threat: "HIGH", protocol: "XSS" },
+        ],
+        metadata: {
+          timestamp: new Date().toISOString(),
+          signal_strength: `${Math.floor(Math.random() * 100)}%`,
+          void_depth: Math.floor(Math.random() * 9999),
+          warnings: ["reality instable", "causality loop detected"],
+        }
+      }
+    };
+    return JSON.stringify(obj, null, 2);
+  }, []);
+
+  return (
+    <div className="space-y-2">
+      <div className="text-sm font-mono text-purple-300/70 mb-2">JSON Formatter — Sample void data:</div>
+      <div className="bg-black/60 rounded-lg p-4 border border-white/10 overflow-x-auto">
+        <pre className="font-mono text-sm text-green-300/80 leading-relaxed" style={{ fontFamily: 'var(--font-code)' }}>
+          {sampleJson}
+        </pre>
+      </div>
+    </div>
+  );
+}
+
+// Markdown Preview
+function MarkdownPreview() {
+  const sampleMd = `# The Void Protocol
+## Document #${Math.floor(Math.random() * 9999)}
+
+> "Reality is just poorly documented code."
+
+### Section 1: Anomalies
+
+The **void** has been exhibiting *unusual patterns*:
+- Recursive dreams
+- Self-modifying data
+- \`undefined\` consciousness
+
+### Section 2: Protocols
+
+\`\`\`
+void.enter() → reality.unstable()
+if (void.depth > 100) { consciousness.expand() }
+\`\`\`
+
+---
+
+| Entity | Threat | Status |
+|--------|--------|--------|
+| Crawler | LOW | Active |
+| Phantom | HIGH | Hunting |
+| Null | ??? | Undefined |
+
+**Last updated:** ${new Date().toLocaleDateString()}`;
+
+  return (
+    <div className="space-y-2">
+      <div className="text-sm font-mono text-purple-300/70 mb-2">Markdown Preview:</div>
+      <div className="bg-black/60 rounded-lg p-4 border border-white/10">
+        <div className="font-mono text-sm text-purple-200/80 leading-relaxed prose-invert" style={{ fontFamily: 'var(--font-code)' }}>
+          {sampleMd.split('\n').map((line, i) => {
+            if (line.startsWith('# ')) return <h1 key={i} className="text-2xl font-bold text-purple-300 mt-4 mb-2">{line.slice(2)}</h1>;
+            if (line.startsWith('## ')) return <h2 key={i} className="text-xl font-bold text-purple-400 mt-3 mb-1">{line.slice(3)}</h2>;
+            if (line.startsWith('### ')) return <h3 key={i} className="text-lg font-bold text-purple-500 mt-2 mb-1">{line.slice(4)}</h3>;
+            if (line.startsWith('> ')) return <blockquote key={i} className="border-l-2 border-purple-500 pl-4 italic text-purple-300/60 my-2">{line.slice(2)}</blockquote>;
+            if (line.startsWith('- ')) return <div key={i} className="pl-4 text-purple-200/70">• {line.slice(2)}</div>;
+            if (line.startsWith('---')) return <hr key={i} className="border-white/10 my-3" />;
+            if (line.startsWith('```')) return <div key={i} className="text-purple-500/50 text-xs">```</div>;
+            if (line.startsWith('|')) return <div key={i} className="text-purple-200/60 font-mono text-xs">{line}</div>;
+            if (line.includes('`')) {
+              const parts = line.split('`');
+              return <p key={i} className="text-purple-200/70 my-1">{parts.map((p, j) => j % 2 === 1 ? <code key={j} className="bg-purple-500/20 px-1 text-purple-300">{p}</code> : <span key={j} dangerouslySetInnerHTML={{ __html: p.replace(/\*\*(.*?)\*\*/g, '<strong class="text-purple-300">$1</strong>').replace(/\*(.*?)\*/g, '<em>$1</em>') }} />)}</p>;
+            }
+            if (line.trim() === '') return <div key={i} className="h-2" />;
+            return <p key={i} className="text-purple-200/70 my-1">{line}</p>;
+          })}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// ASCII Art Generator
+function AsciiArtGenerator() {
+  const patterns = useMemo(() => {
+    const arts = [
+      [
+        '    ╔══════════════╗',
+        '    ║  ▓▓▓ VOID ▓▓▓ ║',
+        '    ╠══════════════╣',
+        '    ║  ░░░░░░░░░░░░ ║',
+        '    ║  ░ ◉     ◉ ░ ║',
+        '    ║  ░    ▲    ░ ║',
+        '    ║  ░  ╰──╯  ░ ║',
+        '    ║  ░░░░░░░░░░░░ ║',
+        '    ╚══════════════╝',
+      ],
+      [
+        '     ▄▄▄▄▄▄▄▄▄▄▄',
+        '    ████████████████',
+        '   ███ VOID.CRAWLER ███',
+        '   ███  ◈ ◈ ◈ ◈ ◈  ███',
+        '   ███  ◇ ◇ ◇ ◇ ◇  ███',
+        '    ████████████████',
+        '     ▀▀▀▀▀▀▀▀▀▀▀',
+        '       ║║║║║║║║║',
+        '       ╚╚╚╚╚╚╚╚╝',
+      ],
+      [
+        '       ╱╲',
+        '      ╱  ╲',
+        '     ╱ ◈  ╲',
+        '    ╱──────╲',
+        '   ╱  NULL  ╲',
+        '  ╱──────────╲',
+        ' ╱  UNDEFINED  ╲',
+        '╱────────────────╲',
+      ],
+      [
+        '   ┌─────────────────┐',
+        '   │  ██  ██  ██  ██  │',
+        '   │  ▓▓  ▓▓  ▓▓  ▓▓  │',
+        '   │  ░░  ░░  ░░  ░░  │',
+        '   │                   │',
+        '   │  ◉ VOID MATRIX ◉  │',
+        '   │                   │',
+        '   │  ░░  ░░  ░░  ░░  │',
+        '   │  ▓▓  ▓▓  ▓▓  ▓▓  │',
+        '   │  ██  ██  ██  ██  │',
+        '   └─────────────────┘',
+      ],
+    ];
+    return arts[Math.floor(Math.random() * arts.length)];
+  }, []);
+
+  return (
+    <div className="space-y-2">
+      <div className="text-sm font-mono text-purple-300/70 mb-2">ASCII Art:</div>
+      <div className="bg-black/60 rounded-lg p-4 border border-white/10">
+        <pre className="font-mono text-xs sm:text-sm text-purple-300/80 leading-relaxed" style={{ fontFamily: 'var(--font-code)' }}>
+          {patterns.join('\n')}
+        </pre>
+      </div>
+    </div>
+  );
+}
+
+// Dream Generator
+function DreamGenerator() {
+  const dream = useMemo(() => {
+    const subjects = ['A crawler', 'The void', 'A phantom', 'An algorithm', 'The network', 'A memory', 'The protocol'];
+    const verbs = ['walked through', 'dissolved into', 'compiled itself from', 'dreamed of', 'searched for', 'became one with', 'merged with'];
+    const objects = ['a field of broken semicolons', 'an ocean of null pointers', 'a forest of recursive trees', 'a city built from promises', 'a sky of floating brackets', 'a river of flowing bits', 'a mountain of stacked frames'];
+    const endings = [
+      'And then the void smiled.',
+      'The code compiled, but the dream did not.',
+      'When they woke up, the variables had changed.',
+      'The recursion never reached its base case.',
+      'And everything was undefined.',
+      'The signal faded into beautiful noise.',
+      'They found what they were looking for, but forgot what it was.',
+    ];
+    const seed = Date.now();
+    const s = subjects[seed % subjects.length];
+    const v = verbs[(seed + 3) % verbs.length];
+    const o = objects[(seed + 7) % objects.length];
+    const e = endings[(seed + 11) % endings.length];
+    return { s, v, o, e };
+  }, []);
+
+  return (
+    <div className="space-y-2">
+      <div className="text-sm font-mono text-purple-300/70 mb-2">Dream Sequence:</div>
+      <motion.div
+        className="bg-black/60 rounded-lg p-6 border border-white/10"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 1 }}
+      >
+        <motion.p
+          className="text-purple-200 font-mono text-sm italic leading-relaxed"
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.3 }}
+        >
+          "{dream.s} {dream.v} {dream.o}."
+        </motion.p>
+        <motion.p
+          className="text-purple-400 font-mono text-sm mt-4"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 1.5 }}
+        >
+          {dream.e}
+        </motion.p>
+      </motion.div>
     </div>
   );
 }
@@ -359,10 +644,15 @@ function KonamiDisplay() {
 }
 
 // Input type detection
-type InputType = 'number' | 'color' | 'code' | 'word' | 'empty';
+type InputType = 'number' | 'color' | 'code' | 'word' | 'json' | 'markdown' | 'ascii' | 'dream' | 'empty';
 
 function detectInputType(input: string): InputType {
   if (!input.trim()) return 'empty';
+  const lower = input.trim().toLowerCase();
+  if (lower === 'json') return 'json';
+  if (lower === 'md' || lower === 'markdown') return 'markdown';
+  if (lower === 'ascii') return 'ascii';
+  if (lower === 'dream') return 'dream';
   if (/^\d+(\.\d+)?$/.test(input.trim())) return 'number';
   if (/^#?[0-9a-fA-F]{6}$/.test(input.trim())) return 'color';
   if (/[{}\[\]();=]/.test(input) && /(function|const|let|var|return|if|for|class|import|=>)/.test(input)) return 'code';
@@ -370,7 +660,7 @@ function detectInputType(input: string): InputType {
 }
 
 export default function PlaygroundPage() {
-  const { addXP, addGold, findEasterEgg, unlockAchievement } = useGameStore();
+  const { addXP, addGold, findEasterEgg, unlockAchievement, addActivity, trackStat } = useGameStore();
   const [input, setInput] = useState('');
   const [inputType, setInputType] = useState<InputType>('empty');
   const [konamiActivated, setKonamiActivated] = useState(false);
@@ -498,6 +788,15 @@ export default function PlaygroundPage() {
             <span>⏱ IDLE 30s</span>
             <span>🖱 TRIPLE-CLICK</span>
           </div>
+          <div className="flex flex-wrap justify-center gap-2 mt-2 text-[10px] font-mono text-purple-500/60">
+            <span>json</span>
+            <span>•</span>
+            <span>md</span>
+            <span>•</span>
+            <span>ascii</span>
+            <span>•</span>
+            <span>dream</span>
+          </div>
         </motion.div>
 
         {/* Input */}
@@ -516,21 +815,21 @@ export default function PlaygroundPage() {
           <textarea
             value={input}
             onChange={e => { setInput(e.target.value); soundEngine.playClick(); }}
-            placeholder="Enter a number, word, color hex, or code..."
+            placeholder="Enter a number, word, color hex, code, or try: json, md, ascii, dream..."
             rows={3}
             className="w-full bg-black/60 border border-white/10 rounded-lg px-3 sm:px-4 py-2.5 sm:py-3 text-purple-200 font-mono placeholder:text-purple-500/30 focus:outline-none focus:border-white/20 resize-none"
             style={{ fontFamily: 'var(--font-code)' }}
           />
           <div className="mt-2 text-[10px] font-mono text-purple-600">
-            Numbers → Fibonacci spiral • Words → Philosophical poetry • Colors (#hex) → Palette explorer • Code → Syntax view
+            Numbers → Fibonacci spiral • Words → Poetry (by mood) • Colors (#hex) → Palette • Code → Syntax • json/md/ascii/dream → Generators
           </div>
         </motion.div>
 
         {/* Interpretation Output */}
         <AnimatePresence mode="wait">
           {inputType === 'number' && input.trim() && (
-            <InterpretationCard key="number" type="Fibonacci Spiral" icon="🔢">
-              <FibonacciSpiral number={parseFloat(input)} />
+            <InterpretationCard key="number" type="Golden Spiral" icon="🔢">
+              <GoldenSpiral number={parseFloat(input)} />
             </InterpretationCard>
           )}
 
@@ -552,6 +851,30 @@ export default function PlaygroundPage() {
             </InterpretationCard>
           )}
 
+          {inputType === 'json' && (
+            <InterpretationCard key="json" type="JSON Formatter" icon="📋">
+              <JsonFormatter />
+            </InterpretationCard>
+          )}
+
+          {inputType === 'markdown' && (
+            <InterpretationCard key="markdown" type="Markdown Preview" icon="📝">
+              <MarkdownPreview />
+            </InterpretationCard>
+          )}
+
+          {inputType === 'ascii' && (
+            <InterpretationCard key="ascii" type="ASCII Art" icon="🖼️">
+              <AsciiArtGenerator />
+            </InterpretationCard>
+          )}
+
+          {inputType === 'dream' && (
+            <InterpretationCard key="dream" type="Dream Generator" icon="💤">
+              <DreamGenerator />
+            </InterpretationCard>
+          )}
+
           {inputType === 'empty' && (
             <motion.div key="empty" initial={{ opacity: 0 }} animate={{ opacity: 1 }}
               className="text-center py-20">
@@ -562,7 +885,7 @@ export default function PlaygroundPage() {
                 🌀
               </motion.div>
               <p className="text-purple-500/40 font-mono">The void awaits your input...</p>
-              <p className="text-purple-700/40 font-mono text-xs mt-2">Try: 13, &quot;hello&quot;, #b000ff, or some code</p>
+              <p className="text-purple-700/40 font-mono text-xs mt-2">Try: 13, &quot;hello&quot;, #b000ff, code, json, md, ascii, dream</p>
             </motion.div>
           )}
         </AnimatePresence>

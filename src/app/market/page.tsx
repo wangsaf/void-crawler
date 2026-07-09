@@ -14,8 +14,13 @@ interface ShopItem {
   emoji: string;
   basePrice: number;
   currentPrice: number;
+  prevPrice: number;
   minPrice: number;
   maxPrice: number;
+  stock: number;
+  maxStock: number;
+  isRare?: boolean;
+  expiresAt?: number;
 }
 
 interface CartEntry {
@@ -42,15 +47,28 @@ interface CheckoutPuzzle {
   hint: string;
 }
 
+interface Receipt {
+  items: { name: string; emoji: string; price: number; qty: number }[];
+  subtotal: number;
+  taxed: boolean;
+  taxAmount: number;
+  total: number;
+}
+
 // ─── Constants ───────────────────────────────────────────────────────────────
 
-const SHOP_ITEMS: Omit<ShopItem, 'currentPrice'>[] = [
-  { id: 'health-potion', name: 'Health Potion', emoji: '🧪', basePrice: 100, minPrice: 50, maxPrice: 150 },
-  { id: 'void-blade', name: 'Void Blade', emoji: '⚔️', basePrice: 350, minPrice: 200, maxPrice: 500 },
-  { id: 'shield-css', name: 'Shield of CSS', emoji: '🛡️', basePrice: 275, minPrice: 150, maxPrice: 400 },
-  { id: 'scroll-ts', name: 'Scroll of TypeScript', emoji: '📜', basePrice: 200, minPrice: 100, maxPrice: 300 },
-  { id: 'crystal-gem', name: 'Crystal Gem', emoji: '💎', basePrice: 550, minPrice: 300, maxPrice: 800 },
-  { id: 'debug-pizza', name: 'Debug Pizza', emoji: '🍕', basePrice: 30, minPrice: 10, maxPrice: 50 },
+const SHOP_ITEMS: Omit<ShopItem, 'currentPrice' | 'prevPrice' | 'stock'>[] = [
+  { id: 'health-potion', name: 'Health Potion', emoji: '🧪', basePrice: 100, minPrice: 50, maxPrice: 150, maxStock: 6 },
+  { id: 'void-blade', name: 'Void Blade', emoji: '⚔️', basePrice: 350, minPrice: 200, maxPrice: 500, maxStock: 4 },
+  { id: 'shield-css', name: 'Shield of CSS', emoji: '🛡️', basePrice: 275, minPrice: 150, maxPrice: 400, maxStock: 5 },
+  { id: 'scroll-ts', name: 'Scroll of TypeScript', emoji: '📜', basePrice: 200, minPrice: 100, maxPrice: 300, maxStock: 5 },
+  { id: 'crystal-gem', name: 'Crystal Gem', emoji: '💎', basePrice: 550, minPrice: 300, maxPrice: 800, maxStock: 3 },
+  { id: 'debug-pizza', name: 'Debug Pizza', emoji: '🍕', basePrice: 30, minPrice: 10, maxPrice: 50, maxStock: 8 },
+];
+
+const RARE_ITEMS = [
+  { id: 'void-crystal', name: 'Void Crystal', emoji: '🌟', basePrice: 1000, minPrice: 500, maxPrice: 1500, maxStock: 1, description: 'Legendary artifact from the void' },
+  { id: 'debug-shield', name: 'Debug Shield', emoji: '⚡', basePrice: 550, minPrice: 300, maxPrice: 800, maxStock: 1, description: 'Blocks all runtime errors' },
 ];
 
 const TAX_GOBLIN_QUESTIONS = [
@@ -76,17 +94,18 @@ function randomPosition() {
 // ─── Component ───────────────────────────────────────────────────────────────
 
 export default function CartChaosPage() {
-  const { addXP, addGold, addItem, completeQuest, unlockAchievement, gold, soundEnabled, setZone } = useGameStore();
+  const { addXP, addGold, addItem, completeQuest, unlockAchievement, gold, soundEnabled, setZone, addActivity, trackStat } = useGameStore();
 
   // ─── State ───────────────────────────────────────────────────────────────
 
   const [items, setItems] = useState<ShopItem[]>(() =>
-    SHOP_ITEMS.map((i) => ({ ...i, currentPrice: i.basePrice })),
+    SHOP_ITEMS.map((i) => ({ ...i, currentPrice: i.basePrice, prevPrice: i.basePrice, stock: Math.floor(Math.random() * 3) + 4 })),
   );
   const [cart, setCart] = useState<CartEntry[]>([]);
   const [glitchingItem, setGlitchingItem] = useState<string | null>(null);
   const [priceRouletteCountdown, setPriceRouletteCountdown] = useState(10);
   const [taxGoblin, setTaxGoblin] = useState<TaxGoblin>({ active: false, question: '', answers: [], correct: 0, reward: 0, penalty: 0 });
+  const [goblinTaxed, setGoblinTaxed] = useState(false);
   const [checkoutPuzzle, setCheckoutPuzzle] = useState<CheckoutPuzzle>({ active: false, num1: 0, num2: 0, operator: '+', answer: 0, hint: '' });
   const [checkoutAnswer, setCheckoutAnswer] = useState('');
   const [floatingItems, setFloatingItems] = useState<{ id: string; emoji: string; pos: ReturnType<typeof randomPosition> }[]>([]);
@@ -94,6 +113,7 @@ export default function CartChaosPage() {
   const [totalSpent, setTotalSpent] = useState(0);
   const [purchaseCount, setPurchaseCount] = useState(0);
   const [message, setMessage] = useState<{ text: string; type: 'success' | 'error' | 'info' | 'warning' } | null>(null);
+  const [receipt, setReceipt] = useState<Receipt | null>(null);
 
   const messageTimer = useRef<ReturnType<typeof setTimeout>>(undefined);
 
@@ -117,7 +137,9 @@ export default function CartChaosPage() {
 
     const rouletteInterval = setInterval(() => {
       setItems((prev) => {
-        const targetIdx = Math.floor(Math.random() * prev.length);
+        const regularItems = prev.filter(i => !i.isRare);
+        if (regularItems.length === 0) return prev;
+        const targetIdx = prev.indexOf(regularItems[Math.floor(Math.random() * regularItems.length)]);
         const target = prev[targetIdx];
         const newPrice = Math.floor(
           target.minPrice + Math.random() * (target.maxPrice - target.minPrice),
@@ -126,7 +148,7 @@ export default function CartChaosPage() {
         if (soundEnabled) soundEngine.playClick();
         setTimeout(() => setGlitchingItem(null), 800);
         return prev.map((item, i) =>
-          i === targetIdx ? { ...item, currentPrice: newPrice } : item,
+          i === targetIdx ? { ...item, prevPrice: item.currentPrice, currentPrice: newPrice } : item,
         );
       });
     }, 10000);
@@ -137,12 +159,63 @@ export default function CartChaosPage() {
     };
   }, [soundEnabled]);
 
+  // ─── Stock regeneration (1 per 30s) ──────────────────────────────────────
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setItems(prev => prev.map(item =>
+        item.stock < item.maxStock && !item.isRare ? { ...item, stock: item.stock + 1 } : item
+      ));
+    }, 30000);
+    return () => clearInterval(interval);
+  }, []);
+
+  // ─── Rare item spawn (every 60s, 40% chance) ────────────────────────────
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      if (Math.random() > 0.4) return;
+      const rare = RARE_ITEMS[Math.floor(Math.random() * RARE_ITEMS.length)];
+      const price = Math.floor(rare.minPrice + Math.random() * (rare.maxPrice - rare.minPrice));
+      const rareItem: ShopItem = {
+        ...rare,
+        currentPrice: price,
+        prevPrice: price,
+        stock: 1,
+        isRare: true,
+        expiresAt: Date.now() + 30000,
+      };
+      setItems(prev => {
+        if (prev.find(i => i.id === rare.id)) return prev;
+        return [...prev, rareItem];
+      });
+      showMessage(`✨ Rare item appeared: ${rare.emoji} ${rare.name}!`, 'warning');
+      if (soundEnabled) soundEngine.playError();
+    }, 60000);
+    return () => clearInterval(interval);
+  }, [soundEnabled, showMessage]);
+
+  // ─── Expire rare items ───────────────────────────────────────────────────
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setItems(prev => prev.filter(item => {
+        if (item.isRare && item.expiresAt && Date.now() > item.expiresAt) {
+          showMessage(`${item.emoji} ${item.name} vanished into the void!`, 'error');
+          return false;
+        }
+        return true;
+      }));
+    }, 5000);
+    return () => clearInterval(interval);
+  }, [showMessage]);
+
   // ─── Random Tax Goblin spawn ─────────────────────────────────────────────
 
   useEffect(() => {
     const interval = setInterval(() => {
       if (taxGoblin.active) return;
-      if (Math.random() > 0.3) return; // 30% chance every 20s
+      if (Math.random() > 0.3) return;
       const q = TAX_GOBLIN_QUESTIONS[Math.floor(Math.random() * TAX_GOBLIN_QUESTIONS.length)];
       setTaxGoblin({ active: true, ...q });
       if (soundEnabled) soundEngine.playError();
@@ -195,7 +268,13 @@ export default function CartChaosPage() {
 
   const addToCart = useCallback(
     (item: ShopItem) => {
+      if (item.stock <= 0) {
+        showMessage(`${item.emoji} ${item.name} is SOLD OUT!`, 'error');
+        return;
+      }
       if (soundEnabled) soundEngine.playClick();
+      // Decrease stock
+      setItems(prev => prev.map(i => i.id === item.id ? { ...i, stock: i.stock - 1 } : i));
       setCart((prev) => {
         const existing = prev.find((e) => e.item.id === item.id);
         if (existing) {
@@ -203,7 +282,7 @@ export default function CartChaosPage() {
             e.item.id === item.id ? { ...e, quantity: e.quantity + 1 } : e,
           );
         }
-        return [...prev, { item: { ...item }, quantity: 1 }];
+        return [...prev, { item: { ...item, stock: item.stock - 1 }, quantity: 1 }];
       });
       showMessage(`Added ${item.emoji} ${item.name} (${item.currentPrice}g) to cart!`, 'info');
     },
@@ -219,10 +298,12 @@ export default function CartChaosPage() {
         addXP(25);
         if (soundEnabled) soundEngine.playSuccess();
         showMessage(`Correct! The Goblin drops ${taxGoblin.reward}g and flees!`, 'success');
+        setGoblinTaxed(false);
       } else {
         addGold(-taxGoblin.penalty);
         if (soundEnabled) soundEngine.playError();
         showMessage(`Wrong! The Goblin steals ${taxGoblin.penalty}g!`, 'error');
+        setGoblinTaxed(true);
       }
       setTaxGoblin({ active: false, question: '', answers: [], correct: 0, reward: 0, penalty: 0 });
     },
@@ -257,21 +338,36 @@ export default function CartChaosPage() {
       return;
     }
     if (parsed === checkoutPuzzle.answer) {
-      // Success!
       if (soundEnabled) soundEngine.playSuccess();
-      addGold(-cartTotal);
+      const taxAmount = goblinTaxed ? Math.floor(cartTotal * 0.15) : 0;
+      const total = cartTotal + taxAmount;
+      addGold(-total);
       addXP(cart.length * 15 + 20);
-      setTotalSpent((t) => t + cartTotal);
+      setTotalSpent((t) => t + total);
       setPurchaseCount((p) => p + cart.reduce((s, e) => s + e.quantity, 0));
       cart.forEach((e) => {
         for (let i = 0; i < e.quantity; i++) addItem(e.item.name);
+        addActivity(`Bought ${e.item.name} for ${e.item.currentPrice}g`);
+        trackStat('totalItemsBought', e.quantity);
       });
       if (purchaseCount >= 3) completeQuest('cart-chaos-shopper');
-      if (totalSpent + cartTotal >= 1000) completeQuest('big-spender');
+      if (totalSpent + total >= 1000) completeQuest('big-spender');
       unlockAchievement('market-shopper');
-      if (totalSpent + cartTotal >= 1000) unlockAchievement('big-spender');
-      showMessage(`Purchased ${cart.length} item(s) for ${cartTotal}g! +${cart.length * 15 + 20} XP!`, 'success');
+      if (totalSpent + total >= 1000) unlockAchievement('big-spender');
+
+      // Show receipt
+      setReceipt({
+        items: cart.map(e => ({ name: e.item.name, emoji: e.item.emoji, price: e.item.currentPrice, qty: e.quantity })),
+        subtotal: cartTotal,
+        taxed: goblinTaxed,
+        taxAmount,
+        total,
+      });
+      setTimeout(() => setReceipt(null), 3000);
+
+      showMessage(`Purchased ${cart.length} item(s) for ${total}g! +${cart.length * 15 + 20} XP!`, 'success');
       setCart([]);
+      setGoblinTaxed(false);
       setCheckoutPuzzle({ active: false, num1: 0, num2: 0, operator: '+', answer: 0, hint: '' });
     } else {
       if (soundEnabled) soundEngine.playError();
@@ -279,15 +375,16 @@ export default function CartChaosPage() {
       showMessage(`Wrong answer! The checkout steals 10% (${Math.floor(cartTotal * 0.1)}g) as a fee!`, 'error');
       setCheckoutPuzzle({ active: false, num1: 0, num2: 0, operator: '+', answer: 0, hint: '' });
     }
-  }, [checkoutAnswer, checkoutPuzzle.answer, cartTotal, cart, addGold, addXP, addItem, completeQuest, purchaseCount, totalSpent, soundEnabled, showMessage]);
+  }, [checkoutAnswer, checkoutPuzzle.answer, cartTotal, cart, addGold, addXP, addItem, completeQuest, purchaseCount, totalSpent, soundEnabled, showMessage, goblinTaxed, addActivity, trackStat]);
 
   // ─── Glitch text effect ──────────────────────────────────────────────────
 
-  function GlitchPrice({ price, isGlitching }: { price: number; isGlitching: boolean }) {
-    const [displayPrice, setDisplayPrice] = useState(price);
+  function GlitchPrice({ item: shopItem }: { item: ShopItem }) {
+    const [displayPrice, setDisplayPrice] = useState(shopItem.currentPrice);
+    const isGlitching = glitchingItem === shopItem.id;
     useEffect(() => {
       if (!isGlitching) {
-        setDisplayPrice(price);
+        setDisplayPrice(shopItem.currentPrice);
         return;
       }
       let frame = 0;
@@ -296,26 +393,33 @@ export default function CartChaosPage() {
         if (frame < 10) {
           setDisplayPrice(Math.floor(Math.random() * 9999));
         } else {
-          setDisplayPrice(price);
+          setDisplayPrice(shopItem.currentPrice);
           clearInterval(interval);
         }
       }, 60);
       return () => clearInterval(interval);
-    }, [price, isGlitching]);
+    }, [shopItem.currentPrice, isGlitching]);
+
+    const trend = shopItem.currentPrice > shopItem.prevPrice ? 'up' : shopItem.currentPrice < shopItem.prevPrice ? 'down' : 'same';
 
     return (
-      <motion.span
-        className="font-mono"
-        style={{ fontFamily: 'var(--font-code)' }}
-        animate={isGlitching ? { x: [0, -3, 3, -2, 2, 0], skewX: [0, -5, 5, -3, 0] } : {}}
-        transition={{ duration: 0.4 }}
-      >
-        {displayPrice}g
-      </motion.span>
+      <div className="flex items-center gap-2">
+        <motion.span
+          className="font-mono"
+          style={{ fontFamily: 'var(--font-code)' }}
+          animate={isGlitching ? { x: [0, -3, 3, -2, 2, 0], skewX: [0, -5, 5, -3, 0] } : {}}
+          transition={{ duration: 0.4 }}
+        >
+          {displayPrice}g
+        </motion.span>
+        <span className={`text-sm font-bold ${
+          trend === 'up' ? 'text-green-400' : trend === 'down' ? 'text-red-400' : 'text-gray-500'
+        }`}>
+          {trend === 'up' ? '↑' : trend === 'down' ? '↓' : '→'}
+        </span>
+      </div>
     );
   }
-
-  // ─── Back handler ────────────────────────────────────────────────────────
 
   // ─── Render ──────────────────────────────────────────────────────────────
 
@@ -368,6 +472,66 @@ export default function CartChaosPage() {
             }`}
           >
             {message.text}
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* Receipt overlay */}
+      <AnimatePresence>
+        {receipt && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-[70] flex items-center justify-center bg-black/70 backdrop-blur-sm"
+          >
+            <motion.div
+              initial={{ scale: 0.5, y: 50 }}
+              animate={{ scale: 1, y: 0 }}
+              exit={{ scale: 0.5, opacity: 0 }}
+              className="mx-4 w-full max-w-sm border-2 border-yellow-500/50 bg-black/90 p-6"
+              style={{ fontFamily: 'var(--font-code)' }}
+            >
+              <div className="text-center mb-4">
+                <h3 className="text-yellow-300 text-lg font-bold uppercase" style={{ fontFamily: 'var(--font-display)' }}>
+                  🧾 RECEIPT
+                </h3>
+                <div className="border-t border-dashed border-yellow-500/30 mt-2" />
+              </div>
+              <div className="space-y-1 mb-3">
+                {receipt.items.map((item, i) => (
+                  <div key={i} className="flex justify-between text-sm text-gray-300">
+                    <span>{item.emoji} {item.name} ×{item.qty}</span>
+                    <span className="text-yellow-400">{item.price * item.qty}g</span>
+                  </div>
+                ))}
+              </div>
+              <div className="border-t border-dashed border-yellow-500/30 pt-2 space-y-1">
+                <div className="flex justify-between text-sm text-gray-400">
+                  <span>SUBTOTAL</span>
+                  <span>{receipt.subtotal}g</span>
+                </div>
+                {receipt.taxed && (
+                  <div className="flex justify-between text-sm text-red-400">
+                    <span>🧾 GOBLIN TAX</span>
+                    <span>+{receipt.taxAmount}g</span>
+                  </div>
+                )}
+                <div className="border-t border-dashed border-yellow-500/30 pt-1" />
+                <div className="flex justify-between text-lg font-bold text-yellow-300">
+                  <span>TOTAL</span>
+                  <span>{receipt.total}g</span>
+                </div>
+              </div>
+              <motion.div
+                className="mt-4 text-center text-xl font-bold text-green-400"
+                style={{ fontFamily: 'var(--font-display)' }}
+                animate={{ scale: [1, 1.1, 1] }}
+                transition={{ duration: 0.5, repeat: 3 }}
+              >
+                THANK YOU
+              </motion.div>
+            </motion.div>
           </motion.div>
         )}
       </AnimatePresence>
@@ -429,54 +593,92 @@ export default function CartChaosPage() {
               Market Stalls
             </h2>
             <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4">
-              {items.map((item, idx) => (
-                <motion.div
-                  key={item.id}
-                  initial={{ opacity: 0, y: 30 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: idx * 0.08 }}
-                  whileHover={{ scale: 1.03, y: -4 }}
-                  whileTap={{ scale: 0.97 }}
-                  onClick={() => addToCart(item)}
-                  className={`retro-card group relative cursor-pointer p-6 h-full transition-all ${
-                    glitchingItem === item.id
-                      ? 'border-pink-500 shadow-[0_0_30px_rgba(255,64,129,0.4)]'
-                      : 'border-white/10 hover:border-white/20 hover:shadow-[0_0_20px_rgba(255,107,53,0.2)]'
-                  }`}
-                >
-                  {/* Glitch overlay */}
-                  <AnimatePresence>
-                    {glitchingItem === item.id && (
-                      <motion.div
-                        initial={{ opacity: 0 }}
-                        animate={{ opacity: [0, 1, 0, 1, 0] }}
-                        exit={{ opacity: 0 }}
-                        transition={{ duration: 0.6 }}
-                        className="pointer-events-none absolute inset-0 rounded-xl bg-gradient-to-r from-pink-500/20 to-orange-500/20"
-                      />
-                    )}
-                  </AnimatePresence>
-
-                  <div className="mb-3 text-5xl transition-transform group-hover:scale-110">
-                    {item.emoji}
-                  </div>
-                  <h3
-                    className="mb-1 text-base font-bold text-white"
-                    style={{ fontFamily: 'var(--font-display)' }}
+              {items.map((item, idx) => {
+                const isSoldOut = item.stock <= 0;
+                return (
+                  <motion.div
+                    key={item.id}
+                    initial={{ opacity: 0, y: 30 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: idx * 0.08 }}
+                    whileHover={!isSoldOut ? { scale: 1.03, y: -4 } : {}}
+                    whileTap={!isSoldOut ? { scale: 0.97 } : {}}
+                    onClick={() => !isSoldOut && addToCart(item)}
+                    className={`retro-card group relative p-6 h-full transition-all ${
+                      isSoldOut ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'
+                    } ${
+                      item.isRare ? 'border-yellow-500 shadow-[0_0_30px_rgba(255,193,7,0.4)]' :
+                      glitchingItem === item.id
+                        ? 'border-pink-500 shadow-[0_0_30px_rgba(255,64,129,0.4)]'
+                        : 'border-white/10 hover:border-white/20 hover:shadow-[0_0_20px_rgba(255,107,53,0.2)]'
+                    }`}
                   >
-                    {item.name}
-                  </h3>
-                  <div className="flex items-baseline gap-2">
-                    <GlitchPrice price={item.currentPrice} isGlitching={glitchingItem === item.id} />
-                    <span className="text-xs text-gray-500 line-through" style={{ fontFamily: 'var(--font-code)' }}>
-                      {item.basePrice}g
-                    </span>
-                  </div>
-                  <div className="mt-2 text-[10px] text-gray-500" style={{ fontFamily: 'var(--font-code)' }}>
-                    range: {item.minPrice}–{item.maxPrice}g
-                  </div>
-                </motion.div>
-              ))}
+                    {/* Glitch overlay */}
+                    <AnimatePresence>
+                      {glitchingItem === item.id && (
+                        <motion.div
+                          initial={{ opacity: 0 }}
+                          animate={{ opacity: [0, 1, 0, 1, 0] }}
+                          exit={{ opacity: 0 }}
+                          transition={{ duration: 0.6 }}
+                          className="pointer-events-none absolute inset-0 rounded-xl bg-gradient-to-r from-pink-500/20 to-orange-500/20"
+                        />
+                      )}
+                    </AnimatePresence>
+
+                    {/* Rare badge */}
+                    {item.isRare && (
+                      <div className="absolute top-2 right-2 px-2 py-0.5 bg-yellow-500/20 border border-yellow-500/50 text-yellow-300 text-[10px] font-bold uppercase">
+                        RARE
+                      </div>
+                    )}
+
+                    <div className="mb-3 text-5xl transition-transform group-hover:scale-110">
+                      {item.emoji}
+                    </div>
+                    <h3
+                      className="mb-1 text-base font-bold text-white"
+                      style={{ fontFamily: 'var(--font-display)' }}
+                    >
+                      {item.name}
+                    </h3>
+                    <div className="flex items-baseline gap-2">
+                      <GlitchPrice item={item} />
+                      <span className="text-xs text-gray-500 line-through" style={{ fontFamily: 'var(--font-code)' }}>
+                        {item.basePrice}g
+                      </span>
+                    </div>
+                    {/* Stock */}
+                    <div className="mt-2 flex items-center gap-2">
+                      {isSoldOut ? (
+                        <span className="text-xs font-bold text-red-400 uppercase" style={{ fontFamily: 'var(--font-display)' }}>
+                          SOLD OUT
+                        </span>
+                      ) : (
+                        <div className="flex items-center gap-1">
+                          <span className="text-[10px] text-gray-500" style={{ fontFamily: 'var(--font-code)' }}>
+                            STOCK:
+                          </span>
+                          {Array.from({ length: item.maxStock }).map((_, i) => (
+                            <div
+                              key={i}
+                              className={`w-2 h-2 ${i < item.stock ? 'bg-green-400' : 'bg-gray-700'}`}
+                            />
+                          ))}
+                        </div>
+                      )}
+                    </div>
+                    {item.isRare && (item as any).description && (
+                      <div className="mt-1 text-[10px] text-yellow-400/60 italic" style={{ fontFamily: 'var(--font-code)' }}>
+                        {(item as any).description}
+                      </div>
+                    )}
+                    <div className="mt-1 text-[10px] text-gray-500" style={{ fontFamily: 'var(--font-code)' }}>
+                      range: {item.minPrice}–{item.maxPrice}g
+                    </div>
+                  </motion.div>
+                );
+              })}
             </div>
           </div>
 
@@ -547,6 +749,11 @@ export default function CartChaosPage() {
                       {cartTotal}g
                     </motion.span>
                   </div>
+                  {goblinTaxed && (
+                    <div className="text-xs text-red-400 text-center" style={{ fontFamily: 'var(--font-code)' }}>
+                      🧾 Goblin tax: +15% will apply at checkout
+                    </div>
+                  )}
 
                   {/* Checkout button */}
                   <motion.button

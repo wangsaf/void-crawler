@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useCallback, useRef } from "react";
+import { useState, useEffect, useCallback, useRef, useMemo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { soundEngine } from "@/lib/sound-engine";
 import { useGameStore } from "@/stores/game-store";
@@ -58,10 +58,42 @@ function randomBetween(min: number, max: number) {
   return Math.floor(Math.random() * (max - min + 1)) + min;
 }
 
+// ─── Confetti Particle ──────────────────────────────────────────────────────
+function ConfettiParticles({ active }: { active: boolean }) {
+  const particles = useMemo(() =>
+    Array.from({ length: 30 }, (_, i) => ({
+      id: i,
+      x: Math.random() * 100,
+      delay: Math.random() * 0.5,
+      color: ['#ffd600', '#ff1744', '#00e5ff', '#b000ff', '#00ff41', '#ff6b35'][Math.floor(Math.random() * 6)],
+      size: 3 + Math.random() * 5,
+      duration: 1 + Math.random() * 1,
+    })), [active]);
+
+  if (!active) return null;
+
+  return (
+    <div className="fixed inset-0 z-50 pointer-events-none">
+      {particles.map(p => (
+        <motion.div
+          key={p.id}
+          initial={{ x: `${p.x}vw`, y: -10, opacity: 1, rotate: 0 }}
+          animate={{ y: '110vh', opacity: 0, rotate: 360 }}
+          transition={{ duration: p.duration, delay: p.delay, ease: 'linear' }}
+          className="absolute"
+          style={{ width: p.size, height: p.size, backgroundColor: p.color, boxShadow: `0 0 6px ${p.color}` }}
+        />
+      ))}
+    </div>
+  );
+}
+
 // ─── Metric Bar ─────────────────────────────────────────────────────────────
 function MetricBar({ label, value, color }: { label: string; value: number; color: string }) {
+  const isWarning = value > 90;
+  const isHigh = value > 80;
   return (
-    <div className="flex items-center gap-4">
+    <div className={`flex items-center gap-4 p-2 rounded-lg transition-all ${isWarning ? 'border border-red-500/50 bg-red-500/5' : ''}`}>
       <span
         className="w-10 text-xs text-right font-bold"
         style={{ fontFamily: "var(--font-code)", color }}
@@ -71,10 +103,19 @@ function MetricBar({ label, value, color }: { label: string; value: number; colo
       <div className="flex-1 h-3 rounded-full bg-black/50 overflow-hidden border border-white/10">
         <motion.div
           className="h-full rounded-full"
-          style={{ background: `linear-gradient(90deg, ${color}88, ${color})` }}
+          style={{
+            background: `linear-gradient(90deg, ${color}88, ${color})`,
+            boxShadow: isHigh ? `0 0 12px ${color}` : 'none',
+          }}
           initial={{ width: 0 }}
-          animate={{ width: `${value}%` }}
-          transition={{ duration: 0.6, ease: "easeOut" }}
+          animate={{
+            width: `${value}%`,
+            opacity: isHigh ? [1, 0.7, 1] : 1,
+          }}
+          transition={{
+            width: { duration: 0.6, ease: "easeOut" },
+            opacity: isHigh ? { duration: 1, repeat: Infinity } : { duration: 0.6 },
+          }}
         />
       </div>
       <span
@@ -120,11 +161,13 @@ function LiveChart({ data, color }: { data: number[]; color: string }) {
 }
 
 // ─── Slot Machine ───────────────────────────────────────────────────────────
-function SlotMachine() {
+function SlotMachine({ totalPulls }: { totalPulls: number }) {
   const [spinning, setSpinning] = useState(false);
   const [reels, setReels] = useState(["$", "$", "$"]);
   const [result, setResult] = useState<string | null>(null);
-  const { addGold, soundEnabled, unlockAchievement } = useGameStore();
+  const [nearMiss, setNearMiss] = useState(false);
+  const [showConfetti, setShowConfetti] = useState(false);
+  const { addGold, soundEnabled, unlockAchievement, trackStat } = useGameStore();
 
   const SYMBOLS = ["💰", "💎", "🪙", "🔥", "💀", "❓", "🎰", "⚡"];
 
@@ -132,9 +175,10 @@ function SlotMachine() {
     if (spinning) return;
     setSpinning(true);
     setResult(null);
+    setNearMiss(false);
     if (soundEnabled) soundEngine.playClick();
+    trackStat('totalPuzzlesSolved');
 
-    // Animate each reel stopping at different times
     let stops = 0;
     const interval = setInterval(() => {
       setReels([
@@ -145,7 +189,6 @@ function SlotMachine() {
       stops++;
       if (stops > 15) {
         clearInterval(interval);
-        // Final result
         const final = [
           SYMBOLS[randomBetween(0, SYMBOLS.length - 1)],
           SYMBOLS[randomBetween(0, SYMBOLS.length - 1)],
@@ -160,11 +203,15 @@ function SlotMachine() {
           setResult(`🎉 JACKPOT! +${goldWon} Gold!`);
           unlockAchievement("slot-winner");
           if (soundEnabled) soundEngine.playLevelUp();
+          setShowConfetti(true);
+          setTimeout(() => setShowConfetti(false), 2500);
         } else if (final[0] === final[1] || final[1] === final[2] || final[0] === final[2]) {
           const goldWon = randomBetween(10, 40);
           addGold(goldWon);
           setResult(`✨ Two match! +${goldWon} Gold`);
           if (soundEnabled) soundEngine.playClick();
+          setNearMiss(true);
+          setTimeout(() => setNearMiss(false), 1500);
         } else {
           setResult("💀 No match. Try again.");
         }
@@ -173,20 +220,22 @@ function SlotMachine() {
   };
 
   return (
-    <div className="retro-card p-6">
+    <div className={`retro-card p-6 ${nearMiss ? 'border-yellow-400 shadow-[0_0_20px_rgba(255,193,7,0.4)]' : ''}`}>
+      <ConfettiParticles active={showConfetti} />
       <h3
         className="text-base font-bold mb-4 text-cyan-300 uppercase tracking-widest"
         style={{ fontFamily: "var(--font-display)" }}
       >
         💰 Billing Slot Machine
+        <span className="text-[10px] text-gray-500 ml-2 normal-case">{totalPulls} pulls</span>
       </h3>
       <div className="flex items-center justify-center gap-2 mb-3">
         {reels.map((r, i) => (
           <motion.div
             key={i}
             className="w-14 h-14 rounded-lg bg-black/60 border border-white/10 flex items-center justify-center text-3xl"
-            animate={spinning ? { y: [0, -5, 0, 5, 0] } : {}}
-            transition={spinning ? { duration: 0.15, repeat: Infinity } : {}}
+            animate={spinning ? { y: [0, -5, 0, 5, 0] } : nearMiss ? { borderColor: ['#ffd600', '#ffffff', '#ffd600'] } : {}}
+            transition={spinning ? { duration: 0.15, repeat: Infinity } : nearMiss ? { duration: 0.3, repeat: 4 } : {}}
           >
             {r}
           </motion.div>
@@ -260,10 +309,13 @@ function ErrorChat() {
   return (
     <div className="retro-card p-6 flex flex-col h-64 sm:h-80">
       <h3
-        className="text-base font-bold mb-4 text-red-400 uppercase tracking-widest"
+        className="text-base font-bold mb-4 text-red-400 uppercase tracking-widest flex items-center gap-2"
         style={{ fontFamily: "var(--font-display)" }}
       >
         🐛 Error Log Chat Room
+        <span className="ml-auto text-[10px] bg-red-500/20 border border-red-500/30 px-2 py-0.5 text-red-300 rounded-full">
+          {messages.length}
+        </span>
       </h3>
       <div className="flex-1 overflow-y-auto space-y-4 pr-1 scrollbar-thin">
         {messages.map((m) => (
@@ -283,7 +335,7 @@ function ErrorChat() {
               <span style={{ color: m.type.color }} className="font-bold">
                 {m.type.mood}
               </span>
-              <span className="text-gray-600 ml-auto">{m.timestamp}</span>
+              <span className="text-gray-600 ml-auto font-mono text-[10px]">{m.timestamp}</span>
             </div>
             <p style={{ color: m.type.color }}>
               [{m.type.type}] {m.message}
@@ -340,7 +392,6 @@ function StatusWeather() {
           </p>
         </div>
       </div>
-      {/* Mini service bars */}
       <div className="mt-4 grid grid-cols-3 sm:grid-cols-6 gap-2">
         {["API", "DB", "CDN", "AUTH", "CACHE", "QUEUE"].map((svc, i) => {
           const up = status < 3 ? true : status === 3 ? i % 2 === 0 : false;
@@ -411,7 +462,8 @@ function APIKeyHoroscope() {
 function DeployNuke() {
   const [phase, setPhase] = useState<"idle" | "countdown" | "explosion" | "deployed">("idle");
   const [count, setCount] = useState(3);
-  const { addXP, addGold, unlockAchievement, soundEnabled } = useGameStore();
+  const { addXP, addGold, unlockAchievement, soundEnabled, addActivity, trackStat } = useGameStore();
+  const deployCountRef = useRef(0);
 
   const startDeploy = () => {
     if (phase !== "idle") return;
@@ -430,9 +482,13 @@ function DeployNuke() {
         if (soundEnabled) soundEngine.playLevelUp();
         setTimeout(() => {
           setPhase("deployed");
-          addXP(100);
+          deployCountRef.current += 1;
+          const bonusXP = 100 + deployCountRef.current * 10;
+          addXP(bonusXP);
           addGold(50);
           unlockAchievement("deploy-master");
+          addActivity(`Deployed via NUKE #${deployCountRef.current}`);
+          trackStat('totalDeploys');
         }, 2000);
       }
     }, 1000);
@@ -445,6 +501,9 @@ function DeployNuke() {
         style={{ fontFamily: "var(--font-display)" }}
       >
         ☢️ Deploy Control
+        {deployCountRef.current > 0 && (
+          <span className="text-[10px] text-gray-500 ml-2 normal-case">#{deployCountRef.current}</span>
+        )}
       </h3>
 
       {phase === "idle" && (
@@ -519,6 +578,9 @@ function DeployNuke() {
           <p className="text-sm text-gray-400 mt-2" style={{ fontFamily: "var(--font-code)" }}>
             +100 XP • +50 Gold • Achievement Unlocked!
           </p>
+          <p className="text-xs text-yellow-400/70 mt-1" style={{ fontFamily: "var(--font-code)" }}>
+            Next deploy bonus: +{(deployCountRef.current + 1) * 10} XP
+          </p>
           <button
             onClick={() => setPhase("idle")}
             className="mt-3 text-xs text-cyan-400 underline hover:text-cyan-300"
@@ -535,7 +597,6 @@ function DeployNuke() {
 export default function DashboardPage() {
   const { addXP, soundEnabled, setZone } = useGameStore();
 
-  // Metric state
   const [metrics, setMetrics] = useState<Record<string, number>>({
     CPU: 45, RAM: 62, NET: 33, IO: 58, REQ: 71, LAT: 28,
   });
@@ -546,7 +607,6 @@ export default function DashboardPage() {
     addXP(25);
   }, []);
 
-  // Fake real-time metrics
   useEffect(() => {
     const interval = setInterval(() => {
       setMetrics((prev) => {
@@ -572,10 +632,8 @@ export default function DashboardPage() {
 
   return (
     <main className="relative min-h-screen overflow-hidden" style={{ background: "#0a0e1a" }}>
-      {/* Scanlines overlay */}
       <div className="fixed inset-0 pointer-events-none z-50 scanlines opacity-20" />
 
-      {/* Top ambient glow */}
       <div
         className="fixed inset-0 pointer-events-none z-0"
         style={{
@@ -583,11 +641,6 @@ export default function DashboardPage() {
             "radial-gradient(ellipse at 30% 20%, rgba(2,136,209,0.08) 0%, transparent 50%), radial-gradient(ellipse at 70% 80%, rgba(0,188,212,0.06) 0%, transparent 50%)",
         }}
       />
-
-      {/* Explosion overlay */}
-      <AnimatePresence>
-        {/* handled inside DeployNuke */}
-      </AnimatePresence>
 
       <div className="relative z-10 max-w-7xl mx-auto px-6 py-12">
         {/* Header */}
@@ -623,7 +676,6 @@ export default function DashboardPage() {
 
         {/* Main Grid */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          {/* Left Column: Metrics + Chart */}
           <div className="lg:col-span-2 space-y-8">
             {/* Metrics Panel */}
             <motion.div
@@ -639,10 +691,7 @@ export default function DashboardPage() {
                 >
                   📊 Real-Time Metrics
                 </h2>
-                <span
-                  className="text-xs text-gray-500"
-                  style={{ fontFamily: "var(--font-code)" }}
-                >
+                <span className="text-xs text-gray-500" style={{ fontFamily: "var(--font-code)" }}>
                   refresh: 1.2s
                 </span>
               </div>
@@ -667,10 +716,7 @@ export default function DashboardPage() {
                 >
                   📈 Request Throughput
                 </h2>
-                <span
-                  className="text-xs text-gray-500"
-                  style={{ fontFamily: "var(--font-code)" }}
-                >
+                <span className="text-xs text-gray-500" style={{ fontFamily: "var(--font-code)" }}>
                   last 20 samples
                 </span>
               </div>
@@ -687,9 +733,7 @@ export default function DashboardPage() {
             </motion.div>
           </div>
 
-          {/* Right Column: Side panels */}
           <div className="space-y-8">
-            {/* Deploy Nuke */}
             <motion.div
               initial={{ opacity: 0, x: 20 }}
               animate={{ opacity: 1, x: 0 }}
@@ -698,7 +742,6 @@ export default function DashboardPage() {
               <DeployNuke />
             </motion.div>
 
-            {/* Status Weather */}
             <motion.div
               initial={{ opacity: 0, x: 20 }}
               animate={{ opacity: 1, x: 0 }}
@@ -707,16 +750,14 @@ export default function DashboardPage() {
               <StatusWeather />
             </motion.div>
 
-            {/* Billing Slots */}
             <motion.div
               initial={{ opacity: 0, x: 20 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ delay: 0.35 }}
             >
-              <SlotMachine />
+              <SlotMachine totalPulls={useGameStore.getState().stats.totalPuzzlesSolved} />
             </motion.div>
 
-            {/* API Key Horoscope */}
             <motion.div
               initial={{ opacity: 0, x: 20 }}
               animate={{ opacity: 1, x: 0 }}

@@ -33,6 +33,8 @@ export interface GameStats {
   totalPuzzlesSolved: number;
   totalPortsScanned: number;
   totalPasswordsChecked: number;
+  totalDeploys: number;
+  totalInterpretations: number;
   konamiUsed: boolean;
   secretsFound: string[];
 }
@@ -98,6 +100,8 @@ const DEFAULT_STATS: GameStats = {
   totalPuzzlesSolved: 0,
   totalPortsScanned: 0,
   totalPasswordsChecked: 0,
+  totalDeploys: 0,
+  totalInterpretations: 0,
   konamiUsed: false,
   secretsFound: [],
 };

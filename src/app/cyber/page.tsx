@@ -81,8 +81,10 @@ function XssPhantom({ onSanitize }: { onSanitize: () => void }) {
 function PortScanner({ addXP, onScanComplete }: { addXP: (n: number) => void; onScanComplete?: () => void }) {
   const [url, setUrl] = useState('');
   const [scanning, setScanning] = useState(false);
-  const [ports, setPorts] = useState<{ port: number; status: 'pending' | 'open' | 'closed' }[]>([]);
+  const [ports, setPorts] = useState<{ port: number; status: 'pending' | 'open' | 'closed'; responseTime: number }[]>([]);
   const [done, setDone] = useState(false);
+  const [progress, setProgress] = useState(0);
+  const { addActivity, trackStat } = useGameStore();
 
   const commonPorts = [21, 22, 23, 25, 53, 80, 110, 143, 443, 445, 993, 995, 1433, 1521, 3306, 3389, 5432, 5900, 8080, 8443];
 
@@ -91,7 +93,8 @@ function PortScanner({ addXP, onScanComplete }: { addXP: (n: number) => void; on
     soundEngine.playClick();
     setScanning(true);
     setDone(false);
-    setPorts(commonPorts.map(p => ({ port: p, status: 'pending' as const })));
+    setProgress(0);
+    setPorts(commonPorts.map(p => ({ port: p, status: 'pending' as const, responseTime: 0 })));
 
     let i = 0;
     const interval = setInterval(() => {
@@ -99,14 +102,19 @@ function PortScanner({ addXP, onScanComplete }: { addXP: (n: number) => void; on
         clearInterval(interval);
         setScanning(false);
         setDone(true);
+        setProgress(100);
         addXP(15);
         soundEngine.playSuccess();
+        trackStat('totalPortsScanned', commonPorts.length);
+        addActivity(`Scanned ${commonPorts.length} ports on ${url}`);
         onScanComplete?.();
         return;
       }
+      const responseTime = Math.floor(Math.random() * 200) + 1;
       setPorts(prev => prev.map((p, idx) =>
-        idx === i ? { ...p, status: Math.random() > 0.6 ? 'open' : 'closed' } : p
+        idx === i ? { ...p, status: Math.random() > 0.6 ? 'open' : 'closed', responseTime } : p
       ));
+      setProgress(Math.round(((i + 1) / commonPorts.length) * 100));
       soundEngine.playClick();
       i++;
     }, 200);
@@ -130,6 +138,25 @@ function PortScanner({ addXP, onScanComplete }: { addXP: (n: number) => void; on
           {scanning ? 'SCANNING...' : 'SCAN'}
         </button>
       </div>
+
+      {/* Progress bar */}
+      {scanning && (
+        <div className="mb-4">
+          <div className="flex justify-between text-[10px] text-[#00ff41]/50 font-mono mb-1">
+            <span>SCANNING...</span>
+            <span>{progress}%</span>
+          </div>
+          <div className="h-2 bg-black/60 rounded-full overflow-hidden border border-white/10">
+            <motion.div
+              className="h-full bg-[#00ff41]"
+              animate={{ width: `${progress}%` }}
+              transition={{ duration: 0.3 }}
+              style={{ boxShadow: '0 0 10px #00ff41' }}
+            />
+          </div>
+        </div>
+      )}
+
       <div className="grid grid-cols-4 sm:grid-cols-5 gap-2">
         <AnimatePresence>
           {ports.map((p, i) => (
@@ -147,6 +174,9 @@ function PortScanner({ addXP, onScanComplete }: { addXP: (n: number) => void; on
             >
               <div className="text-sm font-bold">:{p.port}</div>
               <div className="text-[10px] mt-1">{p.status === 'pending' ? '...' : p.status.toUpperCase()}</div>
+              {p.status !== 'pending' && (
+                <div className="text-[9px] text-gray-500 mt-0.5">{p.responseTime}ms</div>
+              )}
             </motion.div>
           ))}
         </AnimatePresence>
@@ -165,6 +195,8 @@ function PasswordChecker({ onTitanium }: { onTitanium?: () => void }) {
   const [password, setPassword] = useState('');
   const [strength, setStrength] = useState(0);
   const [level, setLevel] = useState('');
+  const [strongestPassword, setStrongestPassword] = useState('');
+  const { trackStat, addActivity } = useGameStore();
 
   useEffect(() => {
     let s = 0;
@@ -177,8 +209,47 @@ function PasswordChecker({ onTitanium }: { onTitanium?: () => void }) {
     setStrength(s);
     const levels = ['', 'PAPER 📄', 'WOOD 🪵', 'STONE 🧱', 'STEEL 🔩', 'DIAMOND 💎', 'TITANIUM 🛡️'];
     setLevel(levels[s] || '');
-    if (s >= 6) onTitanium?.();
+    if (s >= 6) {
+      onTitanium?.();
+      if (password.length > strongestPassword.length) {
+        setStrongestPassword(password);
+        trackStat('totalPasswordsChecked');
+        addActivity(`Strongest password reached: ${level}`);
+      }
+    }
   }, [password, onTitanium]);
+
+  // Calculate entropy
+  const entropy = password.length > 0 ? (() => {
+    let charsetSize = 0;
+    if (/[a-z]/.test(password)) charsetSize += 26;
+    if (/[A-Z]/.test(password)) charsetSize += 26;
+    if (/[0-9]/.test(password)) charsetSize += 10;
+    if (/[^A-Za-z0-9]/.test(password)) charsetSize += 32;
+    return Math.round(password.length * Math.log2(charsetSize || 1));
+  })() : 0;
+
+  // Estimate crack time
+  const crackTime = entropy > 0 ? (() => {
+    const guessesPerSec = 1e10; // 10 billion/sec
+    const seconds = Math.pow(2, entropy) / guessesPerSec;
+    if (seconds < 1) return 'instant';
+    if (seconds < 60) return `${Math.round(seconds)} seconds`;
+    if (seconds < 3600) return `${Math.round(seconds / 60)} minutes`;
+    if (seconds < 86400) return `${Math.round(seconds / 3600)} hours`;
+    if (seconds < 31536000) return `${Math.round(seconds / 86400)} days`;
+    if (seconds < 31536000 * 100) return `${Math.round(seconds / 31536000)} years`;
+    if (seconds < 31536000 * 1e6) return `${Math.round(seconds / 31536000 / 1000)} millennia`;
+    return 'centuries';
+  })() : '—';
+
+  // Character breakdown
+  const breakdown = {
+    uppercase: (password.match(/[A-Z]/g) || []).length,
+    lowercase: (password.match(/[a-z]/g) || []).length,
+    numbers: (password.match(/[0-9]/g) || []).length,
+    symbols: (password.match(/[^A-Za-z0-9]/g) || []).length,
+  };
 
   const barriers = ['paper', 'wood', 'stone', 'steel', 'diamond', 'titanium'];
   const colors = ['#ff0040', '#ff6600', '#ffaa00', '#00aaff', '#aa00ff', '#00ff41'];
@@ -218,6 +289,45 @@ function PasswordChecker({ onTitanium }: { onTitanium?: () => void }) {
           BARRIER: {level}
         </motion.div>
       )}
+
+      {/* Entropy & Crack time */}
+      {password.length > 0 && (
+        <motion.div
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="mt-4 p-3 bg-black/40 border border-white/10 rounded-lg space-y-2"
+        >
+          <div className="flex justify-between text-xs font-mono">
+            <span className="text-gray-400">Entropy:</span>
+            <span className="text-[#00ff41]">{entropy} bits</span>
+          </div>
+          <div className="flex justify-between text-xs font-mono">
+            <span className="text-gray-400">Crack time:</span>
+            <span className="text-yellow-400">{crackTime}</span>
+          </div>
+          <div className="border-t border-white/5 pt-2">
+            <div className="text-[10px] font-mono text-gray-500 mb-1">Character breakdown:</div>
+            <div className="grid grid-cols-4 gap-2 text-[10px] font-mono text-center">
+              <div className="bg-blue-500/10 border border-blue-500/20 p-1 rounded">
+                <div className="text-blue-400 font-bold">{breakdown.uppercase}</div>
+                <div className="text-gray-500">UPPER</div>
+              </div>
+              <div className="bg-green-500/10 border border-green-500/20 p-1 rounded">
+                <div className="text-green-400 font-bold">{breakdown.lowercase}</div>
+                <div className="text-gray-500">lower</div>
+              </div>
+              <div className="bg-yellow-500/10 border border-yellow-500/20 p-1 rounded">
+                <div className="text-yellow-400 font-bold">{breakdown.numbers}</div>
+                <div className="text-gray-500">digits</div>
+              </div>
+              <div className="bg-purple-500/10 border border-purple-500/20 p-1 rounded">
+                <div className="text-purple-400 font-bold">{breakdown.symbols}</div>
+                <div className="text-gray-500">symbols</div>
+              </div>
+            </div>
+          </div>
+        </motion.div>
+      )}
     </div>
   );
 }
@@ -232,17 +342,21 @@ function FirewallSim({ addXP }: { addXP: (n: number) => void }) {
     { id: 5, port: 53, proto: 'UDP', action: 'ALLOW' as 'ALLOW' | 'DROP' },
   ]);
   const [particles, setParticles] = useState<{ id: number; x: number; y: number; rule: number; color: string }[]>([]);
-  const [tick, setTick] = useState(0);
+  const [packetsProcessed, setPacketsProcessed] = useState(0);
+  const [packetsAllowed, setPacketsAllowed] = useState(0);
+  const [packetsDropped, setPacketsDropped] = useState(0);
 
   useEffect(() => {
     const interval = setInterval(() => {
-      setTick(t => t + 1);
       const rule = rules[Math.floor(Math.random() * rules.length)];
       const id = Date.now();
       setParticles(prev => [...prev.slice(-20), {
         id, x: Math.random() * 60 + 20, y: 0, rule: rule.id,
         color: rule.action === 'ALLOW' ? '#00ff41' : '#ff0040'
       }]);
+      setPacketsProcessed(p => p + 1);
+      if (rule.action === 'ALLOW') setPacketsAllowed(p => p + 1);
+      else setPacketsDropped(p => p + 1);
     }, 400);
     return () => clearInterval(interval);
   }, [rules]);
@@ -265,6 +379,18 @@ function FirewallSim({ addXP }: { addXP: (n: number) => void }) {
       <h3 className="text-[#00ff41] font-mono text-lg font-bold mb-4 flex items-center gap-4">
         <span className="text-2xl">🧱</span> FIREWALL SIMULATOR
       </h3>
+
+      {/* Packet counter */}
+      <div className="mb-4 p-3 bg-black/40 border border-white/10 rounded-lg">
+        <div className="text-center text-xl font-mono text-[#00ff41] font-bold">
+          {packetsProcessed.toLocaleString()} packets processed
+        </div>
+        <div className="flex justify-center gap-4 mt-1 text-xs font-mono">
+          <span className="text-green-400">✓ {packetsAllowed.toLocaleString()} allowed</span>
+          <span className="text-red-400">✗ {packetsDropped.toLocaleString()} dropped</span>
+        </div>
+      </div>
+
       <div className="grid grid-cols-1 gap-2 mb-4">
         {rules.map(r => (
           <motion.button
@@ -289,7 +415,6 @@ function FirewallSim({ addXP }: { addXP: (n: number) => void }) {
         <div className="absolute left-2 top-1 text-[10px] text-gray-500 font-mono">INGRESS</div>
         <AnimatePresence>
           {particles.map(p => {
-            const rule = rules.find(r => r.id === p.rule);
             return (
               <motion.div
                 key={p.id}
@@ -522,7 +647,12 @@ function PhishingDetector({ addXP }: { addXP: (n: number) => void }) {
 function TerminalLog() {
   const [logs, setLogs] = useState<string[]>([]);
   const [input, setInput] = useState('');
+  const [history, setHistory] = useState<string[]>([]);
+  const [historyIndex, setHistoryIndex] = useState(-1);
   const endRef = useRef<HTMLDivElement>(null);
+  const { stats, addActivity } = useGameStore();
+
+  const KNOWN_COMMANDS = ['help', 'whoami', 'clear', 'nmap', 'exploit', 'status', 'scan', 'history', 'version', 'about', 'stats'];
 
   useEffect(() => {
     setLogs([
@@ -538,16 +668,53 @@ function TerminalLog() {
 
   const handleCommand = (cmd: string) => {
     const c = cmd.trim().toLowerCase();
+    if (!c) return;
+
+    setHistory(prev => [...prev, cmd]);
+    setHistoryIndex(-1);
+
     const responses: Record<string, string> = {
-      help: '[CMD] Available: scan, whoami, clear, nmap, exploit, status',
+      help: '[CMD] Available: scan, whoami, clear, nmap, exploit, status, history, version, about, stats',
       whoami: '[SYS] void_crawler@exploit.me:~$',
       nmap: '[NMAP] Initiating stealth scan... Use the Port Scanner widget above.',
       exploit: '[EXP] Choose your weapon from the panels above.',
       status: '[SYS] All systems operational. Threat level: ELEVATED',
       scan: '[SCAN] Use the Port Scanner module in the dashboard.',
+      version: '[SYS] exploit.me v2.4.1 — void.crawler cybersecurity module',
+      about: '[SYS] Educational cybersecurity simulation. Practice safe hacking.',
+      stats: `[STATS] Items: ${stats.totalItemsBought} | Ports: ${stats.totalPortsScanned} | Passwords: ${stats.totalPasswordsChecked} | Deploys: ${stats.totalDeploys}`,
+      history: `[HIST] ${history.length > 0 ? history.slice(-10).join(', ') : 'No commands yet'}`,
     };
     if (c === 'clear') { setLogs([]); return; }
     setLogs(prev => [...prev, `> ${cmd}`, responses[c] || `[ERR] Unknown command: ${c}`]);
+  };
+
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === 'Enter') {
+      handleCommand(input);
+      setInput('');
+    } else if (e.key === 'ArrowUp') {
+      e.preventDefault();
+      if (history.length > 0) {
+        const newIndex = historyIndex < history.length - 1 ? historyIndex + 1 : historyIndex;
+        setHistoryIndex(newIndex);
+        setInput(history[history.length - 1 - newIndex] || '');
+      }
+    } else if (e.key === 'ArrowDown') {
+      e.preventDefault();
+      if (historyIndex > 0) {
+        const newIndex = historyIndex - 1;
+        setHistoryIndex(newIndex);
+        setInput(history[history.length - 1 - newIndex] || '');
+      } else {
+        setHistoryIndex(-1);
+        setInput('');
+      }
+    } else if (e.key === 'Tab') {
+      e.preventDefault();
+      const match = KNOWN_COMMANDS.find(cmd => cmd.startsWith(input.toLowerCase()) && cmd !== input.toLowerCase());
+      if (match) setInput(match);
+    }
   };
 
   return (
@@ -565,10 +732,10 @@ function TerminalLog() {
         <input
           value={input}
           onChange={e => setInput(e.target.value)}
-          onKeyDown={e => { if (e.key === 'Enter') { handleCommand(input); setInput(''); } }}
+          onKeyDown={handleKeyDown}
           className="flex-1 bg-transparent text-[#00ff41] font-mono text-sm focus:outline-none"
           style={{ fontFamily: 'var(--font-code)' }}
-          placeholder="type a command..."
+          placeholder="type a command... (Tab to autocomplete)"
         />
       </div>
     </div>
