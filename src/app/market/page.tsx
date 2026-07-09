@@ -62,17 +62,17 @@ interface Receipt {
 // ─── Constants ───────────────────────────────────────────────────────────────
 
 const SHOP_ITEMS: Omit<ShopItem, 'currentPrice' | 'prevPrice' | 'stock'>[] = [
-  { id: 'health-potion', name: 'Health Potion', emoji: '🧪', basePrice: 100, minPrice: 50, maxPrice: 150, maxStock: 6 },
-  { id: 'void-blade', name: 'Void Blade', emoji: '⚔️', basePrice: 350, minPrice: 200, maxPrice: 500, maxStock: 4 },
-  { id: 'shield-css', name: 'Shield of CSS', emoji: '🛡️', basePrice: 275, minPrice: 150, maxPrice: 400, maxStock: 5 },
-  { id: 'scroll-ts', name: 'Scroll of TypeScript', emoji: '📜', basePrice: 200, minPrice: 100, maxPrice: 300, maxStock: 5 },
-  { id: 'crystal-gem', name: 'Crystal Gem', emoji: '💎', basePrice: 550, minPrice: 300, maxPrice: 800, maxStock: 3 },
-  { id: 'debug-pizza', name: 'Debug Pizza', emoji: '🍕', basePrice: 30, minPrice: 10, maxPrice: 50, maxStock: 8 },
+  { id: 'health-potion', name: 'Void Salve', emoji: '◎', basePrice: 100, minPrice: 50, maxPrice: 150, maxStock: 6 },
+  { id: 'void-blade', name: 'Void Blade', emoji: '◇', basePrice: 350, minPrice: 200, maxPrice: 500, maxStock: 4 },
+  { id: 'shield-css', name: 'Null Shield', emoji: '⊞', basePrice: 275, minPrice: 150, maxPrice: 400, maxStock: 5 },
+  { id: 'scroll-ts', name: 'Data Scroll', emoji: '⊡', basePrice: 200, minPrice: 100, maxPrice: 300, maxStock: 5 },
+  { id: 'crystal-gem', name: 'Void Crystal', emoji: '◉', basePrice: 550, minPrice: 300, maxPrice: 800, maxStock: 3 },
+  { id: 'debug-pizza', name: 'Stim Patch', emoji: '△', basePrice: 30, minPrice: 10, maxPrice: 50, maxStock: 8 },
 ];
 
 const RARE_ITEMS = [
-  { id: 'void-crystal', name: 'Void Crystal', emoji: '🌟', basePrice: 1000, minPrice: 500, maxPrice: 1500, maxStock: 1, description: 'Legendary artifact from the void' },
-  { id: 'debug-shield', name: 'Debug Shield', emoji: '⚡', basePrice: 550, minPrice: 300, maxPrice: 800, maxStock: 1, description: 'Blocks all runtime errors' },
+  { id: 'void-crystal', name: 'Void Crystal', emoji: '◉', basePrice: 1000, minPrice: 500, maxPrice: 1500, maxStock: 1, description: 'Legendary artifact from the void' },
+  { id: 'debug-shield', name: 'Debug Shield', emoji: '▣', basePrice: 550, minPrice: 300, maxPrice: 800, maxStock: 1, description: 'Blocks all runtime errors' },
 ];
 
 const TAX_GOBLIN_QUESTIONS = [
@@ -281,7 +281,7 @@ export default function CartChaosPage() {
   // ─── Floating ambient items ──────────────────────────────────────────────
 
   useEffect(() => {
-    const emojisVisible = ['💰', '🏷️', '🎪', '🎭', '🛒', '✦', '💸', '🎰'];
+    const emojisVisible = ['◎', '◇', '⊞', '⊡', '◉', '△', '▣', '◈'];
     const initial = emojisVisible.map((emoji, i) => ({
       id: `float-${i}`,
       emoji,

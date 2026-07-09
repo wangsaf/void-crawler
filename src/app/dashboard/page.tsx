@@ -10,33 +10,33 @@ import { BackButton } from "@/components/rpg/back-button";
 // ─── Fake data generators ───────────────────────────────────────────────────
 const METRICS = ["CPU", "RAM", "NET", "IO", "REQ", "LAT"] as const;
 const WEATHER_STATES = [
-  { icon: "☀️", label: "All Systems Operational", color: "var(--color-signal-gold)" },
-  { icon: "⛅", label: "Minor Degradation", color: "var(--color-signal-blue)" },
-  { icon: "🌧️", label: "Partial Outage", color: "var(--color-text-secondary)" },
-  { icon: "⛈️", label: "Major Outage", color: "var(--color-signal-red)" },
-  { icon: "🌪️", label: "CATASTROPHIC FAILURE", color: "var(--color-signal-red)" },
+  { icon: "◎", label: "All Systems Operational", color: "var(--color-signal-gold)" },
+  { icon: "◇", label: "Minor Degradation", color: "var(--color-signal-blue)" },
+  { icon: "▣", label: "Partial Outage", color: "var(--color-text-secondary)" },
+  { icon: "△", label: "Major Outage", color: "var(--color-signal-red)" },
+  { icon: "◉", label: "CATASTROPHIC FAILURE", color: "var(--color-signal-red)" },
 ];
 
 const ERROR_TYPES = [
-  { type: "TypeError", color: "var(--color-signal-red)", mood: "🔴 ENRAGED", messages: [
+  { type: "TypeError", color: "var(--color-signal-red)", mood: "◉ ENRAGED", messages: [
     "Cannot read properties of undefined! WHO DID THIS?!",
     "null is NOT an object you absolute CLOWN!",
     "I will DESTROY your entire call stack!",
     "WHY WOULD YOU CALL .map() ON UNDEFINED?!",
   ]},
-  { type: "Warning", color: "var(--color-signal-gold)", mood: "🟡 ANXIOUS", messages: [
+  { type: "Warning", color: "var(--color-signal-gold)", mood: "◎ ANXIOUS", messages: [
     "hey um... something looks wrong? maybe? please check?",
     "i-i think the prop might be missing... s-sorry...",
     "this doesn't feel right... proceed with caution...",
     "⚠️ gentle warning: your code makes me nervous...",
   ]},
-  { type: "Deprecation", color: "var(--color-text-secondary)", mood: "👴 TIRED", messages: [
+  { type: "Deprecation", color: "var(--color-text-secondary)", mood: "△ TIRED", messages: [
     "back in my day we didn't need fancy hooks...",
     "this API was deprecated 3 versions ago... *sigh*",
     "i remember when this feature was still relevant...",
     "please... let me rest... use the new API...",
   ]},
-  { type: "SyntaxError", color: "var(--color-signal-purple)", mood: "💜 CONFUSED", messages: [
+  { type: "SyntaxError", color: "var(--color-signal-purple)", mood: "◇ CONFUSED", messages: [
     "unexpected token?! I didn't expect ANYTHING!",
     "missing semicolon... or was it a comma... I forgot...",
     "JSON.parse failed and so did my will to live",

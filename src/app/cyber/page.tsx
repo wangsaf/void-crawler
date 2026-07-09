@@ -52,8 +52,8 @@ function MatrixRain() {
   return <canvas ref={canvasRef} className="fixed inset-0 z-0 opacity-20 pointer-events-none" />;
 }
 
-// XSS Phantom Enemy
-function XssPhantom({ onSanitize, chaosLevel }: { onSanitize: () => void; chaosLevel: number }) {
+// Void Anomaly — floating enemy to purge
+function VoidAnomaly({ onSanitize, chaosLevel }: { onSanitize: () => void; chaosLevel: number }) {
   const [pos, setPos] = useState({ x: 0, y: 0 });
 
   useEffect(() => {
@@ -77,7 +77,7 @@ function XssPhantom({ onSanitize, chaosLevel }: { onSanitize: () => void; chaosL
       <div className="text-4xl drop-shadow-[0_0_12px_#cc2244] hover:drop-shadow-[0_0_20px_#22cc66] transition-all">
         👻
       </div>
-      <div className="text-xs text-center mt-1" style={{ color: 'var(--color-signal-red)', fontFamily: 'var(--font-mono)' }}>XSS<br/>PHANTOM</div>
+      <div className="text-xs text-center mt-1" style={{ color: 'var(--color-signal-red)', fontFamily: 'var(--font-mono)' }}>VOID<br/>ANOMALY</div>
     </motion.div>
   );
 }
@@ -149,7 +149,7 @@ function PortScanner({ addXP, onScanComplete, chaosLevel }: { addXP: (n: number)
   return (
     <div className="void-card p-6 h-full">
       <h3 className="void-title mb-4 flex items-center gap-4">
-        <span className="text-2xl">🔍</span> PORT SCANNER
+        <span className="text-2xl">◌</span> PATTERN SCANNER
       </h3>
       <div className="flex flex-col sm:flex-row items-center gap-4 mb-4">
         <input
@@ -326,7 +326,7 @@ function PasswordChecker({ onTitanium, chaosLevel }: { onTitanium?: () => void; 
   return (
     <div className="void-card p-6 h-full">
       <h3 className="void-title mb-4 flex items-center gap-4">
-        <span className="text-2xl">🔐</span> PASSWORD STRENGTH
+        <span className="text-2xl">▥</span> SIGNAL STRENGTH
       </h3>
       <input
         type="text"
@@ -450,7 +450,7 @@ function FirewallSim({ addXP }: { addXP: (n: number) => void }) {
   return (
     <div className="void-card p-6 h-full">
       <h3 className="void-title mb-4 flex items-center gap-4">
-        <span className="text-2xl">🧱</span> FIREWALL SIMULATOR
+        <span className="text-2xl">▤</span> BARRIER SIMULATOR
       </h3>
 
       {/* Packet counter */}
@@ -529,7 +529,7 @@ function XssPlayground({ addXP }: { addXP: (n: number) => void }) {
   return (
     <div className="void-card p-6 h-full">
       <h3 className="void-title mb-4 flex items-center gap-4">
-        <span className="text-2xl">💀</span> XSS PLAYGROUND
+        <span className="text-2xl">◉</span> SIGNAL INJECTION
       </h3>
       <div className="flex flex-col sm:flex-row items-center gap-4 mb-4">
         <input
@@ -556,7 +556,7 @@ function XssPlayground({ addXP }: { addXP: (n: number) => void }) {
             >
               <div className="text-center">
                 <div className="text-3xl mb-2">⚠️</div>
-                <div className="font-bold" style={{ color: 'var(--color-signal-red)', fontFamily: 'var(--font-mono)' }}>XSS DETECTED</div>
+                <div className="font-bold" style={{ color: 'var(--color-signal-red)', fontFamily: 'var(--font-mono)' }}>ANOMALY DETECTED</div>
                 <div className="text-xs mt-1" style={{ color: 'var(--color-text-ghost)', fontFamily: 'var(--font-mono)' }}>Payload would execute in unsanitized context</div>
               </div>
             </motion.div>
@@ -602,7 +602,7 @@ function SqlInjection({ addXP }: { addXP: (n: number) => void }) {
   return (
     <div className="void-card p-6 h-full">
       <h3 className="void-title mb-4 flex items-center gap-4">
-        <span className="text-2xl">💉</span> SQL INJECTION
+        <span className="text-2xl">⊘</span> DATA INJECTION
       </h3>
       <div className="flex flex-col sm:flex-row items-center gap-4 mb-4">
         <input
@@ -688,7 +688,7 @@ function PhishingDetector({ addXP }: { addXP: (n: number) => void }) {
   return (
     <div className="void-card p-6 h-full">
       <h3 className="void-title mb-4 flex items-center gap-4">
-        <span className="text-2xl">🎣</span> PHISHING DETECTOR
+        <span className="text-2xl">△</span> SIGNAL DETECTOR
       </h3>
       <textarea
         value={email}
@@ -890,7 +890,7 @@ export default function CyberPage() {
       <MatrixRain />
 
       <AnimatePresence>
-        {phantom && <XssPhantom onSanitize={handleSanitizePhantom} chaosLevel={chaosLevel} />}
+        {phantom && <VoidAnomaly onSanitize={handleSanitizePhantom} chaosLevel={chaosLevel} />}
       </AnimatePresence>
 
       <div className="relative z-10 max-w-7xl mx-auto px-6 py-12">
@@ -898,10 +898,10 @@ export default function CyberPage() {
         <motion.div initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }} className="mb-8">
           <BackButton />
           <h1 className="void-title text-2xl sm:text-3xl md:text-4xl font-black uppercase tracking-wider">
-            EXPLOIT<span style={{ color: 'var(--color-text-ghost)' }}>.</span>ME
+            ANOMALY<span style={{ color: 'var(--color-text-ghost)' }}>.</span>ZONE
           </h1>
           <p className="void-label mt-2 text-sm" style={{ fontFamily: 'var(--font-mono)' }}>
-            [CYBERSECURITY PLAYGROUND] — Practice. Learn. Defend.
+            [SIGNAL ANALYSIS ZONE] — Scan. Detect. Purge.
           </p>
         </motion.div>
 

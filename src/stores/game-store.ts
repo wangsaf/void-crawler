@@ -40,23 +40,23 @@ export interface GameStats {
 }
 
 export const ACHIEVEMENTS: Achievement[] = [
-  { id: "first-login", name: "Welcome Crawler", description: "Begin your journey", icon: "🌟", unlocked: false },
-  { id: "market-shopper", name: "First Purchase", description: "Buy your first item", icon: "🛒", unlocked: false },
-  { id: "big-spender", name: "Big Spender", description: "Spend 1000 gold", icon: "💰", unlocked: false },
-  { id: "deploy-master", name: "Deploy Master", description: "Successfully deploy via NUKE", icon: "☢️", unlocked: false },
-  { id: "slot-winner", name: "Lucky Spinner", description: "Win the slot machine jackpot", icon: "🎰", unlocked: false },
-  { id: "xss-hunter", name: "XSS Hunter", description: "Sanitize 10 XSS Phantoms", icon: "🔓", unlocked: false },
-  { id: "port-scanner", name: "Port Explorer", description: "Scan 50 ports", icon: "🔍", unlocked: false },
-  { id: "konami-master", name: "Secret Code", description: "Enter the Konami code", icon: "🎮", unlocked: false },
-  { id: "void-whisperer", name: "Void Whisperer", description: "Discover 5 void interpretations", icon: "🌀", unlocked: false },
-  { id: "tax-evader", name: "Tax Evader", description: "Defeat the Tax Goblin 5 times", icon: "👺", unlocked: false },
-  { id: "level-5", name: "Rising Crawler", description: "Reach level 5", icon: "⭐", unlocked: false },
-  { id: "level-10", name: "Senior Architect", description: "Reach level 10", icon: "🏆", unlocked: false },
-  { id: "all-zones", name: "Explorer", description: "Visit all 4 zones", icon: "🗺️", unlocked: false },
-  { id: "void-core-enter", name: "Core Breach", description: "Enter the Void Core", icon: "🔮", unlocked: false },
-  { id: "void-core-defeat", name: "Void Slayer", description: "Defeat the Void Core Boss", icon: "⚡", unlocked: false },
-  { id: "firewall-master", name: "Firewall Master", description: "Toggle all firewall rules", icon: "🧱", unlocked: false },
-  { id: "password-pro", name: "Password Pro", description: "Achieve TITANIUM strength", icon: "🔐", unlocked: false },
+  { id: "first-login", name: "Welcome Crawler", description: "Begin your journey", icon: "◎", unlocked: false },
+  { id: "market-shopper", name: "First Purchase", description: "Buy your first item", icon: "⊞", unlocked: false },
+  { id: "big-spender", name: "Big Spender", description: "Spend 1000 gold", icon: "◈", unlocked: false },
+  { id: "deploy-master", name: "Deploy Master", description: "Successfully deploy via NUKE", icon: "∎", unlocked: false },
+  { id: "slot-winner", name: "Lucky Spinner", description: "Win the slot machine jackpot", icon: "⊡", unlocked: false },
+  { id: "xss-hunter", name: "Signal Sanitizer", description: "Purge 10 Signal Anomalies", icon: "⊘", unlocked: false },
+  { id: "port-scanner", name: "Pattern Scanner", description: "Scan 50 data patterns", icon: "◌", unlocked: false },
+  { id: "konami-master", name: "Secret Code", description: "Enter the hidden sequence", icon: "⌘", unlocked: false },
+  { id: "void-whisperer", name: "Void Whisperer", description: "Discover 5 void interpretations", icon: "◎", unlocked: false },
+  { id: "tax-evader", name: "Anomaly Evader", description: "Defeat the Void Tax 5 times", icon: "△", unlocked: false },
+  { id: "level-5", name: "Rising Crawler", description: "Reach level 5", icon: "◇", unlocked: false },
+  { id: "level-10", name: "Senior Architect", description: "Reach level 10", icon: "⬢", unlocked: false },
+  { id: "all-zones", name: "Explorer", description: "Visit all 4 zones", icon: "▦", unlocked: false },
+  { id: "void-core-enter", name: "Core Breach", description: "Enter the Void Core", icon: "◉", unlocked: false },
+  { id: "void-core-defeat", name: "Void Slayer", description: "Defeat the Void Core Boss", icon: "▣", unlocked: false },
+  { id: "firewall-master", name: "Firewall Master", description: "Toggle all firewall rules", icon: "▤", unlocked: false },
+  { id: "password-pro", name: "Password Pro", description: "Achieve TITANIUM strength", icon: "▥", unlocked: false },
 ];
 
 export const QUESTS: Quest[] = [
@@ -120,12 +120,12 @@ export interface ItemEffect {
 }
 
 export const ITEM_EFFECTS: Record<string, ItemEffect> = {
-  "health-potion": { id: "health-potion", name: "Health Potion", description: "Restore 30 HP", icon: "🧪", cost: 100, effect: "heal", value: 30 },
-  "void-blade": { id: "void-blade", name: "Void Blade", description: "Next event gives 2x XP", icon: "⚔️", cost: 350, effect: "bonus-xp", value: 2 },
-  "shield-css": { id: "shield-css", name: "Shield of CSS", description: "Block next chaos increase", icon: "🛡️", cost: 275, effect: "shield", value: 1 },
-  "scroll-ts": { id: "scroll-ts", name: "Scroll of TypeScript", description: "Reduce chaos by 15", icon: "📜", cost: 200, effect: "reduce-chaos", value: 15 },
-  "crystal-gem": { id: "crystal-gem", name: "Crystal Gem", description: "Next action gives 2x gold", icon: "💎", cost: 550, effect: "bonus-gold", value: 2 },
-  "debug-pizza": { id: "debug-pizza", name: "Debug Pizza", description: "Heal 10 HP, reduce chaos 5", icon: "🍕", cost: 30, effect: "heal", value: 10 },
+  "health-potion": { id: "health-potion", name: "Void Salve", description: "Restore 30 HP", icon: "◎", cost: 100, effect: "heal", value: 30 },
+  "void-blade": { id: "void-blade", name: "Void Blade", description: "Next event gives 2x XP", icon: "◇", cost: 350, effect: "bonus-xp", value: 2 },
+  "shield-css": { id: "shield-css", name: "Null Shield", description: "Block next chaos increase", icon: "⊞", cost: 275, effect: "shield", value: 1 },
+  "scroll-ts": { id: "scroll-ts", name: "Data Scroll", description: "Reduce chaos by 15", icon: "⊡", cost: 200, effect: "reduce-chaos", value: 15 },
+  "crystal-gem": { id: "crystal-gem", name: "Void Crystal", description: "Next action gives 2x gold", icon: "◉", cost: 550, effect: "bonus-gold", value: 2 },
+  "debug-pizza": { id: "debug-pizza", name: "Stim Patch", description: "Heal 10 HP, reduce chaos 5", icon: "△", cost: 30, effect: "heal", value: 10 },
 };
 
 // ─── Upgrades (Gold Sink) ──────────────────────────────────────────────────
@@ -452,7 +452,7 @@ export const useGameStore = create<GameState>()(
             get().addActivity(`Used ${effect.name}: +${effect.value} HP`);
             break;
           case "shield":
-            get().addBuff({ id: "shield", name: "Shield", icon: "🛡️", duration: 30, effect: "shield", value: 1 });
+            get().addBuff({ id: "shield", name: "Shield", icon: "⊞", duration: 30, effect: "shield", value: 1 });
             get().addActivity(`Activated ${effect.name}: shield for 30s`);
             break;
           case "reduce-chaos":
@@ -460,11 +460,11 @@ export const useGameStore = create<GameState>()(
             get().addActivity(`Used ${effect.name}: -${effect.value} chaos`);
             break;
           case "bonus-xp":
-            get().addBuff({ id: "bonus-xp", name: "XP Boost", icon: "⚔️", duration: 60, effect: "bonus-xp", value: effect.value });
+            get().addBuff({ id: "bonus-xp", name: "XP Boost", icon: "◇", duration: 60, effect: "bonus-xp", value: effect.value });
             get().addActivity(`Activated ${effect.name}: ${effect.value}x XP for 60s`);
             break;
           case "bonus-gold":
-            get().addBuff({ id: "bonus-gold", name: "Gold Boost", icon: "💎", duration: 60, effect: "bonus-gold", value: effect.value });
+            get().addBuff({ id: "bonus-gold", name: "Gold Boost", icon: "◉", duration: 60, effect: "bonus-gold", value: effect.value });
             get().addActivity(`Activated ${effect.name}: ${effect.value}x gold for 60s`);
             break;
         }

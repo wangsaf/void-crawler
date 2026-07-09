@@ -71,7 +71,7 @@ function VoidHub({ characterName, characterClass }: { characterName: string; cha
   const zones = [
     { id: "market" as const, name: "CART_CHAOS", desc: "Buy items, fight the Tax Goblin, survive price crashes", color: "text-signal-red" },
     { id: "dashboard" as const, name: "PANEL_PANIC", desc: "Monitor systems, pull slot machine, deploy with NUKE", color: "text-signal-blue" },
-    { id: "cyber" as const, name: "EXPLOIT.ME", desc: "Scan ports, hunt XSS phantoms, crack passwords", color: "text-signal-green" },
+    { id: "cyber" as const, name: "ANOMALY.ZONE", desc: "Scan patterns, hunt void anomalies, test signal strength", color: "text-signal-green" },
     { id: "playground" as const, name: "THE_VOID", desc: "Generate art, explore numbers, interpret the void", color: "text-signal-purple" },
     ...(level >= 10 ? [{ id: "void-core" as const, name: "VOID_CORE", desc: "Multi-phase boss fight — defeat the Anomaly Core", color: "text-signal-gold" }] : []),
   ];
