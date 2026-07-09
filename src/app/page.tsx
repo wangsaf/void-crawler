@@ -421,6 +421,7 @@ export default function Home() {
     unlockAchievement,
     level,
     characterName,
+    zonesUnlocked,
   } = useGameStore();
 
   // Init sound on first interaction
@@ -430,13 +431,13 @@ export default function Home() {
     }
   }, [soundEnabled]);
 
-  // Auto-detect: if character already created, skip to hub
+  // Auto-detect: if zones already unlocked, skip to hub
   useEffect(() => {
     setCharacterClass(detectCharacterClass());
-    if (characterName && characterName !== "Void Walker") {
+    if (zonesUnlocked.length > 1) {
       setScreen("hub");
     }
-  }, [setCharacterClass, characterName]);
+  }, [setCharacterClass, zonesUnlocked.length]);
 
   // Track first-login achievement
   useEffect(() => {
