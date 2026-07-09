@@ -55,7 +55,7 @@ function StatusLine({ label, value, delay = 0 }: { label: string; value: string;
 // ─── Hub Component ──────────────────────────────────────────────────────────
 function VoidHub({ characterName, characterClass }: { characterName: string; characterClass: string }) {
   const { level, xp, xpToNext, gold, enemiesDefeated, achievements, stats, items, upgrades, buffs, useItem, buyUpgrade, tickBuffs } = useGameStore();
-  const { chaosLevel, chaosMode } = useChaosStore();
+  const { chaosLevel, chaosMode, reduceChaos } = useChaosStore();
   const { setZone, unlockAchievement } = useGameStore();
 
   useEffect(() => {
@@ -67,6 +67,19 @@ function VoidHub({ characterName, characterClass }: { characterName: string; cha
     const interval = setInterval(() => tickBuffs(), 1000);
     return () => clearInterval(interval);
   }, [tickBuffs]);
+
+  // Natural chaos decay — chaos decreases slowly while on hub
+  useEffect(() => {
+    const decayInterval = setInterval(() => {
+      const currentChaos = useChaosStore.getState().chaosLevel;
+      if (currentChaos > 0) {
+        // Decay faster at higher chaos levels
+        const decayAmount = currentChaos > 50 ? 2 : 1;
+        reduceChaos(decayAmount);
+      }
+    }, 5000); // Every 5 seconds
+    return () => clearInterval(decayInterval);
+  }, [reduceChaos]);
 
   const zones = [
     { id: "market" as const, name: "CART_CHAOS", desc: "Buy items, fight the Tax Goblin, survive price crashes", color: "text-signal-red" },
@@ -416,7 +429,7 @@ export default function Home() {
     unlockZone("cyber");
     unlockZone("playground");
     addXP(50);
-    addChaos(10);
+    // Don't add chaos on initial load - let it build naturally
     setScreen("hub");
   };
 

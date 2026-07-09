@@ -254,7 +254,7 @@ export default function CartChaosPage() {
           if (soundEnabled) soundEngine.playError();
           // Lose some gold when item fully escapes
           addGold(-lostGold);
-          addChaos(3);
+          addChaos(1);
           showMessage(`${entry.item.emoji} ${entry.item.name} escaped! Lost ${lostGold}g!`, 'error');
           return prev.filter((_, i) => i !== escapeIdx);
         }
@@ -340,7 +340,7 @@ export default function CartChaosPage() {
         setGoblinTaxed(false);
       } else {
         addGold(-taxGoblin.penalty);
-        addChaos(5);
+        addChaos(2);
         if (soundEnabled) soundEngine.playError();
         showMessage(`Wrong! The Goblin steals ${taxGoblin.penalty}g!`, 'error');
         setGoblinTaxed(true);

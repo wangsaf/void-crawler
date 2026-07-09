@@ -1114,7 +1114,7 @@ export default function PlaygroundPage() {
                 setVoidRejection(true);
                 setInput('');
                 addGold(-20);
-                addChaos(5);
+                addChaos(2);
                 addActivity('The void rejected your input [-20g, +5 chaos]');
                 soundEngine.playError();
                 return;

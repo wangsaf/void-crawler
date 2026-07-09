@@ -119,7 +119,7 @@ function PortScanner({ addXP, onScanComplete, chaosLevel }: { addXP: (n: number)
         setTimedOut(true);
         setProgress(Math.round((i / commonPorts.length) * 100));
         takeGold(-30); // lose 30 gold
-        addChaos(3);
+        addChaos(1);
         soundEngine.playError();
         addActivity(`Port scan TIMEOUT — connection interrupted by chaos! [-30 gold, +3 chaos]`);
         return;

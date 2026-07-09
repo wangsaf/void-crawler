@@ -213,7 +213,7 @@ export const useChaosStore = create<ChaosState>()(
           eventTimeLeft: 0,
         });
         // Chaos increases on failure
-        get().addChaos(15);
+        get().addChaos(5);
       },
 
       completeEvent: () => {
@@ -226,7 +226,7 @@ export const useChaosStore = create<ChaosState>()(
           chaosEventsDefeated: state.chaosEventsDefeated + 1,
         });
         // Chaos decreases on success
-        get().reduceChaos(10);
+        get().reduceChaos(15);
       },
 
       clearEvent: () => set({ activeEvent: null, eventProgress: 0, eventTimeLeft: 0 }),
