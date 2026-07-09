@@ -4,6 +4,12 @@ import { Providers } from "@/components/providers";
 import { AchievementToast } from "@/components/rpg/achievement-toast";
 import { NotificationStack } from "@/components/rpg/notification-stack";
 import { VolumeControl } from "@/components/rpg/volume-control";
+import { ChaosOverlay } from "@/components/effects/chaos-overlay";
+import { ChaosMeter } from "@/components/rpg/chaos-meter";
+import { RandomEventPopup, ChaosEventSpawner } from "@/components/rpg/random-event";
+import { EnhancedHUD } from "@/components/rpg/enhanced-hud";
+import { ChaosModeBody } from "@/components/effects/chaos-mode-body";
+import { ChaosEngine } from "@/components/rpg/chaos-engine";
 
 export const metadata: Metadata = {
   title: "void.crawler() — The Web That Is Alive",
@@ -27,11 +33,18 @@ export default function RootLayout({
           Skip to main content
         </a>
         <Providers>
+          <ChaosModeBody />
+          <ChaosOverlay />
           <div id="main-content" role="main" aria-label="Void Crawler main content">
             {children}
           </div>
+          <EnhancedHUD />
+          <ChaosMeter />
           <AchievementToast />
           <NotificationStack />
+          <RandomEventPopup />
+          <ChaosEventSpawner />
+          <ChaosEngine />
           <VolumeControl />
         </Providers>
       </body>

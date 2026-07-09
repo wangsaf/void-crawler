@@ -1,5 +1,5 @@
-@import "tailwindcss";
 @import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&family=VT323&display=swap');
+@import "tailwindcss";
 
 @theme {
   --color-void-black: #0a0a0f;
@@ -402,6 +402,128 @@ body::after {
 }
 .skip-link:focus {
   top: 0;
+}
+
+/* ==================== CHAOS EFFECTS ==================== */
+
+/* Screen shake */
+@keyframes screen-shake {
+  0%, 100% { transform: translate(0, 0); }
+  10% { transform: translate(-2px, -1px); }
+  20% { transform: translate(3px, 2px); }
+  30% { transform: translate(-1px, -3px); }
+  40% { transform: translate(2px, 1px); }
+  50% { transform: translate(-3px, 2px); }
+  60% { transform: translate(1px, -1px); }
+  70% { transform: translate(-2px, 3px); }
+  80% { transform: translate(3px, -2px); }
+  90% { transform: translate(-1px, 1px); }
+}
+
+.screen-shake {
+  animation: screen-shake 0.15s ease-in-out;
+}
+
+/* Chromatic aberration */
+@keyframes chromatic-pulse {
+  0%, 100% { filter: none; }
+  25% { filter: drop-shadow(-2px 0 rgba(255,0,110,0.4)) drop-shadow(2px 0 rgba(0,212,255,0.4)); }
+  50% { filter: drop-shadow(-1px 0 rgba(255,0,110,0.2)) drop-shadow(1px 0 rgba(0,212,255,0.2)); }
+  75% { filter: drop-shadow(-3px 0 rgba(255,0,110,0.5)) drop-shadow(3px 0 rgba(0,212,255,0.5)); }
+}
+
+.chromatic-aberration {
+  animation: chromatic-pulse 3s ease-in-out infinite;
+}
+
+/* VHS tracking */
+@keyframes vhs-tracking {
+  0% { transform: translateX(0); }
+  25% { transform: translateX(-2px); }
+  50% { transform: translateX(1px); }
+  75% { transform: translateX(-1px); }
+  100% { transform: translateX(0); }
+}
+
+.vhs-tracking {
+  animation: vhs-tracking 0.1s linear infinite;
+}
+
+/* Chaos border glow */
+@keyframes chaos-border {
+  0%, 100% { border-color: #ff333360; }
+  25% { border-color: #ff6b3560; }
+  50% { border-color: #ffd70060; }
+  75% { border-color: #ff006e60; }
+}
+
+.chaos-border {
+  animation: chaos-border 2s linear infinite;
+}
+
+/* Glitch overlay */
+@keyframes glitch-overlay {
+  0%, 100% { opacity: 0; }
+  50% { opacity: 0.1; }
+}
+
+.glitch-overlay::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  background: repeating-linear-gradient(
+    0deg,
+    transparent,
+    transparent 1px,
+    rgba(255, 0, 110, 0.05) 1px,
+    rgba(255, 0, 110, 0.05) 2px
+  );
+  pointer-events: none;
+  z-index: 9998;
+  animation: glitch-overlay 0.5s linear infinite;
+}
+
+/* Chaos mode body effect */
+body.chaos-mode {
+  animation: chromatic-pulse 4s ease-in-out infinite;
+}
+
+body.chaos-mode::after {
+  background: repeating-linear-gradient(
+    0deg,
+    transparent,
+    transparent 1px,
+    rgba(255, 51, 51, 0.12) 1px,
+    rgba(255, 51, 51, 0.12) 3px
+  ) !important;
+}
+
+/* Data corruption effect */
+@keyframes data-corrupt {
+  0%, 100% { transform: skewX(0deg); }
+  20% { transform: skewX(-2deg); }
+  40% { transform: skewX(1deg); }
+  60% { transform: skewX(-1deg); }
+  80% { transform: skewX(2deg); }
+}
+
+.data-corrupt {
+  animation: data-corrupt 0.3s linear;
+}
+
+/* Floating chaos particles */
+@keyframes float-chaos {
+  0% { transform: translateY(100vh) rotate(0deg); opacity: 0; }
+  10% { opacity: 1; }
+  90% { opacity: 1; }
+  100% { transform: translateY(-100vh) rotate(720deg); opacity: 0; }
+}
+
+.chaos-particle {
+  position: fixed;
+  pointer-events: none;
+  z-index: 50;
+  animation: float-chaos linear infinite;
 }
 
 /* ==================== PERFORMANCE ==================== */

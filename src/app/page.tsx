@@ -9,9 +9,9 @@ import { HexGrid } from "@/components/effects/hex-grid";
 import { AmbientOrbs } from "@/components/effects/glow-orb";
 import { ZoneTransition } from "@/components/effects/zone-transition";
 import { ZonePortal } from "@/components/rpg/zone-portal";
-import { CharacterHUD } from "@/components/rpg/character-hud";
 import { MiniMap } from "@/components/rpg/mini-map";
 import { useGameStore, detectCharacterClass } from "@/stores/game-store";
+import { useChaosStore } from "@/stores/chaos-store";
 import { showToast } from "@/components/rpg/achievement-toast";
 import { soundEngine } from "@/lib/sound-engine";
 
@@ -423,6 +423,7 @@ export default function Home() {
     characterName,
     zonesUnlocked,
   } = useGameStore();
+  const { addChaos } = useChaosStore();
 
   // Init sound on first interaction
   const initSound = useCallback(async () => {
@@ -465,10 +466,12 @@ export default function Home() {
     unlockZone("cyber");
     unlockZone("playground");
     addXP(50);
+    addChaos(10); // Entering the void increases chaos
     setScreen("hub");
   };
 
   const handlePortalNavigate = (zone: string, color: string, name: string) => {
+    addChaos(5); // Each zone visit increases chaos
     setTransitioning({ zone, color, name });
   };
 
@@ -488,11 +491,6 @@ export default function Home() {
 
       {/* Ambient glow orbs */}
       {screen === "hub" && <AmbientOrbs />}
-
-      {/* Animated HUD */}
-      <AnimatePresence>
-        {screen === "hub" && <CharacterHUD />}
-      </AnimatePresence>
 
       {/* Zone Transition Overlay */}
       <ZoneTransition

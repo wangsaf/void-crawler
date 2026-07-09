@@ -188,6 +188,74 @@ class SoundEngine {
     }
   }
 
+  // ─── Chaos Sound Effects ───────────────────────────────────────────────
+  playChaosWarning() {
+    if (!this.initialized || !this.warningSynth) return;
+    const now = Tone.now();
+    // Descending alarm
+    this.warningSynth.triggerAttackRelease("E5", "16n", now);
+    this.warningSynth.triggerAttackRelease("D5", "16n", now + 0.12);
+    this.warningSynth.triggerAttackRelease("C5", "16n", now + 0.24);
+    this.warningSynth.triggerAttackRelease("B4", "8n", now + 0.36);
+  }
+
+  playGlitch() {
+    if (!this.initialized || !this.errorSynth) return;
+    this.errorSynth.triggerAttackRelease("32n");
+  }
+
+  playScreenShake() {
+    if (!this.initialized || !this.masterGain) return;
+    const noise = new Tone.Noise("brown").connect(this.masterGain);
+    noise.volume.value = -25;
+    noise.start();
+    setTimeout(() => {
+      noise.stop();
+      noise.dispose();
+    }, 200);
+  }
+
+  playEnemySpawn() {
+    if (!this.initialized || !this.warningSynth) return;
+    const now = Tone.now();
+    this.warningSynth.triggerAttackRelease("A4", "32n", now);
+    this.warningSynth.triggerAttackRelease("E5", "32n", now + 0.05);
+    this.warningSynth.triggerAttackRelease("A5", "16n", now + 0.1);
+  }
+
+  playEnemyDefeat() {
+    if (!this.initialized || !this.successSynth) return;
+    const now = Tone.now();
+    this.successSynth.triggerAttackRelease("C5", "32n", now);
+    this.successSynth.triggerAttackRelease("E5", "32n", now + 0.05);
+    this.successSynth.triggerAttackRelease("G5", "32n", now + 0.1);
+    this.successSynth.triggerAttackRelease("C6", "16n", now + 0.15);
+  }
+
+  playChaosRising() {
+    if (!this.initialized || !this.warningSynth) return;
+    // Rising tone
+    const osc = new Tone.Oscillator(100, "sawtooth");
+    osc.volume.value = -20;
+    const filter = new Tone.Filter(200, "lowpass");
+    osc.connect(filter).connect(this.masterGain!);
+    filter.frequency.rampTo(2000, 1);
+    osc.start();
+    setTimeout(() => {
+      osc.stop();
+      osc.dispose();
+      filter.dispose();
+    }, 1200);
+  }
+
+  playDataCorrupt() {
+    if (!this.initialized || !this.errorSynth) return;
+    const now = Tone.now();
+    this.errorSynth.triggerAttackRelease("64n", now);
+    this.errorSynth.triggerAttackRelease("64n", now + 0.05);
+    this.errorSynth.triggerAttackRelease("32n", now + 0.1);
+  }
+
   destroy() {
     this.stopAmbient();
     this.clickSynth?.dispose();
