@@ -118,3 +118,10 @@
 - **What broke**: 11 auto-generated verification steps failed (dynamic text, random events)
 - **Fix**: Core user flow (18/28 steps) passed — failures are on specific HUD text format checks
 - **Verify**: Landing → Boot → Naming → Tutorial → Hub → Zone Navigation → Item Purchase all pass. Dashboard: https://www.testsprite.com/dashboard/tests/882abaea-2cea-4e00-92a7-12aa6b45e6be/test/092a3f84-25c1-4804-a0d4-8d65bfa08bb1
+
+## Iteration 18: TestSprite 32/32 PASSED
+- **Maker**: Added CHAOS label, status text (STABLE/UNSTABLE/CRITICAL), and EVENTS counter to HUD; made skip-link visible
+- **Checker**: TestSprite CLI re-ran full test suite
+- **What broke**: n/a
+- **Fix**: n/a
+- **Verify**: ALL 32 STEPS PASSED. Full user journey verified: landing → boot → naming → tutorial → hub → zones → items → HUD.
