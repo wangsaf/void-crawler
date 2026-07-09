@@ -63,11 +63,13 @@ class SoundEngine {
 
   playSuccess() {
     if (!this.initialized || !this.successSynth) return;
-    const now = Tone.now();
-    this.successSynth.triggerAttackRelease("C5", "16n", now);
-    this.successSynth.triggerAttackRelease("E5", "16n", now + 0.1);
-    this.successSynth.triggerAttackRelease("G5", "16n", now + 0.2);
-    this.successSynth.triggerAttackRelease("C6", "8n", now + 0.3);
+    try {
+      const now = Tone.now();
+      this.successSynth.triggerAttackRelease("C5", "16n", now + 0.01);
+      this.successSynth.triggerAttackRelease("E5", "16n", now + 0.11);
+      this.successSynth.triggerAttackRelease("G5", "16n", now + 0.21);
+      this.successSynth.triggerAttackRelease("C6", "8n", now + 0.31);
+    } catch {}
   }
 
   playError() {
@@ -77,34 +79,42 @@ class SoundEngine {
 
   playLevelUp() {
     if (!this.initialized || !this.successSynth) return;
-    const now = Tone.now();
-    const scale = ["C4", "E4", "G4", "B4", "C5", "E5", "G5", "C6"];
-    scale.forEach((note, i) => {
-      this.successSynth!.triggerAttackRelease(note, "16n", now + i * 0.08);
-    });
+    try {
+      const now = Tone.now();
+      const scale = ["C4", "E4", "G4", "B4", "C5", "E5", "G5", "C6"];
+      scale.forEach((note, i) => {
+        this.successSynth!.triggerAttackRelease(note, "16n", now + 0.01 + i * 0.08);
+      });
+    } catch {}
   }
 
   playAchievement() {
     if (!this.initialized || !this.successSynth) return;
-    const now = Tone.now();
-    this.successSynth.triggerAttackRelease("G5", "16n", now);
-    this.successSynth.triggerAttackRelease("B5", "16n", now + 0.12);
-    this.successSynth.triggerAttackRelease("D6", "8n", now + 0.24);
+    try {
+      const now = Tone.now();
+      this.successSynth.triggerAttackRelease("G5", "16n", now + 0.01);
+      this.successSynth.triggerAttackRelease("B5", "16n", now + 0.13);
+      this.successSynth.triggerAttackRelease("D6", "8n", now + 0.25);
+    } catch {}
   }
 
   playWarning() {
     if (!this.initialized || !this.warningSynth) return;
-    const now = Tone.now();
-    this.warningSynth.triggerAttackRelease("A4", "16n", now);
-    this.warningSynth.triggerAttackRelease("E4", "16n", now + 0.15);
+    try {
+      const now = Tone.now();
+      this.warningSynth.triggerAttackRelease("A4", "16n", now + 0.01);
+      this.warningSynth.triggerAttackRelease("E4", "16n", now + 0.16);
+    } catch {}
   }
 
   playNotification() {
     if (!this.initialized || !this.successSynth) return;
-    const now = Tone.now();
-    this.successSynth.triggerAttackRelease("C5", "32n", now);
-    this.successSynth.triggerAttackRelease("E5", "32n", now + 0.08);
-    this.successSynth.triggerAttackRelease("G5", "32n", now + 0.16);
+    try {
+      const now = Tone.now();
+      this.successSynth.triggerAttackRelease("C5", "32n", now + 0.01);
+      this.successSynth.triggerAttackRelease("E5", "32n", now + 0.09);
+      this.successSynth.triggerAttackRelease("G5", "32n", now + 0.17);
+    } catch {}
   }
 
   playZoneEnter() {
@@ -134,11 +144,13 @@ class SoundEngine {
 
   playJackpot() {
     if (!this.initialized || !this.successSynth) return;
-    const now = Tone.now();
-    const scale = ["C4", "E4", "G4", "C5", "E5", "G5", "C6", "E6"];
-    scale.forEach((note, i) => {
-      this.successSynth!.triggerAttackRelease(note, "16n", now + i * 0.1);
-    });
+    try {
+      const now = Tone.now();
+      const scale = ["C4", "E4", "G4", "C5", "E5", "G5", "C6", "E6"];
+      scale.forEach((note, i) => {
+        this.successSynth!.triggerAttackRelease(note, "16n", now + 0.01 + i * 0.1);
+      });
+    } catch {}
   }
 
   startAmbient(zone: string) {
@@ -191,12 +203,13 @@ class SoundEngine {
   // ─── Chaos Sound Effects ───────────────────────────────────────────────
   playChaosWarning() {
     if (!this.initialized || !this.warningSynth) return;
-    const now = Tone.now();
-    // Descending alarm
-    this.warningSynth.triggerAttackRelease("E5", "16n", now);
-    this.warningSynth.triggerAttackRelease("D5", "16n", now + 0.12);
-    this.warningSynth.triggerAttackRelease("C5", "16n", now + 0.24);
-    this.warningSynth.triggerAttackRelease("B4", "8n", now + 0.36);
+    try {
+      const now = Tone.now();
+      this.warningSynth.triggerAttackRelease("E5", "16n", now + 0.01);
+      this.warningSynth.triggerAttackRelease("D5", "16n", now + 0.13);
+      this.warningSynth.triggerAttackRelease("C5", "16n", now + 0.25);
+      this.warningSynth.triggerAttackRelease("B4", "8n", now + 0.37);
+    } catch {}
   }
 
   playGlitch() {
@@ -217,19 +230,23 @@ class SoundEngine {
 
   playEnemySpawn() {
     if (!this.initialized || !this.warningSynth) return;
-    const now = Tone.now();
-    this.warningSynth.triggerAttackRelease("A4", "32n", now);
-    this.warningSynth.triggerAttackRelease("E5", "32n", now + 0.05);
-    this.warningSynth.triggerAttackRelease("A5", "16n", now + 0.1);
+    try {
+      const now = Tone.now();
+      this.warningSynth.triggerAttackRelease("A4", "32n", now + 0.01);
+      this.warningSynth.triggerAttackRelease("E5", "32n", now + 0.06);
+      this.warningSynth.triggerAttackRelease("A5", "16n", now + 0.11);
+    } catch {}
   }
 
   playEnemyDefeat() {
     if (!this.initialized || !this.successSynth) return;
-    const now = Tone.now();
-    this.successSynth.triggerAttackRelease("C5", "32n", now);
-    this.successSynth.triggerAttackRelease("E5", "32n", now + 0.05);
-    this.successSynth.triggerAttackRelease("G5", "32n", now + 0.1);
-    this.successSynth.triggerAttackRelease("C6", "16n", now + 0.15);
+    try {
+      const now = Tone.now();
+      this.successSynth.triggerAttackRelease("C5", "32n", now + 0.01);
+      this.successSynth.triggerAttackRelease("E5", "32n", now + 0.06);
+      this.successSynth.triggerAttackRelease("G5", "32n", now + 0.11);
+      this.successSynth.triggerAttackRelease("C6", "16n", now + 0.16);
+    } catch {}
   }
 
   playChaosRising() {
@@ -250,10 +267,12 @@ class SoundEngine {
 
   playDataCorrupt() {
     if (!this.initialized || !this.errorSynth) return;
-    const now = Tone.now();
-    this.errorSynth.triggerAttackRelease("64n", now);
-    this.errorSynth.triggerAttackRelease("64n", now + 0.05);
-    this.errorSynth.triggerAttackRelease("32n", now + 0.1);
+    try {
+      const now = Tone.now();
+      this.errorSynth.triggerAttackRelease("64n", now + 0.01);
+      this.errorSynth.triggerAttackRelease("64n", now + 0.06);
+      this.errorSynth.triggerAttackRelease("32n", now + 0.11);
+    } catch {}
   }
 
   destroy() {
