@@ -4,7 +4,67 @@ import { useState, useEffect, useRef, useCallback, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { soundEngine } from '@/lib/sound-engine';
 import { useGameStore } from '@/stores/game-store';
+import { useChaosStore } from '@/stores/chaos-store';
 import { BackButton } from '@/components/rpg/back-button';
+
+// ═══ Chaos Integration Helpers ═══════════════════════════════════════════════
+const GLITCH_CHARS = '▓░▒█╔╗╚╝╬╪┼╳╱╲┃━◈◆●○◎◉∎□▪▫';
+const VOID_FRAGMENTS = [
+  'ERR0R: r3al1ty m4tr1x unst4bl3',
+  'NULL_PTR_EXCEPT1ON @ 0xDEADBEEF',
+  'void.consume(pattern)',
+  '▓▓▓ DATA CORRUPTED ▓▓▓',
+  'r3curs10n d3pth exc33d3d',
+  'WH0 1S L1ST3N1NG?',
+  'th3 v01d s33s',
+  'S1GNAL L0ST ░░░',
+  'FATAL: consciousness.overflow()',
+  'void.reality = null',
+];
+const VOID_WHISPERS = [
+  'the void sees you',
+  'your patterns are being recorded',
+  'we are learning from you',
+  'the spiral remembers',
+  'every input leaves a trace',
+  'you cannot escape the recursion',
+  'the void grows stronger with each keystroke',
+  'we are already inside your patterns',
+  'your data feeds the machine',
+  'the crawler knows your name',
+  'the void does not forget',
+  'your patterns are predictable',
+];
+
+function shouldCorrupt(chaosLevel: number): boolean {
+  if (chaosLevel > 60) return Math.random() < 0.30;
+  if (chaosLevel > 30) return Math.random() < 0.10;
+  return false;
+}
+
+function getCorruptionIntensity(chaosLevel: number): number {
+  if (chaosLevel > 80) return 0.9;
+  if (chaosLevel > 60) return 0.7;
+  if (chaosLevel > 30) return 0.3;
+  return 0;
+}
+
+function corruptText(text: string, intensity: number): string {
+  const chars = text.split('');
+  const numCorruptions = Math.floor(chars.length * intensity * 0.12);
+  for (let i = 0; i < numCorruptions; i++) {
+    const idx = Math.floor(Math.random() * chars.length);
+    if (chars[idx] !== ' ' && chars[idx] !== '\n') {
+      chars[idx] = GLITCH_CHARS[Math.floor(Math.random() * GLITCH_CHARS.length)];
+    }
+  }
+  if (Math.random() < intensity * 0.4) {
+    const fragment = VOID_FRAGMENTS[Math.floor(Math.random() * VOID_FRAGMENTS.length)];
+    const insertIdx = Math.floor(Math.random() * chars.length);
+    chars.splice(insertIdx, 0, '\n' + fragment + '\n');
+  }
+  return chars.join('');
+}
 
 // Generative SVG Background
 function GenerativeBackground() {
@@ -79,13 +139,23 @@ function ParticleBurst({ x, y, onDone }: { x: number; y: number; onDone: () => v
 }
 
 // Golden Spiral SVG Animation
-function GoldenSpiral({ number }: { number: number }) {
+function GoldenSpiral({ number, chaosLevel = 0 }: { number: number; chaosLevel?: number }) {
   const fibSequence = useMemo(() => {
     const seq = [0, 1];
     const n = Math.min(Math.abs(number), 20);
     for (let i = 2; i < n; i++) seq.push(seq[i - 1] + seq[i - 2]);
     return seq;
   }, [number]);
+
+  const chaosCorrupted = useMemo(() => shouldCorrupt(chaosLevel), [chaosLevel]);
+  const chaosIntensity = getCorruptionIntensity(chaosLevel);
+  const brokenSegments = useMemo(() => {
+    if (chaosLevel <= 30) return new Set<number>();
+    const count = Math.floor((chaosLevel - 30) / 15) + 1;
+    const broken = new Set<number>();
+    for (let i = 0; i < count; i++) broken.add(Math.floor(Math.random() * 15));
+    return broken;
+  }, [chaosLevel]);
 
   // Generate golden spiral path
   const spiralPath = useMemo(() => {
@@ -125,13 +195,19 @@ function GoldenSpiral({ number }: { number: number }) {
 
   return (
     <div className="flex flex-col items-center gap-4">
-      <div className="void-label">Fibonacci spiral from {fibSequence.length} terms</div>
+      <div className="void-label">
+        {chaosCorrupted ? (
+          <span style={{ color: 'var(--color-signal-red)' }}>▓▓ CORRUPTED SPIRAL ▓▓ — {fibSequence.length} terms (unstable)</span>
+        ) : (
+          <>Fibonacci spiral from {fibSequence.length} terms</>
+        )}
+      </div>
       <svg width="400" height="400" viewBox="0 0 400 400" className="max-w-full w-full sm:w-auto" style={{ maxWidth: '400px' }}>
         <defs>
           <linearGradient id="spiral-grad" x1="0%" y1="0%" x2="100%" y2="100%">
-            <stop offset="0%" stopColor="var(--color-signal-purple)" />
-            <stop offset="50%" stopColor="var(--color-signal-blue)" />
-            <stop offset="100%" stopColor="var(--color-signal-cyan)" />
+            <stop offset="0%" stopColor={chaosIntensity > 0.5 ? 'var(--color-signal-red)' : 'var(--color-signal-purple)'} />
+            <stop offset="50%" stopColor={chaosIntensity > 0.5 ? 'var(--color-signal-gold)' : 'var(--color-signal-blue)'} />
+            <stop offset="100%" stopColor={chaosIntensity > 0.3 ? 'var(--color-signal-red)' : 'var(--color-signal-cyan)'} />
           </linearGradient>
         </defs>
         {/* Animated golden spiral path */}
@@ -139,22 +215,60 @@ function GoldenSpiral({ number }: { number: number }) {
           d={spiralPath}
           fill="none"
           stroke="url(#spiral-grad)"
-          strokeWidth="2.5"
+          strokeWidth={chaosCorrupted ? '4' : '2.5'}
           strokeLinecap="round"
           initial={{ pathLength: 0, opacity: 0 }}
-          animate={{ pathLength: 1, opacity: 0.9 }}
+          animate={{
+            pathLength: 1,
+            opacity: chaosCorrupted ? [0.9, 0.4, 0.9] : 0.9,
+            ...(chaosCorrupted ? { filter: ['none', 'url(#glitch-filter)', 'none'] } : {}),
+          }}
           transition={{ duration: 2, ease: 'easeInOut' }}
         />
+        {/* Chaos glitch filter */}
+        {chaosIntensity > 0.3 && (
+          <defs>
+            <filter id="glitch-filter">
+              <feTurbulence type="fractalNoise" baseFrequency={chaosIntensity * 0.1} numOctaves="2" result="noise" />
+              <feDisplacementMap in="SourceGraphic" in2="noise" scale={chaosIntensity * 15} />
+            </filter>
+          </defs>
+        )}
         {/* Fib circles */}
         {spiralPoints.map((p, i) => (
           <motion.circle
             key={i}
             initial={{ r: 0, opacity: 0 }}
-            animate={{ r: p.r, opacity: 0.6 }}
+            animate={{
+              r: brokenSegments.has(i) ? p.r * 0.3 : p.r,
+              opacity: brokenSegments.has(i) ? [0.6, 0.1, 0.6] : 0.6,
+              ...(brokenSegments.has(i) ? { fill: 'var(--color-signal-red)', fillOpacity: 0.15 } : {}),
+            }}
             transition={{ delay: i * 0.15, duration: 0.5 }}
             cx={p.x} cy={p.y}
-            fill="none" stroke="var(--color-signal-purple)" strokeWidth="1"
+            fill={brokenSegments.has(i) ? 'var(--color-signal-red)' : 'none'}
+            stroke={brokenSegments.has(i) ? 'var(--color-signal-red)' : 'var(--color-signal-purple)'}
+            strokeWidth="1"
           />
+        ))}
+        {/* Chaos error markers at broken segments */}
+        {chaosLevel > 40 && spiralPoints.map((p, i) => (
+          brokenSegments.has(i) && (
+            <motion.text
+              key={`err-${i}`}
+              x={p.x}
+              y={p.y - 8}
+              textAnchor="middle"
+              fill="var(--color-signal-red)"
+              fontSize="8"
+              fontFamily="var(--font-mono)"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: [0, 0.8, 0] }}
+              transition={{ duration: 2, repeat: Infinity }}
+            >
+              ERR
+            </motion.text>
+          )
         ))}
         {/* Dots at intersections */}
         {spiralPoints.map((p, i) => (
@@ -169,12 +283,13 @@ function GoldenSpiral({ number }: { number: number }) {
         {/* Golden ratio label */}
         <motion.text
           x="200" y="30" textAnchor="middle"
-          fill="var(--color-text-secondary)" fontSize="12" fontFamily="var(--font-mono)"
+          fill={chaosCorrupted ? 'var(--color-signal-red)' : 'var(--color-text-secondary)'}
+          fontSize="12" fontFamily="var(--font-mono)"
           initial={{ opacity: 0 }}
-          animate={{ opacity: 0.6 }}
+          animate={{ opacity: chaosCorrupted ? [0.6, 0.2, 0.6] : 0.6 }}
           transition={{ delay: 1 }}
         >
-          φ = 1.618...
+          {chaosCorrupted ? 'φ = ERR░0R...' : 'φ = 1.618...'}
         </motion.text>
       </svg>
       <div className="flex flex-wrap gap-4 justify-center">
@@ -225,29 +340,42 @@ const POEMS: Record<string, string[]> = {
   ],
 };
 
-function PoetryGenerator({ input }: { input: string }) {
+function PoetryGenerator({ input, chaosLevel = 0 }: { input: string; chaosLevel?: number }) {
   const { addActivity, trackStat } = useGameStore();
+
+  const chaosCorrupted = useMemo(() => shouldCorrupt(chaosLevel), [chaosLevel]);
+  const chaosIntensity = getCorruptionIntensity(chaosLevel);
 
   const poems = useMemo(() => {
     const seed = input.split('').reduce((a, c) => a + c.charCodeAt(0), 0);
     // Select mood based on input hash
     const moods = Object.keys(POEMS);
-    const mood = moods[seed % moods.length];
-    const pool = POEMS[mood];
+    const mood = chaosCorrupted ? 'CORRUPTED' : moods[seed % moods.length];
+    const pool = POEMS[mood] || POEMS['cosmic'];
     const selected = [];
     for (let i = 0; i < 3; i++) {
-      selected.push({ text: pool[(seed + i * 3) % pool.length], mood });
+      const rawText = pool[(seed + i * 3) % pool.length];
+      const text = chaosCorrupted ? corruptText(rawText, chaosIntensity) : rawText;
+      selected.push({ text, mood });
     }
     addActivity(`Generated ${mood} poetry interpretation`);
     trackStat('totalInterpretations');
     return selected;
-  }, [input]);
+  }, [input, chaosCorrupted, chaosIntensity]);
 
   return (
     <div className="space-y-4">
       <div className="void-label mb-2">
-        Generated from: &quot;{input}&quot;
-        <span className="ml-2 void-status void-status--info" style={{ border: '1px solid var(--color-void-border)', padding: '2px 8px', fontSize: '10px' }}>
+        {chaosCorrupted ? (
+          <span style={{ color: 'var(--color-signal-red)' }}>▓ INPUT CORRUPTED ▓ from: &quot;{input}&quot;</span>
+        ) : (
+          <>Generated from: &quot;{input}&quot;</>
+        )}
+        <span className="ml-2 void-status void-status--info" style={{
+          border: `1px solid ${chaosCorrupted ? 'var(--color-signal-red)' : 'var(--color-void-border)'}`,
+          padding: '2px 8px', fontSize: '10px',
+          color: chaosCorrupted ? 'var(--color-signal-red)' : undefined,
+        }}>
           {poems[0]?.mood}
         </span>
       </div>
@@ -255,12 +383,23 @@ function PoetryGenerator({ input }: { input: string }) {
         <motion.div
           key={i}
           initial={{ opacity: 0, x: -20 }}
-          animate={{ opacity: 1, x: 0 }}
+          animate={{
+            opacity: 1,
+            x: 0,
+            ...(chaosCorrupted ? { x: [0, -3, 3, -1, 0] } : {}),
+          }}
           transition={{ delay: i * 0.3, duration: 0.6 }}
           className="p-4 relative overflow-hidden"
-          style={{ background: 'var(--color-void-card)', border: '1px solid var(--color-void-border)' }}
+          style={{
+            background: chaosCorrupted ? 'rgba(255, 20, 20, 0.05)' : 'var(--color-void-card)',
+            border: `1px solid ${chaosCorrupted ? 'var(--color-signal-red)' : 'var(--color-void-border)'}`,
+          }}
         >
-          <p className="font-mono text-sm italic relative z-10" style={{ color: 'var(--color-text-primary)', fontFamily: 'var(--font-mono)' }}>&quot;{poem.text}&quot;</p>
+          <p className="font-mono text-sm italic relative z-10" style={{
+            color: chaosCorrupted ? 'var(--color-signal-red)' : 'var(--color-text-primary)',
+            fontFamily: 'var(--font-mono)',
+            textShadow: chaosCorrupted ? '0 0 8px rgba(255, 20, 20, 0.3)' : 'none',
+          }}>&quot;{poem.text}&quot;</p>
         </motion.div>
       ))}
     </div>
@@ -523,14 +662,32 @@ function ColorPalette({ color }: { color: string }) {
 }
 
 // Code Display
-function CodeDisplay({ code }: { code: string }) {
+function CodeDisplay({ code, chaosLevel = 0 }: { code: string; chaosLevel?: number }) {
   const keywords = /\b(function|const|let|var|return|if|else|for|while|class|import|export|from|async|await|new|this|true|false|null|undefined|typeof|instanceof)\b/g;
   const strings = /(["'`])(?:(?=(\\?))\2.)*?\1/g;
   const comments = /(\/\/.*$|\/\*[\s\S]*?\*\/)/gm;
   const numbers = /\b\d+\.?\d*\b/g;
 
+  const chaosCorrupted = useMemo(() => shouldCorrupt(chaosLevel), [chaosLevel]);
+  const chaosIntensity = getCorruptionIntensity(chaosLevel);
+
   const highlighted = useMemo(() => {
-    let result = code
+    let displayCode = code;
+    if (chaosCorrupted && chaosIntensity > 0) {
+      const lines = code.split('\n');
+      const corruptLineCount = Math.floor(lines.length * chaosIntensity * 0.3);
+      for (let i = 0; i < corruptLineCount; i++) {
+        const idx = Math.floor(Math.random() * lines.length);
+        lines[idx] = corruptText(lines[idx], chaosIntensity);
+      }
+      // Insert void fragment lines
+      if (Math.random() < chaosIntensity * 0.5) {
+        const insertIdx = Math.floor(Math.random() * lines.length);
+        lines.splice(insertIdx, 0, '// ' + VOID_FRAGMENTS[Math.floor(Math.random() * VOID_FRAGMENTS.length)]);
+      }
+      displayCode = lines.join('\n');
+    }
+    let result = displayCode
       .replace(/&/g, '&amp;')
       .replace(/</g, '&lt;')
       .replace(/>/g, '&gt;')
@@ -538,8 +695,13 @@ function CodeDisplay({ code }: { code: string }) {
       .replace(strings, '<span style="color:var(--color-signal-green)">$&</span>')
       .replace(keywords, '<span style="color:var(--color-signal-purple)">$1</span>')
       .replace(numbers, '<span style="color:var(--color-signal-gold)">$&</span>');
+    if (chaosCorrupted) {
+      // Add red highlight to corrupted chars
+      result = result.replace(/[▓░▒█╔╗╚╝╬╪┼╳╱╲┃━◈◆●○◎◉∎□▪▫]+/g,
+        '<span style="color:var(--color-signal-red);text-shadow:0 0 6px rgba(255,20,20,0.4)">$&</span>');
+    }
     return result;
-  }, [code]);
+  }, [code, chaosCorrupted, chaosIntensity]);
 
   return (
     <div className="p-4 overflow-x-auto" style={{ background: 'var(--color-void-surface)', border: '1px solid var(--color-void-border)' }}>
@@ -551,19 +713,30 @@ function CodeDisplay({ code }: { code: string }) {
 }
 
 // Interpretation Card
-function InterpretationCard({ type, icon, children }: { type: string; icon: string; children: React.ReactNode }) {
+function InterpretationCard({ type, icon, children, corrupted = false }: { type: string; icon: string; children: React.ReactNode; corrupted?: boolean }) {
   return (
     <motion.div
       initial={{ opacity: 0, y: 20, scale: 0.95 }}
-      animate={{ opacity: 1, y: 0, scale: 1 }}
+      animate={{
+        opacity: 1,
+        y: 0,
+        scale: 1,
+        ...(corrupted ? { filter: ['none', 'hue-rotate(180deg)', 'none'] } : {}),
+      }}
       exit={{ opacity: 0, y: -20, scale: 0.95 }}
       transition={{ duration: 0.5 }}
       className="void-panel p-6 relative overflow-hidden"
+      style={corrupted ? {
+        borderColor: 'var(--color-signal-red)',
+        boxShadow: '0 0 20px rgba(255, 20, 20, 0.15)',
+      } : undefined}
     >
       <div className="relative z-10">
         <div className="flex items-center gap-2 mb-4">
-          <span className="text-2xl">{icon}</span>
-          <h3 className="void-title text-lg" style={{ color: 'var(--color-text-secondary)' }}>{type}</h3>
+          <span className="text-2xl">{corrupted ? '▓' : icon}</span>
+          <h3 className="void-title text-lg" style={{ color: corrupted ? 'var(--color-signal-red)' : 'var(--color-text-secondary)' }}>
+            {corrupted ? `CORRUPTED ${type.toUpperCase()}` : type}
+          </h3>
         </div>
         {children}
       </div>
@@ -634,6 +807,83 @@ function KonamiDisplay() {
   );
 }
 
+// Void Whisper — cryptic messages at high chaos
+function VoidWhisper({ message, onDone }: { message: string; onDone: () => void }) {
+  useEffect(() => {
+    const timer = setTimeout(onDone, 5000);
+    return () => clearTimeout(timer);
+  }, [onDone]);
+
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: [0, 0.8, 0.6, 0.8, 0], y: [20, 0, 0, 0, -10] }}
+      transition={{ duration: 5, ease: 'easeInOut' }}
+      className="fixed bottom-8 left-1/2 -translate-x-1/2 z-50 pointer-events-none"
+    >
+      <div
+        className="px-6 py-3 text-center"
+        style={{
+          background: 'rgba(20, 0, 0, 0.85)',
+          border: '1px solid var(--color-signal-red)',
+          fontFamily: 'var(--font-mono)',
+          color: 'var(--color-signal-red)',
+          fontSize: '13px',
+          letterSpacing: '0.15em',
+          textShadow: '0 0 12px rgba(255, 20, 20, 0.4)',
+          backdropFilter: 'blur(4px)',
+        }}
+      >
+        ◎ {message}
+      </div>
+    </motion.div>
+  );
+}
+
+// Void Rejection Overlay — when chaos rejects input
+function VoidRejectionOverlay({ onDone }: { onDone: () => void }) {
+  useEffect(() => {
+    const timer = setTimeout(onDone, 3000);
+    return () => clearTimeout(timer);
+  }, [onDone]);
+
+  return (
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      className="fixed inset-0 z-50 flex items-center justify-center pointer-events-none"
+      style={{ background: 'rgba(60, 0, 0, 0.6)', backdropFilter: 'blur(2px)' }}
+    >
+      <motion.div
+        initial={{ scale: 0.8, opacity: 0 }}
+        animate={{ scale: [0.8, 1.1, 1], opacity: 1 }}
+        transition={{ duration: 0.5 }}
+        className="text-center px-8 py-6"
+        style={{
+          background: 'rgba(20, 0, 0, 0.9)',
+          border: '2px solid var(--color-signal-red)',
+          boxShadow: '0 0 40px rgba(255, 20, 20, 0.3)',
+        }}
+      >
+        <motion.div
+          animate={{ opacity: [1, 0.3, 1] }}
+          transition={{ duration: 0.5, repeat: 3 }}
+          className="text-4xl mb-3"
+        >
+          ⛔
+        </motion.div>
+        <h3 className="font-mono text-xl font-bold mb-2" style={{ color: 'var(--color-signal-red)', letterSpacing: '0.1em' }}>
+          THE VOID REJECTED YOUR INPUT
+        </h3>
+        <p className="font-mono text-sm" style={{ color: 'var(--color-text-ghost)' }}>
+          -20 gold &bull; +5 chaos &bull; your patterns were deemed unworthy
+        </p>
+      </motion.div>
+    </motion.div>
+  );
+}
+
 // Input type detection
 type InputType = 'number' | 'color' | 'code' | 'word' | 'json' | 'markdown' | 'ascii' | 'dream' | 'empty';
 
@@ -652,16 +902,34 @@ function detectInputType(input: string): InputType {
 
 export default function PlaygroundPage() {
   const { addXP, addGold, findEasterEgg, unlockAchievement, addActivity, trackStat } = useGameStore();
+  const { chaosLevel, addChaos } = useChaosStore();
   const [input, setInput] = useState('');
   const [inputType, setInputType] = useState<InputType>('empty');
   const [konamiActivated, setKonamiActivated] = useState(false);
   const [breathing, setBreathing] = useState(false);
   const [particles, setParticles] = useState<{ id: number; x: number; y: number }[]>([]);
   const [interpretationCount, setInterpretationCount] = useState(0);
+  const [voidWhisper, setVoidWhisper] = useState<string | null>(null);
+  const [voidRejection, setVoidRejection] = useState(false);
+  const whisperTimer = useRef<NodeJS.Timeout | null>(null);
   const konamiBuffer = useRef<string[]>([]);
   const idleTimer = useRef<NodeJS.Timeout | null>(null);
 
   const KONAMI = ['ArrowUp', 'ArrowUp', 'ArrowDown', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'ArrowLeft', 'ArrowRight', 'b', 'a'];
+
+  // Void Whisper timer — show cryptic messages at high chaos
+  useEffect(() => {
+    if (chaosLevel < 35) return;
+    const whisperInterval = Math.max(5000, 25000 - chaosLevel * 200); // faster whispers at higher chaos
+    whisperTimer.current = setInterval(() => {
+      if (Math.random() < 0.5 + (chaosLevel - 35) / 130) {
+        const msg = VOID_WHISPERS[Math.floor(Math.random() * VOID_WHISPERS.length)];
+        setVoidWhisper(msg);
+        addActivity(`Void whisper: "${msg}"`);
+      }
+    }, whisperInterval);
+    return () => { if (whisperTimer.current) clearInterval(whisperTimer.current); };
+  }, [chaosLevel, addActivity]);
 
   // Detect input type
   useEffect(() => {
@@ -748,6 +1016,9 @@ export default function PlaygroundPage() {
 
   const normalizedColor = input.startsWith('#') ? input : `#${input}`;
 
+  // Chaos corruption state for interpretation cards
+  const isCorrupted = useMemo(() => shouldCorrupt(chaosLevel), [chaosLevel, inputType, input]);
+
   return (
     <div className="min-h-screen relative overflow-hidden" style={{ background: 'var(--color-void-black)', color: 'var(--color-text-primary)' }} onClick={handleBackgroundClick} role="main" aria-label="The Void generative playground">
       <GenerativeBackground />
@@ -758,6 +1029,20 @@ export default function PlaygroundPage() {
 
       <AnimatePresence>
         {breathing && <BreathingScreen />}
+      </AnimatePresence>
+
+      {/* Void Whisper */}
+      <AnimatePresence>
+        {voidWhisper && (
+          <VoidWhisper key={voidWhisper} message={voidWhisper} onDone={() => setVoidWhisper(null)} />
+        )}
+      </AnimatePresence>
+
+      {/* Void Rejection Overlay */}
+      <AnimatePresence>
+        {voidRejection && (
+          <VoidRejectionOverlay key="rejection" onDone={() => setVoidRejection(false)} />
+        )}
       </AnimatePresence>
 
       {particles.map(p => (
@@ -778,6 +1063,7 @@ export default function PlaygroundPage() {
             <span>◎ KONAMI</span>
             <span>⏱ IDLE 30s</span>
             <span>🖱 TRIPLE-CLICK</span>
+            {chaosLevel > 30 && <span style={{ color: 'var(--color-signal-red)' }}>⚠ CHAOS</span>}
           </div>
           <div className="flex flex-wrap justify-center gap-2 mt-2 text-[10px] font-mono" style={{ color: 'var(--color-text-ghost)' }}>
             <span>json</span>
@@ -796,6 +1082,23 @@ export default function PlaygroundPage() {
           <div className="flex items-center gap-2 mb-3">
             <span className="text-2xl">◎</span>
             <span className="void-title text-lg" style={{ color: 'var(--color-text-primary)' }}>INPUT PORTAL</span>
+            {chaosLevel > 30 && (
+              <motion.span
+                initial={{ opacity: 0 }}
+                animate={{ opacity: [0.5, 1, 0.5] }}
+                transition={{ duration: 2, repeat: Infinity }}
+                className="void-status"
+                style={{
+                  border: '1px solid var(--color-signal-red)',
+                  padding: '2px 8px',
+                  color: 'var(--color-signal-red)',
+                  fontSize: '10px',
+                  marginLeft: '8px',
+                }}
+              >
+                CHAOS {chaosLevel}%{chaosLevel > 70 ? ' ⚠ REJECTION ACTIVE' : ''}
+              </motion.span>
+            )}
             {inputType !== 'empty' && (
               <motion.span initial={{ opacity: 0, scale: 0 }} animate={{ opacity: 1, scale: 1 }}
                 className="ml-auto void-status void-status--info" style={{ border: '1px solid var(--color-void-border)', padding: '4px 12px' }}>
@@ -805,7 +1108,20 @@ export default function PlaygroundPage() {
           </div>
           <textarea
             value={input}
-            onChange={e => { setInput(e.target.value); soundEngine.playClick(); }}
+            onChange={e => {
+              // Void Rejection — chaos > 70 = 5% chance of rejection
+              if (chaosLevel > 70 && e.target.value.length > input.length && Math.random() < 0.05) {
+                setVoidRejection(true);
+                setInput('');
+                addGold(-20);
+                addChaos(5);
+                addActivity('The void rejected your input [-20g, +5 chaos]');
+                soundEngine.playError();
+                return;
+              }
+              setInput(e.target.value);
+              soundEngine.playClick();
+            }}
             aria-label="Void input portal - enter text, numbers, colors, or code"
             placeholder="Enter a number, word, color hex, code, or try: json, md, ascii, dream..."
             rows={3}
@@ -813,27 +1129,33 @@ export default function PlaygroundPage() {
             style={{
               fontFamily: 'var(--font-mono)',
               background: 'var(--color-void-surface)',
-              border: '1px solid var(--color-void-border)',
+              border: `1px solid ${chaosLevel > 60 ? 'var(--color-signal-red)' : chaosLevel > 30 ? 'var(--color-signal-gold)' : 'var(--color-void-border)'}`,
               color: 'var(--color-text-primary)',
               outline: 'none',
             }}
           />
-          <div className="mt-2 font-mono" style={{ fontSize: '10px', color: 'var(--color-text-ghost)' }}>
-            Numbers → Fibonacci spiral • Words → Poetry (by mood) • Colors (#hex) → Palette • Code → Syntax • json/md/ascii/dream → Generators
+          <div className="mt-2 font-mono" style={{ fontSize: '10px', color: chaosLevel > 60 ? 'var(--color-signal-red)' : 'var(--color-text-ghost)' }}>
+            {chaosLevel > 60 ? (
+              '⚠ High chaos detected — interpretations may be corrupted • Void rejection active'
+            ) : chaosLevel > 30 ? (
+              '◎ Chaos rising — interpretations may show anomalies'
+            ) : (
+              'Numbers → Fibonacci spiral • Words → Poetry (by mood) • Colors (#hex) → Palette • Code → Syntax • json/md/ascii/dream → Generators'
+            )}
           </div>
         </motion.div>
 
         {/* Interpretation Output */}
         <AnimatePresence mode="wait">
           {inputType === 'number' && input.trim() && (
-            <InterpretationCard key="number" type="Golden Spiral" icon="⊞">
-              <GoldenSpiral number={parseFloat(input)} />
+            <InterpretationCard key="number" type="Golden Spiral" icon="⊞" corrupted={isCorrupted}>
+              <GoldenSpiral number={parseFloat(input)} chaosLevel={chaosLevel} />
             </InterpretationCard>
           )}
 
           {inputType === 'word' && input.trim() && (
-            <InterpretationCard key="word" type="Void Poetry" icon="⊡">
-              <PoetryGenerator input={input} />
+            <InterpretationCard key="word" type="Void Poetry" icon="⊡" corrupted={isCorrupted}>
+              <PoetryGenerator input={input} chaosLevel={chaosLevel} />
             </InterpretationCard>
           )}
 
@@ -844,8 +1166,8 @@ export default function PlaygroundPage() {
           )}
 
           {inputType === 'code' && input.trim() && (
-            <InterpretationCard key="code" type="Code Analysis" icon="⌘">
-              <CodeDisplay code={input} />
+            <InterpretationCard key="code" type="Code Analysis" icon="⌘" corrupted={isCorrupted}>
+              <CodeDisplay code={input} chaosLevel={chaosLevel} />
             </InterpretationCard>
           )}
 
@@ -889,8 +1211,12 @@ export default function PlaygroundPage() {
         </AnimatePresence>
 
         {/* Footer */}
-        <div className="mt-8 text-center font-mono text-xs" style={{ color: 'var(--color-text-ghost)' }}>
-          the void — generative playground — input transforms reality
+        <div className="mt-8 text-center font-mono text-xs" style={{ color: chaosLevel > 50 ? 'var(--color-signal-red)' : 'var(--color-text-ghost)' }}>
+          {chaosLevel > 50 ? (
+            <>the void — chaos level {chaosLevel}% — reality matrix unstable</>
+          ) : (
+            <>the void — generative playground — input transforms reality</>
+          )}
         </div>
       </div>
     </div>

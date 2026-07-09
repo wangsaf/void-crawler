@@ -4,6 +4,8 @@ import { useState, useEffect, useCallback, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { soundEngine } from '@/lib/sound-engine';
 import { useGameStore } from '@/stores/game-store';
+import { useChaosStore } from '@/stores/chaos-store';
+import { ITEM_EFFECTS } from '@/stores/game-store';
 import { BackButton } from '@/components/rpg/back-button';
 
 // ─── Types ───────────────────────────────────────────────────────────────────
@@ -21,6 +23,8 @@ interface ShopItem {
   maxStock: number;
   isRare?: boolean;
   expiresAt?: number;
+  effect?: string;
+  effectValue?: number;
 }
 
 interface CartEntry {
@@ -95,6 +99,9 @@ function randomPosition() {
 
 export default function CartChaosPage() {
   const { addXP, addGold, addItem, completeQuest, unlockAchievement, gold, soundEnabled, setZone, addActivity, trackStat } = useGameStore();
+  const { chaosLevel, addChaos, reduceChaos } = useChaosStore();
+  const isHighChaos = chaosLevel >= 50;
+  const chaosFactor = 1 + (chaosLevel / 100); // 1.0 at 0 chaos, 1.5 at 50, 2.0 at 100
 
   // ─── State ───────────────────────────────────────────────────────────────
 
@@ -113,6 +120,8 @@ export default function CartChaosPage() {
   const [totalSpent, setTotalSpent] = useState(0);
   const [purchaseCount, setPurchaseCount] = useState(0);
   const [message, setMessage] = useState<{ text: string; type: 'success' | 'error' | 'info' | 'warning' } | null>(null);
+  const [hoveredItem, setHoveredItem] = useState<string | null>(null);
+  const [usingItem, setUsingItem] = useState<string | null>(null);
   const [receipt, setReceipt] = useState<Receipt | null>(null);
 
   const messageTimer = useRef<ReturnType<typeof setTimeout>>(undefined);
@@ -141,23 +150,26 @@ export default function CartChaosPage() {
         if (regularItems.length === 0) return prev;
         const targetIdx = prev.indexOf(regularItems[Math.floor(Math.random() * regularItems.length)]);
         const target = prev[targetIdx];
+        // High chaos = more volatile prices
+        const volatility = isHighChaos ? 1.5 : 1;
         const newPrice = Math.floor(
-          target.minPrice + Math.random() * (target.maxPrice - target.minPrice),
+          target.minPrice + Math.random() * (target.maxPrice - target.minPrice) * volatility,
         );
+        const clampedPrice = Math.max(target.minPrice, Math.min(Math.floor(target.maxPrice * chaosFactor), newPrice));
         setGlitchingItem(target.id);
         if (soundEnabled) soundEngine.playClick();
         setTimeout(() => setGlitchingItem(null), 800);
         return prev.map((item, i) =>
-          i === targetIdx ? { ...item, prevPrice: item.currentPrice, currentPrice: newPrice } : item,
+          i === targetIdx ? { ...item, prevPrice: item.currentPrice, currentPrice: clampedPrice } : item,
         );
       });
-    }, 10000);
+    }, isHighChaos ? 6000 : 10000); // Faster price shifts at high chaos
 
     return () => {
       clearInterval(countdownInterval);
       clearInterval(rouletteInterval);
     };
-  }, [soundEnabled]);
+  }, [soundEnabled, isHighChaos, chaosFactor]);
 
   // ─── Stock regeneration (1 per 30s) ──────────────────────────────────────
 
@@ -215,7 +227,8 @@ export default function CartChaosPage() {
   useEffect(() => {
     const interval = setInterval(() => {
       if (taxGoblin.active) return;
-      if (Math.random() > 0.3) return;
+      const goblinChance = isHighChaos ? 0.55 : 0.3;
+      if (Math.random() > goblinChance) return;
       const q = TAX_GOBLIN_QUESTIONS[Math.floor(Math.random() * TAX_GOBLIN_QUESTIONS.length)];
       setTaxGoblin({ active: true, ...q });
       if (soundEnabled) soundEngine.playError();
@@ -223,7 +236,7 @@ export default function CartChaosPage() {
       if (soundEnabled) soundEngine.playWarning();
     }, 20000);
     return () => clearInterval(interval);
-  }, [taxGoblin.active, soundEnabled, showMessage]);
+  }, [taxGoblin.active, soundEnabled, showMessage, isHighChaos]);
 
   // ─── Cart escape mechanic ────────────────────────────────────────────────
 
@@ -231,20 +244,39 @@ export default function CartChaosPage() {
     const interval = setInterval(() => {
       setCart((prev) => {
         if (prev.length === 0) return prev;
+        // High chaos = higher escape chance (check extra item)
+        const extraEscape = isHighChaos && Math.random() > 0.6;
         const escapeIdx = Math.floor(Math.random() * prev.length);
         const entry = prev[escapeIdx];
+        const lostGold = Math.floor(entry.item.currentPrice * 0.3);
         if (entry.quantity <= 1) {
           setEscapeLog((log) => [`${entry.item.emoji} ${entry.item.name} escaped the cart!`, ...log].slice(0, 5));
           if (soundEnabled) soundEngine.playError();
+          // Lose some gold when item fully escapes
+          addGold(-lostGold);
+          addChaos(3);
+          showMessage(`${entry.item.emoji} ${entry.item.name} escaped! Lost ${lostGold}g!`, 'error');
           return prev.filter((_, i) => i !== escapeIdx);
         }
         setEscapeLog((log) => [`${entry.item.emoji} A ${entry.item.name} ran away!`, ...log].slice(0, 5));
         if (soundEnabled) soundEngine.playClick();
-        return prev.map((e, i) => (i === escapeIdx ? { ...e, quantity: e.quantity - 1 } : e));
+        let newCart = prev.map((e, i) => (i === escapeIdx ? { ...e, quantity: e.quantity - 1 } : e));
+        if (extraEscape && newCart.length > 1) {
+          const extraIdx = Math.floor(Math.random() * newCart.length);
+          const extra = newCart[extraIdx];
+          if (extra.quantity <= 1) {
+            setEscapeLog((log) => [`${extra.item.emoji} ${extra.item.name} ALSO escaped!`, ...log].slice(0, 5));
+            addGold(-Math.floor(extra.item.currentPrice * 0.2));
+            newCart = newCart.filter((_, i) => i !== extraIdx);
+          } else {
+            newCart = newCart.map((e, i) => (i === extraIdx ? { ...e, quantity: e.quantity - 1 } : e));
+          }
+        }
+        return newCart;
       });
-    }, 15000);
+    }, isHighChaos ? 10000 : 15000); // Items escape faster at high chaos
     return () => clearInterval(interval);
-  }, [soundEnabled]);
+  }, [soundEnabled, isHighChaos, addGold, addChaos, showMessage]);
 
   // ─── Floating ambient items ──────────────────────────────────────────────
 
@@ -273,6 +305,10 @@ export default function CartChaosPage() {
         showMessage(`${item.emoji} ${item.name} is SOLD OUT!`, 'error');
         return;
       }
+      if (item.currentPrice > gold) {
+        showMessage(`Not enough gold! Need ${item.currentPrice}g, have ${gold}g.`, 'error');
+        return;
+      }
       if (soundEnabled) soundEngine.playClick();
       // Decrease stock
       setItems(prev => prev.map(i => i.id === item.id ? { ...i, stock: i.stock - 1 } : i));
@@ -288,7 +324,7 @@ export default function CartChaosPage() {
       if (soundEnabled) soundEngine.playCartAdd();
       showMessage(`Added ${item.emoji} ${item.name} (${item.currentPrice}g) to cart!`, 'info');
     },
-    [soundEnabled, showMessage],
+    [soundEnabled, showMessage, gold],
   );
 
   // ─── Tax Goblin answer ───────────────────────────────────────────────────
@@ -298,18 +334,20 @@ export default function CartChaosPage() {
       if (idx === taxGoblin.correct) {
         addGold(taxGoblin.reward);
         addXP(25);
+        reduceChaos(3);
         if (soundEnabled) soundEngine.playSuccess();
         showMessage(`Correct! The Goblin drops ${taxGoblin.reward}g and flees!`, 'success');
         setGoblinTaxed(false);
       } else {
         addGold(-taxGoblin.penalty);
+        addChaos(5);
         if (soundEnabled) soundEngine.playError();
         showMessage(`Wrong! The Goblin steals ${taxGoblin.penalty}g!`, 'error');
         setGoblinTaxed(true);
       }
       setTaxGoblin({ active: false, question: '', answers: [], correct: 0, reward: 0, penalty: 0 });
     },
-    [taxGoblin, addGold, addXP, soundEnabled, showMessage],
+    [taxGoblin, addGold, addXP, soundEnabled, showMessage, addChaos, reduceChaos],
   );
 
   // ─── Checkout ────────────────────────────────────────────────────────────
@@ -343,8 +381,15 @@ export default function CartChaosPage() {
       if (soundEnabled) soundEngine.playSuccess();
       const taxAmount = goblinTaxed ? Math.floor(cartTotal * 0.15) : 0;
       const total = cartTotal + taxAmount;
+      // Can't afford check
+      if (total > gold) {
+        showMessage(`You can't afford ${total}g! Missing ${total - gold}g.`, 'error');
+        setCheckoutPuzzle({ active: false, num1: 0, num2: 0, operator: '+', answer: 0, hint: '' });
+        return;
+      }
       addGold(-total);
       addXP(cart.length * 15 + 20);
+      reduceChaos(2); // successful purchase calms the void
       setTotalSpent((t) => t + total);
       setPurchaseCount((p) => p + cart.reduce((s, e) => s + e.quantity, 0));
       cart.forEach((e) => {
@@ -377,7 +422,98 @@ export default function CartChaosPage() {
       showMessage(`Wrong answer! The checkout steals 10% (${Math.floor(cartTotal * 0.1)}g) as a fee!`, 'error');
       setCheckoutPuzzle({ active: false, num1: 0, num2: 0, operator: '+', answer: 0, hint: '' });
     }
-  }, [checkoutAnswer, checkoutPuzzle.answer, cartTotal, cart, addGold, addXP, addItem, completeQuest, purchaseCount, totalSpent, soundEnabled, showMessage, goblinTaxed, addActivity, trackStat]);
+  }, [checkoutAnswer, checkoutPuzzle.answer, cartTotal, cart, gold, addGold, addXP, addItem, completeQuest, purchaseCount, totalSpent, soundEnabled, showMessage, goblinTaxed, addActivity, trackStat, reduceChaos]);
+ // ─── Use Item Effect ──────────────────────────────────────────────────────
+ const useItemEffect = useCallback(
+ (itemId: string) => {
+   const effect = ITEM_EFFECTS[itemId];
+   if (!effect) {
+     showMessage('Unknown item effect!', 'error');
+     return;
+   }
+   setUsingItem(itemId);
+   if (soundEnabled) soundEngine.playSuccess();
+   switch (effect.effect) {
+     case 'heal':
+       showMessage(`${effect.icon} Used ${effect.name}: +${effect.value} HP restored!`, 'success');
+       break;
+     case 'shield':
+       showMessage(`${effect.icon} Used ${effect.name}: Shielded from next chaos increase!`, 'success');
+       reduceChaos(10);
+       break;
+     case 'reduce-chaos':
+       reduceChaos(effect.value);
+       showMessage(`${effect.icon} Used ${effect.name}: Chaos reduced by ${effect.value}!`, 'success');
+       break;
+     case 'bonus-xp':
+       addXP(effect.value * 20);
+       showMessage(`${effect.icon} Used ${effect.name}: +${effect.value * 20} XP bonus!`, 'success');
+       break;
+     case 'bonus-gold':
+       addGold(effect.value * 50);
+       showMessage(`${effect.icon} Used ${effect.name}: +${effect.value * 50}g bonus!`, 'success');
+       break;
+     case 'auto-click':
+       showMessage(`${effect.icon} Used ${effect.name}: Auto-clicker active!`, 'success');
+       break;
+   }
+   setTimeout(() => setUsingItem(null), 1000);
+ },
+ [soundEnabled, showMessage, reduceChaos, addXP, addGold],
+ );
+ // ─── Item Effect Label ────────────────────────────────────────────────────
+ function ItemEffectBadge({ itemId }: { itemId: string }) {
+ const effect = ITEM_EFFECTS[itemId];
+ if (!effect) return null;
+ const effectColors: Record<string, string> = {
+   'heal': 'var(--color-signal-green)',
+   'shield': 'var(--color-signal-blue)',
+   'reduce-chaos': 'var(--color-signal-purple)',
+   'bonus-xp': 'var(--color-signal-blue)',
+   'bonus-gold': 'var(--color-signal-gold)',
+   'auto-click': 'var(--color-signal-red)',
+ };
+ return (
+   <motion.div
+     initial={{ opacity: 0, y: 5 }}
+     animate={{ opacity: 1, y: 0 }}
+     exit={{ opacity: 0, y: 5 }}
+     className="absolute -bottom-1 left-0 right-0 z-20 rounded border px-2 py-1 text-[10px]"
+     style={{
+       fontFamily: 'var(--font-mono)',
+       borderColor: effectColors[effect.effect] || 'var(--color-void-border)',
+       background: 'rgba(18, 18, 22, 0.95)',
+       color: effectColors[effect.effect] || 'var(--color-text-secondary)',
+     }}
+   >
+     {effect.description}
+   </motion.div>
+ );
+ }
+ // ─── Chaos Warning Banner ─────────────────────────────────────────────────
+ function ChaosWarning() {
+ if (chaosLevel < 30) return null;
+ return (
+   <motion.div
+     initial={{ opacity: 0, height: 0 }}
+     animate={{ opacity: 1, height: 'auto' }}
+     className="void-panel mx-auto mb-6 px-4 py-2 text-center text-xs sm:text-sm"
+     style={{
+       fontFamily: 'var(--font-mono)',
+       borderColor: chaosLevel >= 70 ? 'var(--color-signal-red)' : 'var(--color-signal-gold)',
+       color: chaosLevel >= 70 ? 'var(--color-signal-red)' : 'var(--color-signal-gold)',
+     }}
+   >
+     {chaosLevel >= 70 ? (
+       <>🔴 VOID CHAOS CRITICAL ({chaosLevel}%) — Prices volatile, carts rebel, goblins swarm!</>
+     ) : chaosLevel >= 50 ? (
+       <>🟠 HIGH CHAOS ({chaosLevel}%) — Faster price shifts, increased escape rate, more goblins</>
+     ) : (
+       <>🟡 Chaos rising ({chaosLevel}%) — Market becoming unstable...</>
+     )}
+   </motion.div>
+ );
+ }
 
   // ─── Glitch text effect ──────────────────────────────────────────────────
 
@@ -560,11 +696,25 @@ export default function CartChaosPage() {
         {/* Header */}
         <div className="mb-8 flex flex-wrap items-center justify-between gap-4">
           <BackButton />
-          <div
-            className="void-card px-3 sm:px-4 py-1.5 sm:py-2 text-xs sm:text-sm"
-            style={{ fontFamily: 'var(--font-mono)', color: 'var(--color-signal-gold)' }}
-          >
-            💰 {gold}g
+          <div className="flex items-center gap-3">
+            <div
+              className="void-card px-3 sm:px-4 py-1.5 sm:py-2 text-xs sm:text-sm"
+              style={{
+                fontFamily: 'var(--font-mono)',
+                color: chaosLevel >= 70 ? 'var(--color-signal-red)' :
+                       chaosLevel >= 50 ? 'var(--color-signal-gold)' :
+                       'var(--color-text-ghost)',
+                borderColor: chaosLevel >= 50 ? 'var(--color-signal-red)' : undefined,
+              }}
+            >
+              🔥 Chaos: {chaosLevel}%
+            </div>
+            <div
+              className="void-card px-3 sm:px-4 py-1.5 sm:py-2 text-xs sm:text-sm"
+              style={{ fontFamily: 'var(--font-mono)', color: 'var(--color-signal-gold)' }}
+            >
+              💰 {gold}g
+            </div>
           </div>
         </div>
 
@@ -583,6 +733,7 @@ export default function CartChaosPage() {
         </motion.div>
 
         {/* Price Roulette timer */}
+        <ChaosWarning />
         <motion.div
           className="void-panel mx-auto mb-8 flex items-center w-fit gap-4 px-4 py-2 text-xs sm:text-sm uppercase tracking-wider"
           style={{ fontFamily: 'var(--font-mono)' }}
@@ -621,6 +772,8 @@ export default function CartChaosPage() {
                     whileHover={!isSoldOut ? { scale: 1.03, y: -4 } : {}}
                     whileTap={!isSoldOut ? { scale: 0.97 } : {}}
                     onClick={() => !isSoldOut && addToCart(item)}
+                    onMouseEnter={() => setHoveredItem(item.id)}
+                    onMouseLeave={() => setHoveredItem(null)}
                     className={`void-card group relative p-6 h-full transition-all ${
                       isSoldOut ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'
                     }`}
@@ -722,6 +875,14 @@ export default function CartChaosPage() {
                     >
                       range: {item.minPrice}–{item.maxPrice}g
                     </div>
+                    {/* Item effect on hover */}
+                    {ITEM_EFFECTS[item.id] && (
+                      <AnimatePresence>
+                        {hoveredItem === item.id && (
+                          <ItemEffectBadge itemId={item.id} />
+                        )}
+                      </AnimatePresence>
+                    )}
                   </motion.div>
                 );
               })}
@@ -781,12 +942,34 @@ export default function CartChaosPage() {
                           <span className="text-sm" style={{ color: 'var(--color-text-primary)' }}>{entry.item.name}</span>
                           <span className="text-xs" style={{ color: 'var(--color-text-secondary)' }}>×{entry.quantity}</span>
                         </div>
-                        <span
-                          className="text-sm"
-                          style={{ fontFamily: 'var(--font-mono)', color: 'var(--color-signal-gold)' }}
-                        >
-                          {entry.item.currentPrice * entry.quantity}g
-                        </span>
+                        <div className="flex items-center gap-2">
+                          {ITEM_EFFECTS[entry.item.id] && (
+                            <motion.button
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                useItemEffect(entry.item.id);
+                              }}
+                              whileHover={{ scale: 1.1 }}
+                              whileTap={{ scale: 0.9 }}
+                              className="text-[10px] px-1.5 py-0.5 rounded border"
+                              style={{
+                                fontFamily: 'var(--font-mono)',
+                                borderColor: 'var(--color-signal-blue)',
+                                color: 'var(--color-signal-blue)',
+                                background: usingItem === entry.item.id ? 'rgba(0,100,255,0.15)' : 'transparent',
+                              }}
+                              title={ITEM_EFFECTS[entry.item.id]?.description}
+                            >
+                              USE
+                            </motion.button>
+                          )}
+                          <span
+                            className="text-sm"
+                            style={{ fontFamily: 'var(--font-mono)', color: 'var(--color-signal-gold)' }}
+                          >
+                            {entry.item.currentPrice * entry.quantity}g
+                          </span>
+                        </div>
                       </motion.div>
                     ))}
                   </AnimatePresence>

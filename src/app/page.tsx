@@ -3,6 +3,7 @@
 import { useState, useEffect, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useGameStore, detectCharacterClass } from "@/stores/game-store";
+import { ITEM_EFFECTS, UPGRADES, type Buff } from "@/stores/game-store";
 import { useChaosStore } from "@/stores/chaos-store";
 import { soundEngine } from "@/lib/sound-engine";
 import { ChaosDrift, CorruptedText, Redacted, BreathingText } from "@/components/effects/corruption";
@@ -53,13 +54,19 @@ function StatusLine({ label, value, delay = 0 }: { label: string; value: string;
 
 // ─── Hub Component ──────────────────────────────────────────────────────────
 function VoidHub({ characterName, characterClass }: { characterName: string; characterClass: string }) {
-  const { level, xp, xpToNext, gold, enemiesDefeated, achievements, stats } = useGameStore();
+  const { level, xp, xpToNext, gold, enemiesDefeated, achievements, stats, items, upgrades, buffs, useItem, buyUpgrade, tickBuffs } = useGameStore();
   const { chaosLevel, chaosMode } = useChaosStore();
   const { setZone, unlockAchievement } = useGameStore();
 
   useEffect(() => {
     unlockAchievement("first-login");
   }, [unlockAchievement]);
+
+  // Tick buffs every second while on hub
+  useEffect(() => {
+    const interval = setInterval(() => tickBuffs(), 1000);
+    return () => clearInterval(interval);
+  }, [tickBuffs]);
 
   const zones = [
     { id: "market" as const, name: "CART_CHAOS", desc: "sector.market // the marketplace fights back", color: "text-signal-red" },
@@ -180,6 +187,28 @@ function VoidHub({ characterName, characterClass }: { characterName: string; cha
         </motion.div>
       </ChaosDrift>
 
+      {/* Active Buffs */}
+      {buffs.length > 0 && (
+        <motion.div
+          className="w-full max-w-3xl flex flex-wrap gap-2 mb-6"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 0.6 }}
+        >
+          {buffs.map((buff) => (
+            <div
+              key={buff.id}
+              className="void-card flex items-center gap-2 px-3 py-1.5 text-xs"
+              style={{ fontFamily: "var(--font-mono)", borderColor: "var(--color-signal-gold)" }}
+            >
+              <span>{buff.icon}</span>
+              <span className="text-text-primary">{buff.name}</span>
+              <span className="text-signal-gold">{buff.duration}s</span>
+            </div>
+          ))}
+        </motion.div>
+      )}
+
       {/* Achievements / Recent Activity */}
       <div className="w-full max-w-3xl grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
         <motion.div
@@ -217,6 +246,111 @@ function VoidHub({ characterName, characterClass }: { characterName: string; cha
           )}
         </motion.div>
       </div>
+
+      {/* Inventory Panel */}
+      <motion.div
+        className="w-full max-w-3xl void-panel mb-8"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ delay: 1.0 }}
+      >
+        <div className="void-title mb-3">INVENTORY</div>
+        {items.length === 0 ? (
+          <div className="void-label">No items acquired. Explore zones to collect.</div>
+        ) : (
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+            {Object.entries(
+              items.reduce((acc, id) => {
+                acc[id] = (acc[id] || 0) + 1;
+                return acc;
+              }, {} as Record<string, number>)
+            ).map(([itemId, count]) => {
+              const effect = ITEM_EFFECTS[itemId];
+              if (!effect) return null;
+              return (
+                <button
+                  key={itemId}
+                  className="void-card text-left px-4 py-3 cursor-pointer hover:bg-void-card transition-colors"
+                  onClick={() => { useItem(itemId); soundEngine.playClick(); }}
+                  style={{ fontFamily: "var(--font-mono)" }}
+                >
+                  <div className="flex items-center justify-between">
+                    <span className="text-text-primary text-sm font-bold">{effect.icon} {effect.name}</span>
+                    <span className="text-signal-gold text-xs">x{count}</span>
+                  </div>
+                  <div className="void-label mt-1">{effect.description}</div>
+                  <div className="void-label text-signal-green mt-0.5">CLICK TO USE</div>
+                </button>
+              );
+            })}
+          </div>
+        )}
+      </motion.div>
+
+      {/* Upgrades Panel */}
+      <motion.div
+        className="w-full max-w-3xl void-panel mb-8"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ delay: 1.1 }}
+      >
+        <div className="void-title mb-3">UPGRADES</div>
+        <div className="space-y-2">
+          {UPGRADES.map((upgrade) => {
+            const ownedLevel = upgrades[upgrade.id] || 0;
+            const isMaxed = ownedLevel >= upgrade.maxLevel;
+            const canAfford = gold >= upgrade.cost;
+            return (
+              <div
+                key={upgrade.id}
+                className="void-card flex items-center justify-between px-4 py-3"
+                style={{ fontFamily: "var(--font-mono)" }}
+              >
+                <div className="flex-1 min-w-0">
+                  <div className="text-text-primary text-sm font-bold">{upgrade.name}</div>
+                  <div className="void-label">{upgrade.description}</div>
+                  <div className="void-label text-text-ghost mt-0.5">LVL {ownedLevel}/{upgrade.maxLevel}</div>
+                </div>
+                <button
+                  className="void-btn void-btn--signal ml-4 whitespace-nowrap text-xs disabled:opacity-30"
+                  disabled={isMaxed || !canAfford}
+                  onClick={() => { if (buyUpgrade(upgrade.id)) soundEngine.playClick(); }}
+                >
+                  {isMaxed ? "MAX" : `BUY ${upgrade.cost}g`}
+                </button>
+              </div>
+            );
+          })}
+        </div>
+      </motion.div>
+
+      {/* Void Core Teaser — Level 10+ */}
+      {level >= 10 && (
+        <motion.div
+          className="w-full max-w-3xl void-panel mb-8"
+          style={{ borderColor: "var(--color-signal-purple)" }}
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 1.2 }}
+        >
+          <div className="void-title mb-2" style={{ color: "var(--color-signal-purple)" }}>
+            ░▒▓ VOID CORE DETECTED ▓▒░
+          </div>
+          <p className="void-label text-signal-purple">
+            Anomalous signal detected at coordinates ██.██.███. Sector access requires further clearance.
+            Continue operating to unlock entry to the core.
+          </p>
+          <div className="mt-3 flex items-center gap-3">
+            <span className="void-label">SIGNAL STRENGTH:</span>
+            <div className="flex-1 void-progress" style={{ background: "var(--color-void-surface)" }}>
+              <div
+                className="void-progress__fill"
+                style={{ width: `${Math.min((level - 10) * 10, 100)}%`, background: "var(--color-signal-purple)" }}
+              />
+            </div>
+          </div>
+        </motion.div>
+      )}
 
       {/* Footer */}
       <motion.div

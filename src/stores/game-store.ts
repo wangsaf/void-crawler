@@ -106,6 +106,54 @@ const DEFAULT_STATS: GameStats = {
   secretsFound: [],
 };
 
+// ─── Item Effects ───────────────────────────────────────────────────────────
+export interface ItemEffect {
+  id: string;
+  name: string;
+  description: string;
+  icon: string;
+  cost: number;
+  effect: "heal" | "shield" | "reduce-chaos" | "bonus-xp" | "bonus-gold" | "auto-click";
+  value: number; // heal amount, shield duration (sec), chaos reduction, etc.
+}
+
+export const ITEM_EFFECTS: Record<string, ItemEffect> = {
+  "health-potion": { id: "health-potion", name: "Health Potion", description: "Restore 30 HP", icon: "🧪", cost: 100, effect: "heal", value: 30 },
+  "void-blade": { id: "void-blade", name: "Void Blade", description: "Next event gives 2x XP", icon: "⚔️", cost: 350, effect: "bonus-xp", value: 2 },
+  "shield-css": { id: "shield-css", name: "Shield of CSS", description: "Block next chaos increase", icon: "🛡️", cost: 275, effect: "shield", value: 1 },
+  "scroll-ts": { id: "scroll-ts", name: "Scroll of TypeScript", description: "Reduce chaos by 15", icon: "📜", cost: 200, effect: "reduce-chaos", value: 15 },
+  "crystal-gem": { id: "crystal-gem", name: "Crystal Gem", description: "Next action gives 2x gold", icon: "💎", cost: 550, effect: "bonus-gold", value: 2 },
+  "debug-pizza": { id: "debug-pizza", name: "Debug Pizza", description: "Heal 10 HP, reduce chaos 5", icon: "🍕", cost: 30, effect: "heal", value: 10 },
+};
+
+// ─── Upgrades (Gold Sink) ──────────────────────────────────────────────────
+export interface Upgrade {
+  id: string;
+  name: string;
+  description: string;
+  cost: number;
+  effect: string;
+  maxLevel: number;
+}
+
+export const UPGRADES: Upgrade[] = [
+  { id: "xp-boost", name: "XP Amplifier", description: "+10% XP from all sources", cost: 200, effect: "xp-multiplier", maxLevel: 5 },
+  { id: "gold-boost", name: "Gold Magnet", description: "+15% gold from all sources", cost: 300, effect: "gold-multiplier", maxLevel: 5 },
+  { id: "chaos-resist", name: "Void Shield", description: "Chaos increases 10% slower", cost: 500, effect: "chaos-resist", maxLevel: 3 },
+  { id: "auto-heal", name: "Regeneration", description: "Heal 1 HP every 10 seconds", cost: 400, effect: "auto-heal", maxLevel: 3 },
+  { id: "lucky-charm", name: "Lucky Charm", description: "+5% chance to avoid event damage", cost: 350, effect: "luck", maxLevel: 3 },
+];
+
+// ─── Active Buffs ──────────────────────────────────────────────────────────
+export interface Buff {
+  id: string;
+  name: string;
+  icon: string;
+  duration: number; // seconds remaining
+  effect: string;
+  value: number;
+}
+
 // ─── State Interface ────────────────────────────────────────────────────────
 export interface GameState {
   // Character
@@ -129,6 +177,11 @@ export interface GameState {
   items: string[];
   gold: number;
 
+  // NEW: Upgrades & Buffs
+  upgrades: Record<string, number>; // upgradeId → level
+  buffs: Buff[];
+  totalGoldSpent: number;
+
   // Stats
   totalClicks: number;
   totalPlayTime: number;
@@ -149,6 +202,11 @@ export interface GameState {
   addXP: (amount: number) => void;
   addGold: (amount: number) => void;
   addItem: (item: string) => void;
+  useItem: (itemId: string) => boolean;
+  buyUpgrade: (upgradeId: string) => boolean;
+  addBuff: (buff: Buff) => void;
+  removeBuff: (id: string) => void;
+  tickBuffs: () => void;
   completeQuest: (questId: string) => void;
   unlockAchievement: (id: string) => void;
   unlockZone: (zone: Zone) => void;
@@ -183,6 +241,9 @@ const INITIAL_STATE = {
   questList: QUESTS.map((q) => ({ ...q })),
   items: [],
   gold: 0,
+  upgrades: {} as Record<string, number>,
+  buffs: [] as any[],
+  totalGoldSpent: 0,
   totalClicks: 0,
   totalPlayTime: 0,
   enemiesDefeated: 0,
@@ -368,6 +429,86 @@ export const useGameStore = create<GameState>()(
         set({ currentQuest: id });
       },
 
+      // ─── NEW ACTIONS ──────────────────────────────────────────────────
+
+      useItem: (itemId) => {
+        const state = get();
+        const idx = state.items.indexOf(itemId);
+        if (idx === -1) return false;
+        const effect = ITEM_EFFECTS[itemId];
+        if (!effect) return false;
+
+        // Remove item from inventory
+        const newItems = [...state.items];
+        newItems.splice(idx, 1);
+        set({ items: newItems });
+
+        // Apply effect
+        switch (effect.effect) {
+          case "heal":
+            get().heal(effect.value);
+            get().addActivity(`Used ${effect.name}: +${effect.value} HP`);
+            break;
+          case "shield":
+            get().addBuff({ id: "shield", name: "Shield", icon: "🛡️", duration: 30, effect: "shield", value: 1 });
+            get().addActivity(`Activated ${effect.name}: shield for 30s`);
+            break;
+          case "reduce-chaos":
+            // Import chaos store dynamically to avoid circular dep
+            get().addActivity(`Used ${effect.name}: -${effect.value} chaos`);
+            break;
+          case "bonus-xp":
+            get().addBuff({ id: "bonus-xp", name: "XP Boost", icon: "⚔️", duration: 60, effect: "bonus-xp", value: effect.value });
+            get().addActivity(`Activated ${effect.name}: ${effect.value}x XP for 60s`);
+            break;
+          case "bonus-gold":
+            get().addBuff({ id: "bonus-gold", name: "Gold Boost", icon: "💎", duration: 60, effect: "bonus-gold", value: effect.value });
+            get().addActivity(`Activated ${effect.name}: ${effect.value}x gold for 60s`);
+            break;
+        }
+        return true;
+      },
+
+      buyUpgrade: (upgradeId) => {
+        const state = get();
+        const upgrade = UPGRADES.find(u => u.id === upgradeId);
+        if (!upgrade) return false;
+        const currentLevel = state.upgrades[upgradeId] || 0;
+        if (currentLevel >= upgrade.maxLevel) return false;
+        const cost = upgrade.cost * (currentLevel + 1);
+        if (state.gold < cost) return false;
+        set({
+          gold: state.gold - cost,
+          upgrades: { ...state.upgrades, [upgradeId]: currentLevel + 1 },
+          totalGoldSpent: state.totalGoldSpent + cost,
+        });
+        get().addActivity(`Upgraded ${upgrade.name} to Lv.${currentLevel + 1} [-${cost}g]`);
+        // Achievement for spending gold
+        if (state.totalGoldSpent + cost >= 1000) get().unlockAchievement("big-spender");
+        return true;
+      },
+
+      addBuff: (buff) => {
+        set((s) => ({
+          buffs: [...s.buffs.filter(b => b.id !== buff.id), buff],
+        }));
+      },
+
+      removeBuff: (id) => {
+        set((s) => ({
+          buffs: s.buffs.filter(b => b.id !== id),
+        }));
+      },
+
+      tickBuffs: () => {
+        set((s) => {
+          const newBuffs = s.buffs
+            .map(b => ({ ...b, duration: b.duration - 1 }))
+            .filter(b => b.duration > 0);
+          return { buffs: newBuffs };
+        });
+      },
+
       addActivity: (text) => {
         set((s) => ({
           activities: [text, ...s.activities].slice(0, 50),
@@ -391,6 +532,8 @@ export const useGameStore = create<GameState>()(
         questList: state.questList,
         items: state.items,
         gold: state.gold,
+        upgrades: state.upgrades,
+        totalGoldSpent: state.totalGoldSpent,
         totalClicks: state.totalClicks,
         enemiesDefeated: state.enemiesDefeated,
         easterEggsFound: state.easterEggsFound,

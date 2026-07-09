@@ -4,6 +4,7 @@ import { useState, useEffect, useCallback, useRef, useMemo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { soundEngine } from "@/lib/sound-engine";
 import { useGameStore } from "@/stores/game-store";
+import { useChaosStore } from "@/stores/chaos-store";
 import { BackButton } from "@/components/rpg/back-button";
 
 // ─── Fake data generators ───────────────────────────────────────────────────
@@ -58,6 +59,76 @@ function randomBetween(min: number, max: number) {
   return Math.floor(Math.random() * (max - min + 1)) + min;
 }
 
+// ─── Chaos-aware metric corruption ─────────────────────────────────────────
+function corruptMetrics(base: Record<string, number>, chaosLevel: number): Record<string, number> {
+  if (chaosLevel < 30) return base;
+  const corrupted: Record<string, number> = {};
+  const corruptionStrength = (chaosLevel - 30) / 70; // 0 at chaos 30, 1 at chaos 100
+  for (const [key, value] of Object.entries(base)) {
+    if (Math.random() < corruptionStrength * 0.6) {
+      // Swap with random nonsense values at high chaos
+      if (chaosLevel > 70 && Math.random() < 0.3) {
+        corrupted[key] = randomBetween(0, 999); // completely wrong
+      } else {
+        corrupted[key] = Math.max(0, Math.min(999, value + randomBetween(-40, 40)));
+      }
+    } else {
+      corrupted[key] = value;
+    }
+  }
+  return corrupted;
+}
+
+function getDeployFailChance(chaosLevel: number): number {
+  if (chaosLevel > 70) return 0.5;
+  if (chaosLevel > 50) return 0.3;
+  return 0;
+}
+
+// ─── Chaos Indicator Banner ────────────────────────────────────────────────
+function ChaosIndicator() {
+  const chaosLevel = useChaosStore((s) => s.chaosLevel);
+  const chaosMode = useChaosStore((s) => s.chaosMode);
+
+  if (chaosLevel < 10) return null;
+
+  const severity = chaosLevel > 70 ? 'critical' : chaosLevel > 50 ? 'high' : chaosLevel > 30 ? 'moderate' : 'low';
+  const colors = {
+    low: { bg: 'rgba(204,170,34,0.08)', border: 'rgba(204,170,34,0.3)', text: 'var(--color-signal-gold)', label: 'MINOR INTERFERENCE' },
+    moderate: { bg: 'rgba(204,170,34,0.12)', border: 'rgba(204,170,34,0.5)', text: 'var(--color-signal-gold)', label: 'DATA CORRUPTION DETECTED' },
+    high: { bg: 'rgba(204,34,68,0.1)', border: 'rgba(204,34,68,0.5)', text: 'var(--color-signal-red)', label: '⚠ METRICS UNRELIABLE' },
+    critical: { bg: 'rgba(204,34,68,0.15)', border: 'rgba(204,34,68,0.7)', text: 'var(--color-signal-red)', label: '🔴 CHAOS MODE — NOTHING IS REAL' },
+  };
+  const c = colors[severity];
+
+  return (
+    <motion.div
+      className="void-card px-4 py-2 text-xs flex items-center gap-3"
+      style={{
+        background: c.bg,
+        border: `1px solid ${c.border}`,
+        fontFamily: 'var(--font-mono)',
+      }}
+      animate={chaosMode ? { opacity: [1, 0.5, 1] } : { opacity: 1 }}
+      transition={chaosMode ? { duration: 0.5, repeat: Infinity } : {}}
+    >
+      <span style={{ color: c.text }} className="font-bold">{c.label}</span>
+      <div
+        className="flex-1 h-1.5 rounded overflow-hidden"
+        style={{ background: 'var(--color-void-black)', border: '1px solid var(--color-void-border)' }}
+      >
+        <motion.div
+          className="h-full rounded"
+          style={{ backgroundColor: chaosLevel > 50 ? 'var(--color-signal-red)' : 'var(--color-signal-gold)' }}
+          animate={{ width: `${chaosLevel}%` }}
+          transition={{ duration: 0.4 }}
+        />
+      </div>
+      <span style={{ color: c.text }}>{chaosLevel}%</span>
+    </motion.div>
+  );
+}
+
 // ─── Confetti Particle ──────────────────────────────────────────────────────
 function ConfettiParticles({ active }: { active: boolean }) {
   const particles = useMemo(() =>
@@ -90,19 +161,22 @@ function ConfettiParticles({ active }: { active: boolean }) {
 
 // ─── Metric Bar ─────────────────────────────────────────────────────────────
 function MetricBar({ label, value, color }: { label: string; value: number; color: string }) {
-  const isWarning = value > 90;
-  const isHigh = value > 80;
+  const isCorrupted = value > 100;
+  const isWarning = value > 90 || isCorrupted;
+  const isHigh = value > 80 || isCorrupted;
+  const barWidth = isCorrupted ? 100 : value;
+  const displayValue = isCorrupted ? `${value}?!` : `${value}%`;
   return (
     <div
       className="flex items-center gap-4 p-2 rounded transition-all"
       style={{
-        border: isWarning ? '1px solid var(--color-signal-red)' : '1px solid transparent',
-        background: isWarning ? 'rgba(204,34,68,0.05)' : 'transparent',
+        border: isCorrupted ? '1px solid var(--color-signal-purple)' : isWarning ? '1px solid var(--color-signal-red)' : '1px solid transparent',
+        background: isCorrupted ? 'rgba(102,34,204,0.08)' : isWarning ? 'rgba(204,34,68,0.05)' : 'transparent',
       }}
     >
       <span
         className="w-10 text-xs text-right font-bold"
-        style={{ fontFamily: "var(--font-mono)", color }}
+        style={{ fontFamily: "var(--font-mono)", color: isCorrupted ? 'var(--color-signal-purple)' : color }}
       >
         {label}
       </span>
@@ -117,7 +191,7 @@ function MetricBar({ label, value, color }: { label: string; value: number; colo
           }}
           initial={{ width: 0 }}
           animate={{
-            width: `${value}%`,
+            width: `${barWidth}%`,
             opacity: isHigh ? [1, 0.7, 1] : 1,
           }}
           transition={{
@@ -128,9 +202,9 @@ function MetricBar({ label, value, color }: { label: string; value: number; colo
       </div>
       <span
         className="w-10 text-xs text-right"
-        style={{ fontFamily: "var(--font-mono)", color }}
+        style={{ fontFamily: "var(--font-mono)", color: isCorrupted ? 'var(--color-signal-purple)' : color }}
       >
-        {value}%
+        {displayValue}
       </span>
     </div>
   );
@@ -175,12 +249,17 @@ function SlotMachine({ totalPulls }: { totalPulls: number }) {
   const [result, setResult] = useState<string | null>(null);
   const [nearMiss, setNearMiss] = useState(false);
   const [showConfetti, setShowConfetti] = useState(false);
-  const { addGold, soundEnabled, unlockAchievement, trackStat } = useGameStore();
+  const { addGold, soundEnabled, unlockAchievement, trackStat, gold } = useGameStore();
+  const chaosLevel = useChaosStore((s) => s.chaosLevel);
+
+  const SPIN_COST = 25;
+  const canAfford = gold >= SPIN_COST;
 
   const SYMBOLS = ["💰", "💎", "🪙", "🔥", "💀", "❓", "🎰", "⚡"];
 
   const pull = () => {
-    if (spinning) return;
+    if (spinning || !canAfford) return;
+    addGold(-SPIN_COST);
     setSpinning(true);
     setResult(null);
     setNearMiss(false);
@@ -207,22 +286,26 @@ function SlotMachine({ totalPulls }: { totalPulls: number }) {
         setSpinning(false);
 
         if (final[0] === final[1] && final[1] === final[2]) {
-          const goldWon = randomBetween(50, 200);
+          const jackpot = chaosLevel > 70 && Math.random() < 0.15 ? 0 : 500;
+          const goldWon = jackpot > 0 ? jackpot : 0;
           addGold(goldWon);
-          setResult(`🎉 JACKPOT! +${goldWon} Gold!`);
+          setResult(jackpot > 0 ? `🎉 JACKPOT! +${goldWon} Gold!` : '💀 Chaos ate your jackpot! +0 Gold!');
           unlockAchievement("slot-winner");
            if (soundEnabled) soundEngine.playJackpot();
           setShowConfetti(true);
           setTimeout(() => setShowConfetti(false), 2500);
         } else if (final[0] === final[1] || final[1] === final[2] || final[0] === final[2]) {
-          const goldWon = randomBetween(10, 40);
+          const goldWon = randomBetween(15, 60);
           addGold(goldWon);
           setResult(`✨ Two match! +${goldWon} Gold`);
           if (soundEnabled) soundEngine.playClick();
           setNearMiss(true);
           setTimeout(() => setNearMiss(false), 1500);
         } else {
-          setResult("💀 No match. Try again.");
+          const lossMsg = chaosLevel > 50 && Math.random() < 0.2
+            ? '💀 No match. The void stares back. -25 Gold'
+            : '💀 No match. Try again. (-25 Gold)';
+          setResult(lossMsg);
         }
       }
     }, 80);
@@ -239,7 +322,7 @@ function SlotMachine({ totalPulls }: { totalPulls: number }) {
         <span
           className="text-[10px] ml-2 normal-case"
           style={{ color: 'var(--color-text-ghost)' }}
-        >{totalPulls} pulls</span>
+        >{totalPulls} pulls • {SPIN_COST}g/spin • 500g jackpot</span>
       </h3>
       <div className="flex items-center justify-center gap-2 mb-3">
         {reels.map((r, i) => (
@@ -259,11 +342,12 @@ function SlotMachine({ totalPulls }: { totalPulls: number }) {
       </div>
       <button
         onClick={pull}
-        disabled={spinning}
+        disabled={spinning || !canAfford}
         aria-label={spinning ? "Slot machine spinning" : "Pull slot machine lever"}
         className="void-btn w-full"
+        style={!canAfford ? { opacity: 0.5, cursor: 'not-allowed' } : undefined}
       >
-        {spinning ? "SPINNING..." : "🎰 PULL LEVER"}
+        {spinning ? "SPINNING..." : !canAfford ? `💰 NEED ${SPIN_COST} GOLD` : `🎰 PULL LEVER (${SPIN_COST}g)`}
       </button>
       <AnimatePresence>
         {result && (
@@ -500,16 +584,21 @@ function APIKeyHoroscope() {
 
 // ─── Deploy Nuke ────────────────────────────────────────────────────────────
 function DeployNuke() {
-  const [phase, setPhase] = useState<"idle" | "countdown" | "explosion" | "deployed">("idle");
+  const [phase, setPhase] = useState<"idle" | "countdown" | "explosion" | "deployed" | "failed">("idle");
   const [count, setCount] = useState(3);
-  const { addXP, addGold, unlockAchievement, soundEnabled, addActivity, trackStat } = useGameStore();
+  const [failReason, setFailReason] = useState('');
+  const { addXP, addGold, unlockAchievement, soundEnabled, addActivity, trackStat, takeDamage } = useGameStore();
+  const chaosLevel = useChaosStore((s) => s.chaosLevel);
   const deployCountRef = useRef(0);
+
+  const failChance = getDeployFailChance(chaosLevel);
 
   const startDeploy = () => {
     if (phase !== "idle") return;
     if (soundEnabled) soundEngine.playClick();
     setPhase("countdown");
     setCount(3);
+    setFailReason('');
 
     let c = 3;
     const interval = setInterval(() => {
@@ -521,14 +610,31 @@ function DeployNuke() {
         setPhase("explosion");
         if (soundEnabled) soundEngine.playLevelUp();
         setTimeout(() => {
-          setPhase("deployed");
-          deployCountRef.current += 1;
-          const bonusXP = 100 + deployCountRef.current * 10;
-          addXP(bonusXP);
-          addGold(50);
-          unlockAchievement("deploy-master");
-          addActivity(`Deployed via NUKE #${deployCountRef.current}`);
-          trackStat('totalDeploys');
+          // Check for chaos-based failure
+          if (failChance > 0 && Math.random() < failChance) {
+            setPhase("failed");
+            addGold(-50);
+            takeDamage(10);
+            const reasons = [
+              'Deploy pipeline corrupted by void interference!',
+              'Chaos energy overloaded the server cluster!',
+              'Reality distortion field scrambled the config!',
+              'DNS resolution dissolved into the abyss!',
+              'Container orchestration lost in chaos dimension!',
+            ];
+            setFailReason(reasons[randomBetween(0, reasons.length - 1)]);
+            addActivity(`NUKE DEPLOY FAILED — lost 50g + 10 HP`);
+            trackStat('totalDeploys');
+          } else {
+            setPhase("deployed");
+            deployCountRef.current += 1;
+            const bonusXP = 100 + deployCountRef.current * 10;
+            addXP(bonusXP);
+            addGold(50);
+            unlockAchievement("deploy-master");
+            addActivity(`Deployed via NUKE #${deployCountRef.current}`);
+            trackStat('totalDeploys');
+          }
         }, 2000);
       }
     }, 1000);
@@ -641,6 +747,54 @@ function DeployNuke() {
           </button>
         </motion.div>
       )}
+
+      {phase === "failed" && (
+        <motion.div
+          className="text-center py-4"
+          initial={{ opacity: 0, scale: 0.5 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ type: "spring", damping: 10 }}
+        >
+          <p
+            className="void-data text-3xl font-black"
+            style={{ color: 'var(--color-signal-red)' }}
+          >
+            ❌ DEPLOY FAILED
+          </p>
+          <p
+            className="text-sm mt-2"
+            style={{ color: 'var(--color-signal-red)', fontFamily: 'var(--font-mono)' }}
+          >
+            {failReason}
+          </p>
+          <p
+            className="text-xs mt-2"
+            style={{ color: 'var(--color-signal-gold)', fontFamily: 'var(--font-mono)', opacity: 0.8 }}
+          >
+            -50 Gold • -10 HP • Chaos disrupted the deploy!
+          </p>
+          <button
+            onClick={() => setPhase("idle")}
+            className="void-btn void-btn--signal mt-3 text-xs"
+          >
+            Retry deploy
+          </button>
+        </motion.div>
+      )}
+
+      {failChance > 0 && phase === "idle" && (
+        <div
+          className="mt-3 text-[10px] text-center px-2 py-1 rounded"
+          style={{
+            background: 'rgba(204,34,68,0.08)',
+            border: '1px solid rgba(204,34,68,0.3)',
+            color: 'var(--color-signal-red)',
+            fontFamily: 'var(--font-mono)',
+          }}
+        >
+          ⚠ Chaos Level: {chaosLevel}% → {Math.round(failChance * 100)}% fail chance
+        </div>
+      )}
     </div>
   );
 }
@@ -648,11 +802,15 @@ function DeployNuke() {
 // ─── Main Page ──────────────────────────────────────────────────────────────
 export default function DashboardPage() {
   const { addXP, soundEnabled, setZone } = useGameStore();
+  const chaosLevel = useChaosStore((s) => s.chaosLevel);
 
   const [metrics, setMetrics] = useState<Record<string, number>>({
     CPU: 45, RAM: 62, NET: 33, IO: 58, REQ: 71, LAT: 28,
   });
   const [chartData, setChartData] = useState<number[]>(Array.from({ length: 20 }, () => randomBetween(20, 80)));
+
+  // Chaos-corrupted metrics for display
+  const displayMetrics = useMemo(() => corruptMetrics(metrics, chaosLevel), [metrics, chaosLevel]);
 
   useEffect(() => {
     setZone("dashboard");
@@ -707,6 +865,7 @@ export default function DashboardPage() {
               </p>
             </div>
           </div>
+          <ChaosIndicator />
           <motion.div
             className="void-card px-3 py-1.5 text-xs shrink-0"
             style={{ fontFamily: "var(--font-mono)" }}
@@ -731,9 +890,9 @@ export default function DashboardPage() {
               <div className="flex items-center justify-between mb-4">
                 <h2
                   className="void-label"
-                  style={{ color: 'var(--color-signal-blue)' }}
+                  style={{ color: chaosLevel > 50 ? 'var(--color-signal-red)' : 'var(--color-signal-blue)' }}
                 >
-                  📊 Real-Time Metrics
+                  {chaosLevel > 50 ? '⚠️ UNRELIABLE Metrics' : '📊 Real-Time Metrics'}
                 </h2>
                 <span
                   className="text-xs"
@@ -744,7 +903,7 @@ export default function DashboardPage() {
               </div>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 {METRICS.map((m) => (
-                  <MetricBar key={m} label={m} value={metrics[m]} color={metricColors[m]} />
+                  <MetricBar key={m} label={m} value={displayMetrics[m]} color={metricColors[m]} />
                 ))}
               </div>
             </motion.div>

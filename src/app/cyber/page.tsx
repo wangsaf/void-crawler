@@ -4,6 +4,7 @@ import { useState, useEffect, useRef, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { soundEngine } from '@/lib/sound-engine';
 import { useGameStore } from '@/stores/game-store';
+import { useChaosStore } from '@/stores/chaos-store';
 import { BackButton } from '@/components/rpg/back-button';
 
 // Matrix Rain Background
@@ -52,19 +53,23 @@ function MatrixRain() {
 }
 
 // XSS Phantom Enemy
-function XssPhantom({ onSanitize }: { onSanitize: () => void }) {
+function XssPhantom({ onSanitize, chaosLevel }: { onSanitize: () => void; chaosLevel: number }) {
   const [pos, setPos] = useState({ x: 0, y: 0 });
 
   useEffect(() => {
     setPos({ x: Math.random() * 80 + 10, y: Math.random() * 70 + 15 });
   }, []);
 
+  // At high chaos, phantoms move faster and more erratically
+  const moveSpeed = chaosLevel > 60 ? 1.5 : chaosLevel > 30 ? 2.5 : 4;
+  const driftRange = chaosLevel > 60 ? 40 : chaosLevel > 30 ? 25 : 20;
+
   return (
     <motion.div
       initial={{ opacity: 0, scale: 0 }}
-      animate={{ opacity: 1, scale: 1, x: [0, 20, -20, 10, 0], y: [0, -10, 5, -5, 0] }}
+      animate={{ opacity: 1, scale: 1, x: [0, driftRange, -driftRange, driftRange/2, 0], y: [0, -driftRange/2, driftRange/4, -driftRange/4, 0] }}
       exit={{ opacity: 0, scale: 0, rotate: 360 }}
-      transition={{ duration: 2, x: { repeat: Infinity, duration: 4 }, y: { repeat: Infinity, duration: 3 } }}
+      transition={{ duration: 2, x: { repeat: Infinity, duration: moveSpeed }, y: { repeat: Infinity, duration: moveSpeed * 0.75 } }}
       className="fixed z-50 cursor-pointer select-none"
       style={{ left: `${pos.x}%`, top: `${pos.y}%` }}
       onClick={() => { soundEngine.playSuccess(); onSanitize(); }}
@@ -78,13 +83,15 @@ function XssPhantom({ onSanitize }: { onSanitize: () => void }) {
 }
 
 // Port Scanner Visualizer
-function PortScanner({ addXP, onScanComplete }: { addXP: (n: number) => void; onScanComplete?: () => void }) {
+function PortScanner({ addXP, onScanComplete, chaosLevel }: { addXP: (n: number) => void; onScanComplete?: () => void; chaosLevel: number }) {
   const [url, setUrl] = useState('');
   const [scanning, setScanning] = useState(false);
   const [ports, setPorts] = useState<{ port: number; status: 'pending' | 'open' | 'closed'; responseTime: number }[]>([]);
   const [done, setDone] = useState(false);
   const [progress, setProgress] = useState(0);
-  const { addActivity, trackStat } = useGameStore();
+  const [timedOut, setTimedOut] = useState(false);
+  const { addActivity, trackStat, addGold: takeGold } = useGameStore();
+  const { addChaos } = useChaosStore();
 
   const commonPorts = [21, 22, 23, 25, 53, 80, 110, 143, 443, 445, 993, 995, 1433, 1521, 3306, 3389, 5432, 5900, 8080, 8443];
 
@@ -93,11 +100,30 @@ function PortScanner({ addXP, onScanComplete }: { addXP: (n: number) => void; on
     soundEngine.playClick();
     setScanning(true);
     setDone(false);
+    setTimedOut(false);
     setProgress(0);
     setPorts(commonPorts.map(p => ({ port: p, status: 'pending' as const, responseTime: 0 })));
 
+    // Chaos risk: at chaos > 50, 20% chance of scan timeout
+    const willTimeout = chaosLevel > 50 && Math.random() < 0.2;
+    const timeoutAt = willTimeout ? Math.floor(Math.random() * 12) + 3 : -1; // fail partway through
+
     let i = 0;
+    // Chaos slows down port scanning
+    const scanInterval = chaosLevel > 60 ? 400 : chaosLevel > 30 ? 280 : 200;
     const interval = setInterval(() => {
+      // Check for chaos timeout
+      if (willTimeout && i >= timeoutAt) {
+        clearInterval(interval);
+        setScanning(false);
+        setTimedOut(true);
+        setProgress(Math.round((i / commonPorts.length) * 100));
+        takeGold(-30); // lose 30 gold
+        addChaos(3);
+        soundEngine.playError();
+        addActivity(`Port scan TIMEOUT — connection interrupted by chaos! [-30 gold, +3 chaos]`);
+        return;
+      }
       if (i >= commonPorts.length) {
         clearInterval(interval);
         setScanning(false);
@@ -117,7 +143,7 @@ function PortScanner({ addXP, onScanComplete }: { addXP: (n: number) => void; on
       setProgress(Math.round(((i + 1) / commonPorts.length) * 100));
       soundEngine.playClick();
       i++;
-    }, 200);
+    }, scanInterval);
   };
 
   return (
@@ -196,16 +222,32 @@ function PortScanner({ addXP, onScanComplete }: { addXP: (n: number) => void; on
           ✓ Scan complete — {ports.filter(p => p.status === 'open').length} open ports found (+15 XP)
         </motion.div>
       )}
+      {timedOut && (
+        <motion.div initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} className="mt-3 p-3 rounded-lg text-center" style={{ backgroundColor: 'rgba(204,34,68,0.15)', border: '2px solid var(--color-signal-red)' }}>
+          <div className="text-lg font-black" style={{ color: 'var(--color-signal-red)', fontFamily: 'var(--font-mono)' }}>
+            ⚠ SCAN INTERRUPTED
+          </div>
+          <div className="text-xs mt-1" style={{ color: 'var(--color-text-ghost)', fontFamily: 'var(--font-mono)' }}>
+            Chaos interference detected — connection severed at {progress}%
+          </div>
+          <div className="text-xs mt-1" style={{ color: 'var(--color-signal-red)', fontFamily: 'var(--font-mono)' }}>
+            −30 gold · +3 chaos
+          </div>
+        </motion.div>
+      )}
     </div>
   );
 }
 
 // Password Strength Checker
-function PasswordChecker({ onTitanium }: { onTitanium?: () => void }) {
+function PasswordChecker({ onTitanium, chaosLevel }: { onTitanium?: () => void; chaosLevel: number }) {
   const [password, setPassword] = useState('');
   const [strength, setStrength] = useState(0);
   const [level, setLevel] = useState('');
   const [strongestPassword, setStrongestPassword] = useState('');
+  const [chaosGlitch, setChaosGlitch] = useState(false);
+  const [fakeStrength, setFakeStrength] = useState(0);
+  const [fakeLevel, setFakeLevel] = useState('');
   const { trackStat, addActivity } = useGameStore();
 
   useEffect(() => {
@@ -219,6 +261,16 @@ function PasswordChecker({ onTitanium }: { onTitanium?: () => void }) {
     setStrength(s);
     const levels = ['', 'PAPER 📄', 'WOOD 🪵', 'STONE 🧱', 'STEEL 🔩', 'DIAMOND 💎', 'TITANIUM 🛡️'];
     setLevel(levels[s] || '');
+
+    // Chaos > 60: password strength meter occasionally shows WRONG result briefly
+    if (chaosLevel > 60 && password.length > 0 && Math.random() < 0.25) {
+      const wrongS = Math.max(0, Math.min(6, s + (Math.random() > 0.5 ? 2 : -2)));
+      setFakeStrength(wrongS);
+      setFakeLevel(levels[wrongS] || '');
+      setChaosGlitch(true);
+      setTimeout(() => setChaosGlitch(false), 1200);
+    }
+
     if (s >= 6) {
       onTitanium?.();
       if (password.length > strongestPassword.length) {
@@ -302,8 +354,11 @@ function PasswordChecker({ onTitanium }: { onTitanium?: () => void }) {
         ))}
       </div>
       {level && (
-        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="mt-3 text-center text-lg" style={{ color: barrierColors[strength - 1] || 'var(--color-text-primary)', fontFamily: 'var(--font-mono)' }}>
-          BARRIER: {level}
+        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="mt-3 text-center text-lg" style={{ color: chaosGlitch ? 'var(--color-signal-red)' : (barrierColors[(chaosGlitch ? fakeStrength : strength) - 1] || 'var(--color-text-primary)'), fontFamily: 'var(--font-mono)' }}>
+          BARRIER: {chaosGlitch ? fakeLevel : level}
+          {chaosGlitch && (
+            <span className="ml-2 text-xs" style={{ color: 'var(--color-signal-red)' }}>⚠ CORRUPTED</span>
+          )}
         </motion.div>
       )}
 
@@ -785,6 +840,7 @@ function TerminalLog() {
 
 export default function CyberPage() {
   const { addXP, addGold, findEasterEgg, unlockAchievement } = useGameStore();
+  const { chaosLevel } = useChaosStore();
   const [phantom, setPhantom] = useState(false);
   const [phantomTimer, setPhantomTimer] = useState<NodeJS.Timeout | null>(null);
   const [phantomCount, setPhantomCount] = useState(0);
@@ -794,24 +850,38 @@ export default function CyberPage() {
   useEffect(() => {
     const spawn = () => {
       setPhantom(true);
-      const timer = setTimeout(() => setPhantom(false), 8000);
+      // Phantom disappears faster at high chaos (harder to click)
+      const despawnTime = chaosLevel > 60 ? 4000 : chaosLevel > 30 ? 6000 : 8000;
+      const timer = setTimeout(() => setPhantom(false), despawnTime);
       setPhantomTimer(timer);
     };
-    const interval = setInterval(spawn, 15000 + Math.random() * 15000);
+    // At high chaos, phantoms spawn much more frequently
+    const spawnRate = chaosLevel > 60 ? 5000 + Math.random() * 5000 : chaosLevel > 30 ? 10000 + Math.random() * 10000 : 15000 + Math.random() * 15000;
+    const interval = setInterval(spawn, spawnRate);
     const initial = setTimeout(spawn, 5000);
     return () => { clearInterval(interval); clearTimeout(initial); if (phantomTimer) clearTimeout(phantomTimer); };
-  }, []);
+  }, [chaosLevel]);
 
   const handleSanitizePhantom = () => {
     setPhantom(false);
-    addXP(25);
-    addGold(10);
+    // Risk/reward: hit gives XP, miss (timeout) adds chaos
+    const xpGain = chaosLevel > 60 ? 40 : 25;
+    const goldGain = chaosLevel > 60 ? 15 : 10;
+    addXP(xpGain);
+    addGold(goldGain);
     findEasterEgg('xss_phantom');
     if (phantomTimer) clearTimeout(phantomTimer);
     const newCount = phantomCount + 1;
     setPhantomCount(newCount);
     if (newCount >= 10) unlockAchievement('xss-hunter');
   };
+
+  // When phantom times out (miss), add chaos
+  useEffect(() => {
+    if (!phantom && phantomTimer === null) return;
+    // Phantom was shown but disappeared without being clicked = miss
+    return () => {}; // cleanup handled in spawn
+  }, [phantom]);
 
   const wrappedAddXP = useCallback((n: number) => addXP(n), [addXP]);
 
@@ -820,7 +890,7 @@ export default function CyberPage() {
       <MatrixRain />
 
       <AnimatePresence>
-        {phantom && <XssPhantom onSanitize={handleSanitizePhantom} />}
+        {phantom && <XssPhantom onSanitize={handleSanitizePhantom} chaosLevel={chaosLevel} />}
       </AnimatePresence>
 
       <div className="relative z-10 max-w-7xl mx-auto px-6 py-12">
@@ -838,14 +908,14 @@ export default function CyberPage() {
         {/* Grid */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           <motion.div className="h-full" initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.1 }}>
-            <PortScanner addXP={wrappedAddXP} onScanComplete={() => {
+            <PortScanner addXP={wrappedAddXP} chaosLevel={chaosLevel} onScanComplete={() => {
               const newCount = portScanCount + 1;
               setPortScanCount(newCount);
               if (newCount >= 50) unlockAchievement('port-scanner');
             }} />
           </motion.div>
           <motion.div className="h-full" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.2 }}>
-            <PasswordChecker onTitanium={() => unlockAchievement('password-pro')} />
+            <PasswordChecker onTitanium={() => unlockAchievement('password-pro')} chaosLevel={chaosLevel} />
           </motion.div>
           <motion.div className="h-full" initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.3 }}>
             <FirewallSim addXP={wrappedAddXP} />
