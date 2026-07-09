@@ -8,6 +8,8 @@ import { VoidFlowField } from "@/components/effects/void-flow-field";
 import { CorruptionOverlay } from "@/components/effects/corruption";
 import { VoidCursor } from "@/components/effects/void-cursor";
 import { ChaosEffects } from "@/components/effects/chaos-effects";
+import { BreathingViewport } from "@/components/effects/corruption";
+import { LivingVoid } from "@/components/effects/living-void";
 import { ChaosMeter } from "@/components/rpg/chaos-meter";
 import { RandomEventPopup, ChaosEventSpawner } from "@/components/rpg/random-event";
 import { EnhancedHUD } from "@/components/rpg/enhanced-hud";
@@ -37,10 +39,12 @@ export default function RootLayout({
         </a>
         <Providers>
           <ChaosModeBody />
+          <BreathingViewport />
           <VoidFlowField />
           <CorruptionOverlay />
           <VoidCursor />
           <ChaosEffects />
+          <LivingVoid />
           <div id="main-content" role="main" aria-label="Void Crawler main content">
             {children}
           </div>
