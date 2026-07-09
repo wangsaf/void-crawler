@@ -587,3 +587,65 @@ body::after {
     height: 14rem;
   }
 }
+
+/* ==================== GRAV CARD EFFECTS ==================== */
+
+/* Gravitational pull card wrapper - base */
+.grav-card {
+  transform-style: preserve-3d;
+  will-change: transform;
+}
+
+/* Hover: resist gravitational pull - normalize and lift */
+.grav-card:hover {
+  z-index: 10;
+}
+
+/* Subtle glow pulse on cards being pulled */
+.grav-card::after {
+  content: "";
+  position: absolute;
+  inset: -1px;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.grav-card:hover::after {
+  opacity: 0;
+}
+
+/* Zone-specific ambient blackhole background */
+.zone-blackhole-bg {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+  opacity: 0.15;
+}
+
+.zone-blackhole-bg::before {
+  content: "";
+  position: absolute;
+  width: 200px;
+  height: 200px;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: radial-gradient(circle, rgba(176, 0, 255, 0.3) 0%, rgba(176, 0, 255, 0.05) 40%, transparent 70%);
+  border-radius: 50%;
+  animation: bh-event-horizon 6s ease-in-out infinite;
+}
+
+.zone-blackhole-bg::after {
+  content: "";
+  position: absolute;
+  width: 350px;
+  height: 350px;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: radial-gradient(circle, transparent 30%, rgba(0, 212, 255, 0.03) 50%, transparent 70%);
+  border-radius: 50%;
+  animation: bh-lensing 8s ease-in-out infinite;
+}

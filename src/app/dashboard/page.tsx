@@ -5,6 +5,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { soundEngine } from "@/lib/sound-engine";
 import { useGameStore } from "@/stores/game-store";
 import { BackButton } from "@/components/rpg/back-button";
+import { GravCard } from "@/components/effects/grav-card";
 
 // ─── Fake data generators ───────────────────────────────────────────────────
 const METRICS = ["CPU", "RAM", "NET", "IO", "REQ", "LAT"] as const;
@@ -636,6 +637,8 @@ export default function DashboardPage() {
 
   return (
     <main className="relative min-h-screen overflow-hidden" style={{ background: "#0a0e1a" }} role="main" aria-label="Panel Panic dashboard zone">
+      {/* Zone blackhole background */}
+      <div className="zone-blackhole-bg" style={{ background: 'radial-gradient(ellipse at 50% 50%, rgba(0,188,212,0.04) 0%, transparent 50%)' }} />
       <div className="fixed inset-0 pointer-events-none z-50 scanlines opacity-20" />
 
       <div
@@ -682,6 +685,7 @@ export default function DashboardPage() {
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           <div className="lg:col-span-2 space-y-8">
             {/* Metrics Panel */}
+            <GravCard intensity={0.2}>
             <motion.div
               className="glass-strong p-6 sm:p-8 box-glow-blue"
               initial={{ opacity: 0, y: 20 }}
@@ -705,8 +709,10 @@ export default function DashboardPage() {
                 ))}
               </div>
             </motion.div>
+            </GravCard>
 
             {/* Live Chart */}
+            <GravCard intensity={0.2}>
             <motion.div
               className="retro-card p-6"
               initial={{ opacity: 0, y: 20 }}
@@ -726,8 +732,10 @@ export default function DashboardPage() {
               </div>
               <LiveChart data={chartData} color="#00bcd4" />
             </motion.div>
+            </GravCard>
 
             {/* Error Chat */}
+            <GravCard intensity={0.2}>
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
@@ -735,9 +743,11 @@ export default function DashboardPage() {
             >
               <ErrorChat />
             </motion.div>
+            </GravCard>
           </div>
 
           <div className="space-y-8">
+            <GravCard intensity={0.2}>
             <motion.div
               initial={{ opacity: 0, x: 20 }}
               animate={{ opacity: 1, x: 0 }}
@@ -745,7 +755,9 @@ export default function DashboardPage() {
             >
               <DeployNuke />
             </motion.div>
+            </GravCard>
 
+            <GravCard intensity={0.2}>
             <motion.div
               initial={{ opacity: 0, x: 20 }}
               animate={{ opacity: 1, x: 0 }}
@@ -753,7 +765,9 @@ export default function DashboardPage() {
             >
               <StatusWeather />
             </motion.div>
+            </GravCard>
 
+            <GravCard intensity={0.2}>
             <motion.div
               initial={{ opacity: 0, x: 20 }}
               animate={{ opacity: 1, x: 0 }}
@@ -761,7 +775,9 @@ export default function DashboardPage() {
             >
               <SlotMachine totalPulls={useGameStore.getState().stats.totalPuzzlesSolved} />
             </motion.div>
+            </GravCard>
 
+            <GravCard intensity={0.2}>
             <motion.div
               initial={{ opacity: 0, x: 20 }}
               animate={{ opacity: 1, x: 0 }}
@@ -769,6 +785,7 @@ export default function DashboardPage() {
             >
               <APIKeyHoroscope />
             </motion.div>
+            </GravCard>
           </div>
         </div>
 

@@ -5,6 +5,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { soundEngine } from '@/lib/sound-engine';
 import { useGameStore } from '@/stores/game-store';
 import { BackButton } from '@/components/rpg/back-button';
+import { GravCard } from '@/components/effects/grav-card';
 
 // Generative SVG Background
 function GenerativeBackground() {
@@ -759,6 +760,8 @@ export default function PlaygroundPage() {
 
   return (
     <div className="min-h-screen bg-[#0a0010] text-white relative overflow-hidden" onClick={handleBackgroundClick} role="main" aria-label="The Void generative playground">
+      {/* Zone blackhole background */}
+      <div className="zone-blackhole-bg" style={{ background: 'radial-gradient(ellipse at 50% 50%, rgba(176,0,255,0.04) 0%, transparent 50%)' }} />
       <GenerativeBackground />
 
       <AnimatePresence>
@@ -800,8 +803,9 @@ export default function PlaygroundPage() {
         </motion.div>
 
         {/* Input */}
+        <GravCard intensity={0.2}>
         <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }}
-          className="glass-strong rounded-xl p-6 mb-8">
+          className="glass-strong p-6 mb-8">
           <div className="flex items-center gap-2 mb-3">
             <span className="text-2xl">🔮</span>
             <span className="text-purple-300 font-mono text-lg font-bold tracking-wider">INPUT PORTAL</span>
@@ -825,6 +829,7 @@ export default function PlaygroundPage() {
             Numbers → Fibonacci spiral • Words → Poetry (by mood) • Colors (#hex) → Palette • Code → Syntax • json/md/ascii/dream → Generators
           </div>
         </motion.div>
+        </GravCard>
 
         {/* Interpretation Output */}
         <AnimatePresence mode="wait">

@@ -5,6 +5,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { soundEngine } from '@/lib/sound-engine';
 import { useGameStore } from '@/stores/game-store';
 import { BackButton } from '@/components/rpg/back-button';
+import { GravCard } from '@/components/effects/grav-card';
 
 // ─── Types ───────────────────────────────────────────────────────────────────
 
@@ -427,6 +428,8 @@ export default function CartChaosPage() {
 
   return (
     <div className="relative min-h-screen overflow-hidden" style={{ background: 'linear-gradient(135deg, #1a0a2e 0%, #2d1b4e 30%, #1a0a2e 60%, #0d0618 100%)' }} role="main" aria-label="Cart Chaos market zone">
+      {/* Zone blackhole background */}
+      <div className="zone-blackhole-bg" style={{ background: 'radial-gradient(ellipse at 50% 50%, rgba(255,107,53,0.04) 0%, transparent 50%)' }} />
       {/* Warm neon overlay */}
       <div className="pointer-events-none fixed inset-0 z-0 opacity-20" style={{ background: 'radial-gradient(ellipse at 30% 20%, #ff6b35 0%, transparent 50%), radial-gradient(ellipse at 70% 80%, #ff4081 0%, transparent 50%), radial-gradient(ellipse at 50% 50%, #ffc107 0%, transparent 40%)' }} />
 
@@ -599,8 +602,8 @@ export default function CartChaosPage() {
               {items.map((item, idx) => {
                 const isSoldOut = item.stock <= 0;
                 return (
+                  <GravCard key={item.id} intensity={0.2}>
                   <motion.div
-                    key={item.id}
                     initial={{ opacity: 0, y: 30 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: idx * 0.08 }}
@@ -680,6 +683,7 @@ export default function CartChaosPage() {
                       range: {item.minPrice}–{item.maxPrice}g
                     </div>
                   </motion.div>
+                  </GravCard>
                 );
               })}
             </div>
@@ -687,6 +691,7 @@ export default function CartChaosPage() {
 
           {/* ─── Cart Panel ─────────────────────────────────────────────────── */}
           <div className="lg:col-span-1">
+            <GravCard intensity={0.2}>
             <motion.div
               className="glass-strong lg:sticky top-0 lg:top-8 border-2 border-void-border p-6"
               initial={{ opacity: 0, x: 30 }}
@@ -782,10 +787,11 @@ export default function CartChaosPage() {
                   <div className="text-lg font-bold text-pink-300" style={{ fontFamily: 'var(--font-code)' }}>{totalSpent}g</div>
                   <div className="text-[10px] text-gray-500">Total Spent</div>
                 </div>
-              </div>
-            </motion.div>
-          </div>
-        </div>
+                </div>
+                </motion.div>
+                </GravCard>
+                </div>
+                </div>
 
         {/* ─── Checkout Puzzle Modal ──────────────────────────────────────── */}
         <AnimatePresence>
