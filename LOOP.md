@@ -62,3 +62,24 @@
 - **What broke**: Minor CSS hydration mismatch
 - **Fix**: Added suppressHydrationWarning
 - **Verify**: All pages load, all interactions work, all zones navigable
+
+## Iteration 10: Chaos Overhaul
+- **Maker**: Added chaos system (meter, events, engine, sounds, enhanced HUD)
+- **Checker**: TestSprite tested chaos flow
+- **What broke**: Tone.js "Start time must be strictly greater" crash
+- **Fix**: try-catch + now+0.01 offset on all multi-note methods
+- **Verify**: Chaos meter fills, random events spawn, HUD updates, sounds play
+
+## Iteration 11: Void Redesign
+- **Maker**: Complete aesthetic overhaul — retro/pixel → clinical/SCP void
+- **Checker**: TestSprite tested new visual system
+- **What broke**: CSS @import order (Google Fonts after Tailwind)
+- **Fix**: @import url() before @import "tailwindcss"
+- **Verify**: Landing has SCP document style, hub has clinical panels, zones use void design
+
+## Iteration 12: Corruption Effects + Polish
+- **Maker**: Added corruption overlay, void cursor, chaos sounds, dead code cleanup
+- **Checker**: TestSprite tested corruption scaling
+- **What broke**: n/a
+- **Fix**: n/a
+- **Verify**: Vignette deepens with chaos, screen tear at 50%+, red tint at 70%+, cursor distorts, chaos sounds play at thresholds
