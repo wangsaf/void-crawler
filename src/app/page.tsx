@@ -7,6 +7,11 @@ import { ITEM_EFFECTS, UPGRADES, type Buff } from "@/stores/game-store";
 import { useChaosStore } from "@/stores/chaos-store";
 import { soundEngine } from "@/lib/sound-engine";
 import { ChaosDrift, CorruptedText, Redacted, BreathingText } from "@/components/effects/corruption";
+import { TutorialOverlay } from "@/components/rpg/tutorial-overlay";
+import { VoidTooltip } from "@/components/rpg/void-tooltip";
+import { ProgressionGuide } from "@/components/rpg/progression-guide";
+import { SaveIndicator } from "@/components/rpg/save-indicator";
+import { SettingsPanel } from "@/components/rpg/settings-panel";
 
 type Screen = "boot" | "landing" | "naming" | "hub";
 
@@ -82,11 +87,11 @@ function VoidHub({ characterName, characterClass }: { characterName: string; cha
   }, [reduceChaos]);
 
   const zones = [
-    { id: "market" as const, name: "CART_CHAOS", desc: "Buy items, fight the Tax Goblin, survive price crashes", color: "text-signal-red" },
-    { id: "dashboard" as const, name: "PANEL_PANIC", desc: "Monitor systems, pull slot machine, deploy with NUKE", color: "text-signal-blue" },
-    { id: "cyber" as const, name: "ANOMALY.ZONE", desc: "Scan patterns, hunt void anomalies, test signal strength", color: "text-signal-green" },
-    { id: "playground" as const, name: "THE_VOID", desc: "Generate art, explore numbers, interpret the void", color: "text-signal-purple" },
-    ...(level >= 10 ? [{ id: "void-core" as const, name: "VOID_CORE", desc: "Multi-phase boss fight — defeat the Anomaly Core", color: "text-signal-gold" }] : []),
+    { id: "market" as const, name: "CART_CHAOS", desc: "Buy items, fight the Tax Goblin, survive price crashes", color: "text-signal-red", tip: "REWARDS: XP +30-60, Gold +40-80 per event. RISK: Chaos +5-10. Recommended starting zone." },
+    { id: "dashboard" as const, name: "PANEL_PANIC", desc: "Monitor systems, pull slot machine, deploy with NUKE", color: "text-signal-blue", tip: "REWARDS: XP +40-80, Gold +50-100 per event. RISK: Chaos +8-12. Features a slot machine for bonus gold." },
+    { id: "cyber" as const, name: "ANOMALY.ZONE", desc: "Scan patterns, hunt void anomalies, test signal strength", color: "text-signal-green", tip: "REWARDS: XP +35-70, Gold +45-90 per event. RISK: Chaos +6-11. Scan data patterns and sanitize anomalies." },
+    { id: "playground" as const, name: "THE_VOID", desc: "Generate art, explore numbers, interpret the void", color: "text-signal-purple", tip: "REWARDS: XP +25-55, Gold +30-70 per event. RISK: Chaos +4-8. Creative zone with unique generative activities." },
+    ...(level >= 10 ? [{ id: "void-core" as const, name: "VOID_CORE", desc: "Multi-phase boss fight — defeat the Anomaly Core", color: "text-signal-gold", tip: "BOSS ZONE: Multi-phase anomaly encounter. Bring supplies. High chaos risk, high reward." }] : []),
   ];
 
   const chaosStatus = chaosLevel >= 70 ? "CRITICAL" : chaosLevel >= 40 ? "UNSTABLE" : "STABLE";
@@ -94,6 +99,11 @@ function VoidHub({ characterName, characterClass }: { characterName: string; cha
 
   return (
     <div className="relative z-10 min-h-screen flex flex-col items-center px-4 sm:px-6 py-8 sm:py-16">
+      {/* UX Overlays */}
+      <TutorialOverlay />
+      <SaveIndicator />
+      <SettingsPanel />
+
       {/* Document Header */}
       <motion.div
         className="w-full max-w-3xl mb-12"
@@ -124,10 +134,10 @@ function VoidHub({ characterName, characterClass }: { characterName: string; cha
         <div className="void-title mb-4">OPERATIONAL STATUS</div>
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
           {[
-            { label: "LEVEL", value: `${level}`, color: "text-text-primary" },
-            { label: "XP", value: `${xp}/${xpToNext}`, color: "text-text-primary" },
-            { label: "GOLD", value: `${gold}`, color: "text-signal-gold" },
-            { label: "CHAOS", value: `${chaosLevel}%`, color: chaosColor },
+            { label: "LEVEL", value: `${level}`, color: "text-text-primary", tip: "Your crawler level. Gain XP from zones to level up. Each level increases max HP by 20." },
+            { label: "XP", value: `${xp}/${xpToNext}`, color: "text-text-primary", tip: "Experience points. Earn them by completing zone activities. Fill the bar to level up." },
+            { label: "GOLD", value: `${gold}`, color: "text-signal-gold", tip: "Currency earned from zones. Spend gold on items and permanent upgrades." },
+            { label: "CHAOS", value: `${chaosLevel}%`, color: chaosColor, tip: "Chaos level rises during zone activity. At 70%+ chaos mode activates. Return to hub to let it decay." },
           ].map((stat, i) => (
             <motion.div
               key={stat.label}
@@ -137,8 +147,12 @@ function VoidHub({ characterName, characterClass }: { characterName: string; cha
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.3 + i * 0.1 }}
             >
-              <div className={`text-lg font-bold ${stat.color}`}>{stat.value}</div>
-              <div className="void-label mt-1">{stat.label}</div>
+              <VoidTooltip text={stat.tip} position="top">
+                <div className="cursor-help">
+                  <div className={`text-lg font-bold ${stat.color}`}>{stat.value}</div>
+                  <div className="void-label mt-1">{stat.label}</div>
+                </div>
+              </VoidTooltip>
             </motion.div>
           ))}
         </div>
@@ -161,45 +175,51 @@ function VoidHub({ characterName, characterClass }: { characterName: string; cha
           <div className="void-title mb-4">ZONE ACCESS</div>
         <div className="space-y-2">
           {zones.map((zone, i) => (
-              <motion.a
-                key={zone.id}
-                href={`/${zone.id}`}
-                className="block group"
-                style={{
-                  background: "var(--color-void-surface)",
-                  border: "1px solid var(--color-void-border)",
-                  padding: "12px 16px",
-                  cursor: "pointer",
-                  transition: "all 0.2s ease",
-                  display: "block",
-                }}
-                initial={{ opacity: 0, x: -20 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ delay: 0.5 + i * 0.1 }}
-                onClick={() => { setZone(zone.id); soundEngine.playClick(); }}
-                onMouseEnter={(e) => {
-                  e.currentTarget.style.borderColor = "var(--color-text-ghost)";
-                  e.currentTarget.style.background = "var(--color-void-card)";
-                }}
-                onMouseLeave={(e) => {
-                  e.currentTarget.style.borderColor = "var(--color-void-border)";
-                  e.currentTarget.style.background = "var(--color-void-surface)";
-                }}
-              >
-                <div className="flex items-center justify-between">
-                  <div>
-                    <div className="font-bold text-sm text-text-primary">{zone.name}</div>
-                    <div className="void-label mt-0.5">{zone.desc}</div>
+              <VoidTooltip text={zone.tip} position="bottom">
+                <motion.a
+                  key={zone.id}
+                  href={`/${zone.id}`}
+                  className="block group"
+                  style={{
+                    background: "var(--color-void-surface)",
+                    border: "1px solid var(--color-void-border)",
+                    padding: "14px 16px",
+                    cursor: "pointer",
+                    transition: "all 0.2s ease",
+                    display: "block",
+                    minHeight: "44px",
+                  }}
+                  initial={{ opacity: 0, x: -20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ delay: 0.5 + i * 0.1 }}
+                  onClick={() => { setZone(zone.id); soundEngine.playClick(); }}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.borderColor = "var(--color-text-ghost)";
+                    e.currentTarget.style.background = "var(--color-void-card)";
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.borderColor = "var(--color-void-border)";
+                    e.currentTarget.style.background = "var(--color-void-surface)";
+                  }}
+                >
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <div className="font-bold text-sm text-text-primary">{zone.name}</div>
+                      <div className="void-label mt-0.5">{zone.desc}</div>
+                    </div>
+                    <div className="void-label group-hover:text-text-primary transition-colors">
+                      ACCESS →
+                    </div>
                   </div>
-                  <div className="void-label group-hover:text-text-primary transition-colors">
-                    ACCESS →
-                  </div>
-                </div>
-              </motion.a>
+                </motion.a>
+              </VoidTooltip>
           ))}
         </div>
         </motion.div>
       </ChaosDrift>
+
+      {/* Progression Guide */}
+      <ProgressionGuide />
 
       {/* Active Buffs */}
       {buffs.length > 0 && (
@@ -282,19 +302,21 @@ function VoidHub({ characterName, characterClass }: { characterName: string; cha
               const effect = ITEM_EFFECTS[itemId];
               if (!effect) return null;
               return (
-                <button
-                  key={itemId}
-                  className="void-card text-left px-4 py-3 cursor-pointer hover:bg-void-card transition-colors"
-                  onClick={() => { useItem(itemId); soundEngine.playClick(); }}
-                  style={{ fontFamily: "var(--font-mono)" }}
-                >
-                  <div className="flex items-center justify-between">
-                    <span className="text-text-primary text-sm font-bold">{effect.icon} {effect.name}</span>
-                    <span className="text-signal-gold text-xs">x{count}</span>
-                  </div>
-                  <div className="void-label mt-1">{effect.description}</div>
-                  <div className="void-label text-signal-green mt-0.5">CLICK TO USE</div>
-                </button>
+                <VoidTooltip text={`${effect.description}. Effect: ${effect.effect} (${effect.value}).`} position="top">
+                  <button
+                    key={itemId}
+                    className="void-card text-left px-4 py-3 cursor-pointer hover:bg-void-card transition-colors w-full"
+                    onClick={() => { useItem(itemId); soundEngine.playClick(); }}
+                    style={{ fontFamily: "var(--font-mono)", minHeight: "44px" }}
+                  >
+                    <div className="flex items-center justify-between">
+                      <span className="text-text-primary text-sm font-bold">{effect.icon} {effect.name}</span>
+                      <span className="text-signal-gold text-xs">x{count}</span>
+                    </div>
+                    <div className="void-label mt-1">{effect.description}</div>
+                    <div className="void-label text-signal-green mt-0.5">CLICK TO USE</div>
+                  </button>
+                </VoidTooltip>
               );
             })}
           </div>
@@ -329,6 +351,7 @@ function VoidHub({ characterName, characterClass }: { characterName: string; cha
                   className="void-btn void-btn--signal ml-4 whitespace-nowrap text-xs disabled:opacity-30"
                   disabled={isMaxed || !canAfford}
                   onClick={() => { if (buyUpgrade(upgrade.id)) soundEngine.playClick(); }}
+                  style={{ minHeight: "44px" }}
                 >
                   {isMaxed ? "MAX" : `BUY ${upgrade.cost}g`}
                 </button>

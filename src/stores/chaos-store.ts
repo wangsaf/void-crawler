@@ -143,6 +143,7 @@ interface ChaosState {
   setScreenShake: (intensity: number) => void;
   setVisitCount: (count: number) => void;
   setLastVisit: (timestamp: number) => void;
+  resetChaos: () => void;
 }
 
 export const useChaosStore = create<ChaosState>()(
@@ -244,6 +245,19 @@ export const useChaosStore = create<ChaosState>()(
       setScreenShake: (intensity) => set({ screenShakeIntensity: intensity }),
       setVisitCount: (count) => set({ visitCount: count }),
       setLastVisit: (timestamp) => set({ lastVisit: timestamp }),
+      resetChaos: () => set({
+        chaosLevel: 0,
+        totalChaosEvents: 0,
+        chaosEventsDefeated: 0,
+        activeEvent: null,
+        eventProgress: 0,
+        eventTimeLeft: 0,
+        screenShakeIntensity: 0,
+        glitchIntensity: 0,
+        chaosMode: false,
+        visitCount: 0,
+        lastVisit: 0,
+      }),
     }),
     {
       name: "void-chaos-save",

@@ -400,3 +400,71 @@ body.chaos-mode::after {
 .skip-link:focus {
   top: 0;
 }
+
+/* ==================== MOBILE UX ==================== */
+
+/* Ensure minimum touch target size (44px) on mobile */
+@media (pointer: coarse) {
+  .void-btn {
+    min-height: 44px;
+    min-width: 44px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .void-card {
+    min-height: 44px;
+  }
+  button, a[href] {
+    min-height: 44px;
+  }
+}
+
+/* Prevent horizontal overflow on mobile */
+@media (max-width: 640px) {
+  body {
+    font-size: 13px;
+    -webkit-text-size-adjust: 100%;
+    text-size-adjust: 100%;
+  }
+  .void-panel {
+    padding: 12px;
+  }
+  .void-card {
+    padding: 12px;
+  }
+  .void-btn {
+    padding: 10px 16px;
+    font-size: 11px;
+  }
+  .void-title {
+    font-size: 10px;
+  }
+  .void-label {
+    font-size: 9px;
+  }
+}
+
+/* Smooth momentum scrolling on iOS */
+@supports (-webkit-touch-callout: none) {
+  main {
+    -webkit-overflow-scrolling: touch;
+    overflow-y: auto;
+  }
+}
+
+/* Ensure readable text without zoom on inputs */
+input, textarea, select {
+  font-size: max(14px, 1rem);
+}
+
+/* Prevent buttons from overlapping on small screens */
+.grid {
+  overflow: visible;
+}
+.space-y-2 > * + * {
+  margin-top: 8px;
+}
+.space-y-3 > * + * {
+  margin-top: 12px;
+}
